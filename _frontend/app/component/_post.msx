@@ -1,0 +1,108 @@
+var fn = require('../core/_fn.msx');
+var data = require('../core/_data.msx');
+var Comments = require('./_comment.msx');
+
+var PostView = function(ctrl){
+    return <div className="main mh800">
+      {ctrl.request.ready()?[
+         <div>
+           <span className="breadcrumb">
+             {fn.buildBreadcrumb(Window.urls, Window.categories,ctrl.post().post.categories[0], [])}
+             {ctrl.post().post.title}
+           </span>
+           
+           <br/>
+           <hr className="style3"/>
+           <div className="postWr">
+             <div className="postTitle">
+               <h1>{ctrl.post().post.title}</h1>
+             </div>
+             <hr className="style3"/>
+             <div className="postInfo cf">
+               <div className="meta-data">
+        
+                 <span className="upload">{ctrl.post().post.upload}</span>
+                 <span className="category">
+                     {ctrl.post().post.categories.map(function (item) {
+                         return <a href={"/category/" + item}
+                                   config={m.route}
+                         ><span>{(Window.categories.getItemByParam({slug: item}) != undefined)?(Window.categories.getItemByParam({slug: item}).name):("")}</span></a>
+                     })}
+                      </span>
+                 <span className="time">{moment(ctrl.post().post.time).format('L')}</span>
+               </div>
+      
+               <div className="t-left">
+                 <a href="#"><img src={"/cover/get/" + ctrl.post().post.cover.id} alt={ctrl.post().post.cover.alt}/></a>
+               </div>
+               <div className="t-right">
+                 <div className="rate-nav">RATING</div>
+                 <div className="rate-num">{ctrl.post().post.nLike}</div>
+                 <button className="rate-button"
+                    onclick={function(el){
+                        if(Window.user == undefined){
+                            data.showSignin = true;
+                        } else {
+                            if(!ctrl.voted) {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/post/vote",
+                                    data: JSON.stringify({
+                                        "id": ctrl.postID,
+                                    }),
+                                    contentType: "application/json",
+                                    dataType: "text",
+                                    success: function (res) {
+                                        ctrl.post().post.nLike += 1;
+                                        m.redraw();
+                                    }
+                                });
+                                ctrl.voted = true;
+                            }
+                        }
+                    }}
+                 >+1</button>
+               </div>
+             <div className="t-mid">
+                 <div className="go-download">
+                     <a href="#download"><span>Tải ngay</span></a>
+                 </div>
+             </div>
+             </div>
+             <hr className="style3"/>
+             <div className="postContent">
+               {m.trust(marked(ctrl.post().post.content))}
+               
+               <div id="download" className="down-box ">
+                   <h4 style="color: red; font-style: italic; margin-bottom: 5px;">Chọn link phía dưới để tải về!</h4>
+                   <div className="inside">
+                       {ctrl.post().post.link.map(function(link){
+                          {/*return <span><a href={link.shortUrl}>Download {link.filename}</a></span>*/}
+                          return <span><a
+                              href={fn.getShortUrl()  + "vndocs.com/download/" + link.url} target="_blank">Download {link.filename}</a></span>
+                       })}
+                   </div>
+               </div>
+             </div>
+           </div>
+         </div>,
+          <hr className="style3"/>,
+          Comments(ctrl, ctrl.post(), ctrl.postID, "post")
+          
+      ]:[
+          <div className="loading">
+              <div class="loader">
+                  <div class="inner one"></div>
+                  <div class="inner two"></div>
+                  <div class="inner three"></div>
+              </div>
+          </div>
+      ]
+      }
+    </div>
+      
+};
+
+
+
+module.exports = PostView;

@@ -1,0 +1,94 @@
+@(title: String, user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Material Admin - Dashboard</title>
+    <base href="/admin">
+      <!-- BEGIN META -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="your,keywords">
+    <meta name="description" content="Short explanation about this website">
+      <!-- END META -->
+
+      <!-- BEGIN STYLESHEETS -->
+    <link href='http://fonts.googleapis.com/css?family=Roboto:300italic,400italic,300,400,500,700,900' rel='stylesheet' type='text/css'/>
+    <link type="text/css" rel="stylesheet" href="/assets/admin/css/theme-default/bootstrap.css?1422792965" />
+    <link type="text/css" rel="stylesheet" href="/assets/admin/css/theme-default/materialadmin.css?1425466319" />
+    <link type="text/css" rel="stylesheet" href="/assets/admin/css/theme-default/font-awesome.min.css?1422529194" />
+    <link type="text/css" rel="stylesheet" href="/assets/admin/css/theme-default/material-design-iconic-font.min.css?1421434286" />
+    <link type="text/css" rel="stylesheet" href="/assets/admin/css/theme-default/libs/rickshaw/rickshaw.css?1422792967" />
+    <link type="text/css" rel="stylesheet" href="/assets/admin/css/theme-default/libs/morris/morris.core.css?1420463396" />
+    <link type="text/css" rel="stylesheet" href="/assets/styles/jquery.domenu-0.95.77.css" />
+    <link type="text/css" rel="stylesheet" href="/assets/admin/tagsinput/bootstrap-tagsinput.css" />
+    <link type="text/css" rel="stylesheet" href="/assets/admin/css/custom.css" />
+
+
+    <!-- END STYLESHEETS -->
+
+      <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+      <!--[if lt IE 9]>
+		<script type="text/javascript" src="/assets/admin/js/libs/utils/html5shiv.js?1403934957"></script>
+		<script type="text/javascript" src="/assets/admin/js/libs/utils/respond.min.js?1403934956"></script>
+		<![endif]-->
+  </head>
+  <body class="menubar-hoverable header-fixed ">
+    <div id="app"></div>
+    @helper.CSRF.formField
+    <style>
+      .content {
+        margin-bottom: 100px;
+      }
+
+      #editor {
+        min-height: 500px;
+      }
+      #render {
+        min-height: 500px;
+      }
+    </style>
+
+    <script src="/assets/admin/js/libs/jquery/jquery-1.11.2.min.js"></script>
+    <script src="/assets/admin/js/libs/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script src="/assets/admin/js/libs/bootstrap/bootstrap.min.js"></script>
+    <script src="/assets/admin/js/libs/spin.js/spin.min.js"></script>
+    <script src="/assets/admin/js/libs/autosize/jquery.autosize.min.js"></script>
+    <script src="/assets/admin/js/libs/moment/moment.min.js"></script>
+    <script src="/assets/admin/js/libs/flot/jquery.flot.min.js"></script>
+    <script src="/assets/admin/js/libs/flot/jquery.flot.time.min.js"></script>
+    <script src="/assets/admin/js/libs/flot/jquery.flot.resize.min.js"></script>
+    <script src="/assets/admin/js/libs/flot/jquery.flot.orderBars.js"></script>
+    <script src="/assets/admin/js/libs/flot/jquery.flot.pie.js"></script>
+    <script src="/assets/admin/js/libs/flot/curvedLines.js"></script>
+    <script src="/assets/admin/js/libs/jquery-knob/jquery.knob.min.js"></script>
+    <script src="/assets/admin/js/libs/sparkline/jquery.sparkline.min.js"></script>
+    <script src="/assets/admin/js/libs/nanoscroller/jquery.nanoscroller.min.js"></script>
+    <script src="/assets/admin/js/libs/d3/d3.min.js"></script>
+    <script src="/assets/admin/js/libs/d3/d3.v3.js"></script>
+    <script src="/assets/admin/js/libs/rickshaw/rickshaw.min.js"></script>
+    <script src="/assets/admin/js/core/source/App.js"></script>
+    <script src="/assets/admin/js/core/source/AppNavigation.js"></script>
+    <script src="/assets/admin/js/core/source/AppOffcanvas.js"></script>
+    <script src="/assets/admin/js/core/source/AppCard.js"></script>
+    <script src="/assets/admin/js/core/source/AppForm.js"></script>
+    <script src="/assets/admin/js/core/source/AppNavSearch.js"></script>
+    <script src="/assets/admin/js/core/source/AppVendor.js"></script>
+    <script src="/assets/admin/js/core/demo/Demo.js"></script>
+    <script src="/assets/admin/tagsinput/bootstrap-tagsinput.js"></script>
+    <script src="/assets/lib/jquery.domenu-0.95.77.min.js"></script>
+    <script src="/assets/lib/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/assets/lib/marked.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/assets/lib/mithril.js"></script>
+    @**@
+
+    @if(play.Play.isDev()){
+      <script src=@{"/file/admin.js?" + scala.util.Random.nextInt(10000)}></script>
+    } else {
+      <script src="/assets/js/admin.js"></script>
+    }
+
+  </body>
+</html>

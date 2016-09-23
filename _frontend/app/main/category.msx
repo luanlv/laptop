@@ -1,0 +1,90 @@
+var Category = {};
+var Menu = require('../component/_menu.msx');
+var fn = require('../core/_fn.msx');
+var Data = require('../core/_data.msx');
+var Content = require('../component/_content.msx');
+var Side = require('../component/_side.msx');
+var Login = require('../component/_login.msx');
+var Head = require('../component/_head.msx');
+var Footer = require('../component/_footer.msx');
+
+
+Category.controller = function(){
+  if(Window.user == undefined){
+    Data.sessionstorage.set( 'url' , m.route() );
+  } else {
+    Data.sessionstorage.set( 'url' , "/" );
+  }
+  
+  var ctrl = this;
+  ctrl.needUser = m.route.param("needUser");
+  if(ctrl.needUser != undefined  && Window.user == undefined){
+    Data.showSignin = true;
+  }
+  ctrl.request = {};
+  ctrl.request.ready = m.prop(false);
+  ctrl.posts = m.prop({});
+  ctrl.categorySlug =  m.route.param("categorySlug");
+  ctrl.posts().total = 1;
+  ctrl.articles = Window.articles;
+  ctrl.page = (m.route.param("p") == undefined)?(1):(parseInt(m.route.param("p")));
+  
+  if(Window.posts === undefined) {
+    ctrl.request = fn.requestWithFeedback({method: "GET", url: "/category/" + ctrl.categorySlug + "/" + ctrl.page}, ctrl.posts, ctrl.setup);
+  } else {
+    ctrl.request.data = m.prop(Window.posts);
+    ctrl.posts().posts=ctrl.request.data();
+    ctrl.posts().total = Window.totalPosts;
+    Window.posts = undefined;
+    ctrl.request.ready = m.prop(true);
+    m.redraw();
+  };
+  ctrl.setup = function(){
+    m.redraw();
+  };
+  
+  ctrl.goToPage = function(page){
+    if(page >= 1 && page <= Math.ceil(ctrl.posts().total/5)) {
+      ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/category/" + ctrl.categorySlug + "/" + page}, ctrl.posts, ctrl.setup);
+      fn.changePageUrl("Page " + page, ctrl.page, page, 'top');
+      ctrl.page = page;
+    }
+  };
+  ctrl.goPrev = function(page){
+    if(page > 1) {
+      ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/category/" + ctrl.categorySlug + "/" + (page-1)}, ctrl.posts, ctrl.setup);
+      fn.changePageUrl("Page " + (page-1), page, page-1, 'top');
+      ctrl.page = page-1;
+    }
+  }
+  ctrl.goNext = function(page){
+    if(page < Math.ceil(ctrl.posts().total/5)) {
+      ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/category/" + ctrl.categorySlug + "/" + (page+1)}, ctrl.posts, ctrl.setup);
+      fn.changePageUrl("Page " + (page+1), page, page+1, 'top');
+      ctrl.page = page+1;
+    }
+  }
+};
+
+Category.view = function(ctrl){
+  return [
+    <div className="headWr ">
+      {Head(ctrl)}
+    </div>,
+    <div className="container containerBor">
+           
+      <div className="bodyWr">
+        {Menu(ctrl)}
+        <div className="content ">
+          {Content(ctrl)}
+          {Side(ctrl)}
+        </div>
+      </div>
+    
+    </div>,
+    Login(ctrl),
+    Footer(ctrl)
+  ]
+};
+
+module.exports =  Category;

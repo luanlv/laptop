@@ -1,0 +1,40 @@
+var data = require('../core/_data.msx');
+var fn = require('../core/_fn.msx');
+
+var Head = function(ctrl){
+  return [
+    <div className="container">
+       <span className="menu-icon"
+             onclick={function(elem){
+               var el = document.querySelectorAll('.menu')[0];
+               var el2 = document.querySelectorAll('.content')[0];
+               fn.toggleClass(el, "menu-active");
+               fn.toggleClass(el2, "menu-active");
+               fn.toggleClass(elem.target, "menu-active");
+             }}
+       ></span>
+      <a href="/" config={m.route}>
+        <img className="logo" src={data.logo} alt="logo Vndocs.com"/>
+      </a>
+      <span className="slogan orange"
+        config={function(el, isInited, context){
+          if(!isInited){
+            setInterval(function(){
+              fn.toggleClass(el, 'orange');
+            }, 300)
+          }
+        }}
+      >Nơi chia sẻ tài liệu hoàn toàn miễn phí !</span>
+      <div className="free-logoWr">
+        <img className="free-logo" src="/assets/images/100_free.png" alt=""/>
+        <img className="lookingfor" src="/assets/images/lookingfor.png" alt=""/>
+      </div>
+      
+      <div className="shareWr">
+        <img className="share" src="/assets/images/sharing-is-caring.png" alt=""/>
+      </div>
+    </div>
+  ]
+};
+
+module.exports = Head;

@@ -1,0 +1,51 @@
+var Product = {};
+var Header = require('./_header.msx');
+var Menu = require('./_menu.msx');
+var NewProduct = require('./_newproduct.msx');
+var Right = require('./_right.msx');
+var fn = require('./fn.msx');
+
+var postData = {"ok": "data"}
+
+Product.controller = function(){
+  console.log("new product");
+  var ctrl = this;
+  ctrl.showImgList = false;
+  ctrl.imgList = m.prop([]);
+  
+  ctrl.setup2 = function(){
+    ctrl.imgList(ctrl.request2.data());
+    ctrl.showImgList = true;
+    m.redraw();
+  };
+  
+  ctrl.setup = function(){
+    ctrl.categories(ctrl.request.data());
+    m.redraw();
+  };
+  
+  
+  ctrl.categories = m.prop([]);
+  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
+  
+};
+
+
+
+Product.view = function(ctrl){
+  return  [
+    Header(ctrl),
+    <div id="base">
+      
+      {NewProduct(ctrl)}
+      
+      {Menu(ctrl)}
+      
+      {Right(ctrl)}
+    
+    </div>
+  ]
+};
+
+
+module.exports = Product;

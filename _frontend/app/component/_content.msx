@@ -1,0 +1,110 @@
+var Content = function(ctrl){
+  return <div className="main cf mh800">
+    {ctrl.request.ready()?[
+      <div className="sort roundbox" id="top">
+        <form name="news_set_sort" id="news_set_sort" method="post" action="http://englishtips.org/">
+          <span>Lọc theo:&nbsp;</span>
+          <a href="javascript:void(0)" >Ngày đăng</a>
+          <a href="javascript:void(0)" >Rating</a>
+          <a href="javascript:void(0)" >Lượt xem</a>
+          <a href="javascript:void(0)" >Bình luận</a>
+        </form>
+      </div>,
+      <div class="navigation" align="center" style="margin-bottom:10px; margin-top:10px;">
+        <button className="btn btn-1 btn-1a"
+            onclick={function(){
+              ctrl.goPrev(ctrl.page)
+            }}
+        >PREV</button>
+        <input type="number" id="page" value={ctrl.page} style="width: 50px; text-alige: center"/>
+        / {Math.ceil(ctrl.posts().total/5) } &nbsp;
+        <button className="btn btn-1 btn-1a"
+            onclick={function(){
+              ctrl.goToPage($('#page').val())
+            }}
+        > Go</button>
+        <button className="btn btn-1 btn-1a"
+            onclick={function(){
+              ctrl.goNext(ctrl.page)
+            }}
+        >NEXT</button>
+      </div>,
+      <hr className="style3" style="margin-top: 45px;"/>,
+      ctrl.posts().posts.map(function(el) {
+        return <div className="block main-item">
+          <div className="title">
+            <div className="t-left">
+              <a href={"/post/" + el._id}
+                 className="title"
+                 config={m.route}
+              >{el.title}</a>
+            </div>
+            <div className="t-right">
+              <div className="rate-nav">RATING</div>
+              <div className="rate-num">{el.nLike}</div>
+            </div>
+          </div>
+          <div className="meta-data">
+            <span className="upload">{el.upload}</span>
+            <span className="category">
+                      {el.categories.map(function (item) {
+                        return <a href={"/category/" + item}
+                                  config={m.route}
+                        ><span>{(Window.categories.getItemByParam({slug: item}) == undefined)?(""):(Window.categories.getItemByParam({slug: item}).name)}</span></a>
+                      })}
+                      </span>
+            <span className="time">{moment(el.time).format('L')}</span>
+            <span className="nComment">
+                    <a href={"/post/" + el._id + "#comment"}
+                       config={m.route}
+                    >{el.nComment} bình luận</a>
+                    
+                </span>
+          </div>
+          <div className="info">
+            <a href="#"><img src={"/cover/get/" + el.cover.id} alt={el.cover.alt}/></a>
+            <p className="description">
+              {(window.isMobile) ? el.description.slice(0, 250) : el.description} ...
+            </p>
+          </div>
+        </div>
+      }),
+     
+      <hr className="style3"/>,
+      <div class="navigation" align="center" style="margin-bottom:10px; margin-top:10px;">
+        <button className="btn btn-1 btn-1a"
+          onclick={function(){
+            ctrl.goPrev(ctrl.page)
+          }}
+        >PREV</button>
+        <input type="number" id="page" value={ctrl.page} style="width: 50px; text-alige: center"/>
+        / {Math.ceil(ctrl.posts().total/5) } &nbsp;
+        <button className="btn btn-1 btn-1a"
+            onclick={function(){
+              ctrl.goToPage($('#page').val())
+            }}
+        > Go</button>
+        <button className="btn btn-1 btn-1a"
+            onclick={function(){
+              ctrl.goNext(ctrl.page)
+            }}
+        >NEXT</button>
+      </div>
+    
+    ]:[
+      <div className="loading">
+        <div class="loader">
+          <div class="inner one"></div>
+          <div class="inner two"></div>
+          <div class="inner three"></div>
+        </div>
+      </div>
+    ]}
+  
+  
+  </div>
+};
+
+
+
+module.exports = Content;

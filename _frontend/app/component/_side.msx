@@ -1,0 +1,44 @@
+var data = require('../core/_data.msx');
+
+var Side = function(ctrl){
+    return [<div className="side mh1000">
+        <div className="menubar">
+            Tìm kiếm
+        </div>
+        <div className="search cf">
+            <form class="search-form">
+                <div class="search-field-container">
+                    <input type="text" class="search-field" placeholder="Tìm kiếm..." />
+                </div>
+            </form>
+        </div>
+        <hr className="style1"/>
+        <div className="menubar">
+            Fanpage website
+        </div>
+        <div style="height: 135px; margin-top: 10px;">
+            <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fvndocs&tabs&width=190&height=136&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=695740397243976" width="190" height="136" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+        </div>
+        <hr className="style1"/>
+        <div className="menubar">
+            Hướng dẫn/Chia sẻ
+        </div>
+        <ul className="side-article">
+            {Window.articles.map(function(el){
+                return <li>
+                    <span>
+                        <a href={"/blog/" + el._id}
+                            config={m.route}
+                        >
+                            {el.title}
+                        </a>
+                    </span>
+                </li>
+            })}
+        </ul>
+    </div>,
+    
+    ]
+};
+
+module.exports = Side;

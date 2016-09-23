@@ -1,0 +1,42 @@
+var Article = {};
+var Header = require('./_header.msx');
+var Menu = require('./_menu.msx');
+var NewArticle = require('./_newarticle.msx');
+var Right = require('./_right.msx');
+var fn = require('./fn.msx');
+
+var postData = {"ok": "data"}
+
+Article.controller = function(){
+  console.log("new article");
+  var ctrl = this;
+  ctrl.showImgList = false;
+  ctrl.imgList = m.prop([]);
+  
+  ctrl.setup2 = function(){
+    ctrl.imgList(ctrl.request2.data());
+    ctrl.showImgList = true;
+    m.redraw();
+  };
+
+};
+
+
+
+Article.view = function(ctrl){
+  return  [
+    Header(ctrl),
+    <div id="base">
+      
+      {NewArticle(ctrl)}
+      
+      {Menu(ctrl)}
+      
+      {Right(ctrl)}
+    
+    </div>
+  ]
+};
+
+
+module.exports = Article;

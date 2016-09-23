@@ -1,0 +1,100 @@
+// File Name: _header.scss
+// Description: global header styles
+// Used by: Page.scss
+// Dependencies:
+// ------------------------------------------------------------
+
+.headWr {
+  //background: $blue;
+  height: 38px;
+  @include breakpoint($mobile){
+    border-bottom: 1px solid #ddd;
+  }
+  @include min-breakpoint($mobile){
+    background: #f6f8f9;
+    min-height: 38px;
+  }
+  @include min-breakpoint(700){
+    min-height: 70px;
+  }
+
+  img.logo {
+    height: 40px;
+    width: 200px;
+    position: absolute;
+    @include breakpoint($mobile){
+      margin: auto;
+      top: 7px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    @include min-breakpoint(700) {
+      position: absolute;
+      left: 0px;
+      top: 33px;
+    }
+    @include min-breakpoint($mobile){
+      position: absolute;
+    }
+  }
+  span.slogan {
+    position: absolute;
+    left: 200px;
+    top: 20px;
+    color: #666;
+    font-size: 16px;
+    font-weight: bold;
+    font-style: italic;
+    display: none;
+    @include min-breakpoint(700) {
+      top: 53px;
+      display: block;
+    }
+    @include min-breakpoint($mobile){
+      display: block;
+    }
+  }
+  span.orange {
+    color: $orange !important;
+  }
+  .free-logoWr {
+    position: relative;
+    margin-left: 520px;
+    padding-top: 30px;
+  }
+  img.free-logo {
+    height: 40px;
+    width: 40px;
+    position: absolute;
+    display: none;
+    @include min-breakpoint(700) {
+      display: block;
+    }
+  }
+  img.lookingfor {
+    height: 25px;
+    position: absolute;
+    top: 10px;
+    display: none;
+    @include min-breakpoint(700) {
+      display: block;
+    }
+  }
+
+  .shareWr{
+    float: right;
+    position: relative;
+  }
+  img.share{
+    position: absolute;
+    height: 60px;
+    top: -20px;
+    right: 0;
+    display: none;
+    @include min-breakpoint(888) {
+      display: block;
+    }
+  }
+}

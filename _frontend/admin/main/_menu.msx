@@ -1,0 +1,83 @@
+var Menu = function(ctrl){
+  return [
+    <div id="menubar" className="menubar-inverse ">
+      <div className="menubar-fixed-panel">
+        <div>
+          <a className="btn btn-icon-toggle btn-default menubar-toggle" data-toggle="menubar" href="javascript:void(0);">
+            <i className="fa fa-bars"></i>
+          </a>
+        </div>
+        <div className="expanded">
+          <a href="../../html/dashboards/dashboard.html">
+            <span className="text-lg text-bold text-primary ">MATERIAL&nbsp;ADMIN</span>
+          </a>
+        </div>
+      </div>
+      
+      
+      
+      <div className="menubar-scroll-panel"
+        onmouseleave={function(){
+          $('body').removeClass('menubar-visible');
+        }}
+       onmouseenter={function(){
+         $('body').addClass('menubar-visible');
+       }}
+      >
+        
+        <div className="gui-controls" id="main-menu">
+          <li>
+            <a href="#/" className="active">
+              <div className="gui-icon"><i className="md md-home"></i></div>
+              <span className="title">Dashboard</span>
+            </a>
+          </li>
+          
+          <li className="gui-folder">
+            <a href="/admin#/newProduct"
+            >
+              <div className="gui-icon"><i className="md md-web"></i></div>
+              <span className="title">Post</span>
+            </a>
+          </li>
+  
+          <li className="gui-folder">
+            <a href="/admin#/newArticle"
+            >
+              <div className="gui-icon"><i className="md md-web"></i></div>
+              <span className="title">Article</span>
+            </a>
+          </li>
+  
+          <li>
+            <a href="/admin#/category/create"
+            >
+              <div className="gui-icon"><i className="md md-web"></i></div>
+              <span className="title">New Category</span>
+            </a>
+          </li>
+  
+          <li>
+            <a href="/admin#/menu"
+            >
+              <div className="gui-icon"><i className="md md-web"></i></div>
+              <span className="title">Menu</span>
+            </a>
+          </li>
+          
+          
+        </div>
+        
+        
+        <div className="menubar-foot-panel">
+          <small className="no-linebreak hidden-folded">
+            <span className="opacity-75">Copyright &copy; 2014</span> <strong>CodeCovers</strong>
+          </small>
+        </div>
+        
+      </div>
+    </div>
+  ]
+}
+
+module.exports = Menu;

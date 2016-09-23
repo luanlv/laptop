@@ -1,0 +1,60 @@
+@import scala.util.Random
+@import play._
+@(menu: String, categories: String, article: String, comments: String, articles: String)(implicit user: Option[User],request: RequestHeader, messages: Messages)
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Document</title>
+        <link rel="stylesheet" href="/assets/styles/animate.css">
+        @if(play.Play.isDev()){
+            <link rel="stylesheet" href=@{"/file/style.css?" + scala.util.Random.nextInt(10000)} >
+        } else {
+            <link rel="stylesheet" href="/assets/css/style.css">
+        }
+
+    </head>
+    <body>
+
+        <span id="initdata" style="display: none;">
+            <span class="durls">{}</span>
+            <span class="dmenu">@Html(menu)</span>
+            <span class="dcategories">@Html(categories)</span>
+            <span class="dposts"></span>
+            <span class="dpost"></span>
+            <span class="dcomments">@Html(comments)</span>
+            <span class="darticle">@Html(article)</span>
+            <span class="darticles">@Html(articles)</span>
+            <span class="dtotalPosts"></span>
+            <span class="duser">
+            @user match {
+                case Some(user) => {
+                    {
+                    "userID" : "@user.userID",
+                    "avatarURL" : "@user.avatarURL",
+                    "fullName" : "@user.fullName"
+                    }
+                }
+                case None => {
+
+                }
+            }
+            </span>
+        </span>
+        <div id="app"></div>
+        @helper.CSRF.formField
+        <script src="/assets/lib/jquery.min.op.js"></script>
+        <script src="/assets/lib/marked.min.op.js" type="text/javascript" charset="utf-8"></script>
+        <script src="/assets/lib/moment.min.op.js"></script>
+        <script src="/assets/lib/mithril.min.op.js"></script>
+        <script src="/assets/lib/mithril-storage.min.op.js"></script>
+        @if(play.Play.isDev()){
+            <script src=@{"/file/app.js?" + scala.util.Random.nextInt(10000)}></script>
+        } else {
+            <script src="/assets/js/app.js"></script>
+        }
+    </body>
+</html>

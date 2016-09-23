@@ -1,0 +1,76 @@
+var Post = {};
+var Menu = require('../component/_menu.msx');
+var fn = require('../core/_fn.msx');
+var Data = require('../core/_data.msx');
+var ArticleView = require('../component/_article.msx');
+var Side = require('../component/_side.msx');
+var Login = require('../component/_login.msx');
+var Head = require('../component/_head.msx');
+var Footer = require('../component/_footer.msx');
+
+
+Post.controller = function(){
+  
+  if(Window.user == undefined){
+    Data.sessionstorage.set( 'url' , m.route() );
+  } else {
+    Data.sessionstorage.set( 'url' , "/" );
+  }
+  
+  var ctrl = this;
+  ctrl.needUser = m.route.param("needUser");
+  if(ctrl.needUser != undefined  && Window.user == undefined){
+    Data.showSignin = true;
+  }
+  ctrl.setup = function(){
+    m.redraw();
+  };
+  ctrl.slug =  m.route.param("slug");
+  ctrl.request = {};
+  ctrl.request.ready = m.prop(false);
+  ctrl.article = m.prop({});
+  ctrl.comment = m.prop("");
+  ctrl.voted = false;
+  
+  if(Window.article === undefined) {
+    console.log("run request !!!!!!!!!!")
+    ctrl.request = fn.requestWithFeedback({method: "GET", url: "/blog/get/" + ctrl.slug}, ctrl.article, ctrl.setup);
+  } else {
+    // ctrl.request.data = m.prop(Window.post);
+    ctrl.article().article = Window.article;
+    ctrl.article().comments = Window.comments;
+    Window.article = undefined;
+    Window.comments = undefined;
+    ctrl.request.ready = m.prop(true);
+    m.redraw();
+  };
+  ctrl.setup = function(){
+    // ctrl.post(ctrl.request.data());
+    console.log(ctrl.article());
+    m.redraw();
+  };
+  
+};
+
+Post.view = function(ctrl){
+  return [
+    <div className="headWr ">
+      {Head(ctrl)}
+    </div>,
+    <div className="container containerBor">
+          
+      <div className="bodyWr">
+        {Menu(ctrl)}
+        <div className="content ">
+          {ArticleView(ctrl)}
+          {Side(ctrl)}
+        </div>
+      </div>
+    
+    </div>,
+    Login(ctrl),
+    Footer(ctrl)
+  ]
+};
+
+module.exports =  Post;

@@ -1,0 +1,150 @@
+var fn ={};
+
+
+fn.cache = undefined;
+fn.url = m.route();
+
+
+
+fn.checkMenu = function(link){
+    console.log(m.route());
+    var partRoute = m.route().split('/');
+    var result = true;
+    var partLink = link.replace('https://', '').replace('http://', '').split('/');
+    if(!(partLink[1] === "c" || partLink[1] === "p")){
+        return false;
+    }
+    for(var i = 2; i < partLink.length; i++){
+        if(partLink[i] != partRoute[i]){
+            result = false;
+        }
+    }
+    return result;
+};
+
+fn.createMenu = function(menuJson, level){
+    return m('ul.level' + level, [
+        menuJson.map(function(child){
+            return m('li',  [
+                m('a', {title: child.title, href: child.http, config: m.route} ,m('span', child.title)),
+                (level > 1 )?<sup className="norm">6431</sup>:"",
+                (child.children !== undefined)?fn.createMenu(child.children, level + 1):''
+            ])
+        })
+    ])
+};
+
+fn.runCreateMenu = function(menuJson, level){
+
+    if(fn.cache !== undefined){
+        return fn.cache;
+    } else {
+        if(menuJson !== undefined) {
+            fn.cache = fn.createMenu(menuJson, level);
+            return fn.cache;
+        }
+    }
+};
+
+
+fn.toggleClass =  function(el, className){
+    if(el.classList){
+        if(el.classList.contains(className)) {
+            el.classList.remove(className);
+        } else {
+            el.classList.add(className);
+        }
+
+    } else {
+        el.className += ' ' + className;
+    }
+};
+
+fn.requestWithFeedback = function(args, bind, fn) {
+    var data = m.prop();
+    var completed = m.prop(false);
+    var complete = function() {
+        completed(true)
+    };
+    args.background = true;
+    args.config = function(xhr) {
+        // xhr.timeout = 4000;
+        xhr.timeout = 6000;
+        xhr.onTimeout = function() {
+            complete();
+            m.redraw();
+            window.location.reload();
+        }
+    };
+    return {
+        request: m.request(args).then(
+            function(data) {
+                completed(true); return data
+            },
+            function(err) {
+                window.location.reload();
+                completed(true); throw err
+            })
+            .then(function (data) {
+                if(bind !== undefined) bind(data);
+                if(fn !== undefined) fn();
+                m.redraw();
+                return data
+            }
+        ),
+        data: data,
+        ready: completed
+    }
+};
+
+fn.buildBreadcrumb = function(urls, category, currentCategory, result){
+    if(currentCategory === "NONE") {
+        result.push(" » " ,<a href="/" config={m.route}>Trang chủ</a> );
+        return result.reverse();
+    }
+    var jsonCategory = category.getItemByParam({slug: currentCategory});
+    result.push(" » " ,<a href={"/category/" + currentCategory} config={m.route}> {jsonCategory.name} </a>);
+    return fn.buildBreadcrumb(urls, category, jsonCategory.sku.slug, result);
+};
+
+fn.changePageUrl = function(title, pageOld, pageNew, id) {
+    if(m.route().indexOf("?p=") >=0){
+        var Old = "?p=" + pageOld;
+        var New = "?p=" + pageNew;
+        var newUrl = m.route().replace(Old, New);
+        if (typeof (history.pushState) != "undefined") {
+            var obj = { Title: title, Url: newUrl };
+            history.pushState(obj, obj.Title, obj.Url);
+        } else {
+            alert("Browser does not support HTML5.");
+        }
+    } else {
+        if (typeof (history.pushState) != "undefined") {
+            var obj = { Title: title, Url:  m.route()+"?p=" + pageNew };
+            history.pushState(obj, obj.Title, obj.Url);
+        } else {
+            alert("Browser does not support HTML5.");
+        }
+    }
+    
+    if(id != undefined){
+        scroll(id);
+    }
+};
+
+var shortUrl = [
+    "http://ouo.io/s/jkaTd8hX?s=",
+    "http://sh.st/st/e789c1b5ebbd52558715462cbeccf4ca/",
+    "http://adf.ly/14693643/"
+];
+
+fn.getShortUrl = function(){
+    return shortUrl[Math.floor(Math.random()*3)]
+};
+
+function scroll(element){
+    var ele = document.getElementById(element);
+    window.scrollTo(ele.offsetLeft,ele.offsetTop);
+}
+
+module.exports = fn;

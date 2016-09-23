@@ -1,0 +1,14 @@
+var data = require('../core/_data.msx');
+var fn = require('../core/_fn.msx');
+
+var Footer = function(ctrl){
+  return [
+    <div className="footer">
+      <div className="container">
+        ©2016 VnDocs.com
+      </div>
+    </div>
+  ]
+};
+
+module.exports = Footer;

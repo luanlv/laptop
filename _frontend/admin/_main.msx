@@ -1,0 +1,26 @@
+
+var Main = Main || {};
+
+Main.Home = require('./main/home.msx');
+Main.NewProduct = require('./main/newproduct.msx');
+Main.NewArticle = require('./main/newarticle.msx');
+Main.NewCategory = require('./main/newcategory.msx');
+Main.MenuController = require('./main/menucontroller.msx');
+//Main.Dashboard = require('./main/_dashboard.msx');
+// Main.Product = require('./main/_product.msx');
+// Main.Category = require('./main/_category.msx');
+// Main.Search = require('./main/_search.msx');
+
+
+m.route(document.querySelector('#app'), "/", {
+  "/": Main.Home,
+  "/newProduct": Main.NewProduct,
+  "/newArticle": Main.NewArticle,
+  "/category/create": Main.NewCategory,
+  "/menu": Main.MenuController
+});
+
+// m.route('/menu');
+
+
+module.exports = Main;

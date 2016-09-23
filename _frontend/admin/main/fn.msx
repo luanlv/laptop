@@ -1,0 +1,137 @@
+var Fn = {};
+
+
+Fn.setupAce = function(editor){
+  editor.renderer.setShowGutter(false);
+  editor.setShowPrintMargin(false);
+  
+  editor.commands.addCommand({
+    name: 'Ctrl_B',
+    bindKey: {win: 'Ctrl-B',  mac: 'Command-B'},
+    exec: function(editor) {
+      var selectedText = editor.getSelectedText() + "";
+      var Range = ace.require('ace/range').Range;
+      var row = editor.selection.getRange().start.row;
+      var column = editor.selection.getRange().start.column;
+      var columnEnd = editor.selection.getRange().end.column;
+      var rangeBefore = new Range(row, column - 2, row, column);
+      var rangeAfter = new Range(row, columnEnd, row, columnEnd + 2);
+      var before = editor.getSession().doc.getTextRange(rangeBefore);
+      var after = editor.getSession().doc.getTextRange(rangeAfter);
+      if(before === "**" && after === '**') {
+        editor.session.replace(rangeAfter, "");
+        editor.session.replace(rangeBefore, "");
+      } else {
+        var x = "**" + selectedText +"**";
+        editor.session.replace(editor.selection.getRange(), x);
+        var length = x.length;
+        //editor.selection.moveCursorToPosition({row: row, column: column - length}) ;
+        var range = new Range(row, column + 2, row, columnEnd + 2);
+        editor.selection.setSelectionRange(range, true);
+      }
+    }
+  });
+  
+  editor.commands.addCommand({
+    name: 'Ctrl_I',
+    bindKey: {win: 'Ctrl-I',  mac: 'Command-I'},
+    exec: function(editor) {
+      var selectedText = editor.getSelectedText() + "";
+      var Range = ace.require('ace/range').Range;
+      var row = editor.selection.getRange().start.row;
+      var column = editor.selection.getRange().start.column;
+      var columnEnd = editor.selection.getRange().end.column;
+      var rangeBefore = new Range(row, column - 1, row, column);
+      var rangeAfter = new Range(row, columnEnd, row, columnEnd + 1);
+      var before = editor.getSession().doc.getTextRange(rangeBefore);
+      var after = editor.getSession().doc.getTextRange(rangeAfter);
+      if(before === "*" && after === '*') {
+        editor.session.replace(rangeAfter, "");
+        editor.session.replace(rangeBefore, "");
+      } else {
+        var x = "*" + selectedText +"*";
+        editor.session.replace(editor.selection.getRange(), x);
+        var length = x.length;
+        //editor.selection.moveCursorToPosition({row: row, column: column - length}) ;
+        var range = new Range(row, column + 1, row, columnEnd + 1);
+        editor.selection.setSelectionRange(range, true);
+      }
+    }
+  });
+  
+  editor.commands.addCommand({
+    name: 'Alt_A',
+    bindKey: {win: 'Alt-A',  mac: 'Alt-A'},
+    exec: function(editor) {
+      editor.selection.selectWord()
+    }
+  });
+};
+
+
+Fn.requestWithFeedback = function(args, bind, fn) {
+  var data = m.prop();
+  var completed = m.prop(false);
+  var complete = function() {
+    completed(true)
+  };
+  args.background = true;
+  args.config = function(xhr) {
+    xhr.timeout = 4000;
+    xhr.ontimeout = function() {
+      complete();
+      m.redraw();
+    }
+  };
+  return {
+    request: m.request(args).then(data).then(function(data){
+      if(bind !== undefined) bind(data);
+      if(fn !== undefined) fn();
+      complete();
+      m.redraw();
+    }),
+    data: data,
+    ready: completed
+  }
+};
+
+Fn.slug = function(str) {
+  str = str.replace(/^\s+|\s+$/g, ''); // trim
+  str = str.toLowerCase();
+  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a');
+  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e');
+  str = str.replace(/ì|í|ị|ỉ|ĩ/g, 'i');
+  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, 'o');
+  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, 'u');
+  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, 'y');
+  str = str.replace(/đ/g, 'd');
+  // remove accents, swap ñ for n, etc
+  var from = "ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;";
+  var to   = "aaaaaeeeeeiiiiooooouuuunc------";
+  for (var i=0, l=from.length ; i<l ; i++) {
+    str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+  }
+  
+  str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+      .replace(/\s+/g, '-') // collapse whitespace and replace by -
+      .replace(/-+/g, '-'); // collapse dashes
+  
+  return str;
+};
+
+Fn.bindOnce = (function() {
+  console.log("run bindOnce")
+  var cache = {}
+  return function(view) {
+    if (!cache[view.toString()]) {
+      console.log("view")
+      cache[view.toString()] = true
+      return view()
+    }
+    else return {subtree: "retain"}
+  }
+}())
+
+
+
+module.exports = Fn;

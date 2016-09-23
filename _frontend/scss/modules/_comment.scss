@@ -1,0 +1,101 @@
+#comment {
+  h2 {
+    text-align: center; margin-top: 15px;
+    color: #666;
+    font-weight: bold;
+    font-style: italic;
+  }
+  .notUser {
+    color: red;
+  }
+  .isUser {
+    color: $blue;
+  }
+
+  .icon { height: 50px; width: 50px; border-radius: 7px; }
+
+  span.poster {
+    float: left; width: 80px; text-align: center; font-size: 12px;
+    //background: #eee;
+    height: 75px;
+    padding-top: 5px; padding-right: 5px;
+    //border: 1px solid #bbb;
+    //border-radius: 10px 0px 0px 10px;
+  }
+
+  span.info { display: block; border-bottom: 1px solid #ddd; margin: -4px 0px 3px 0px; font-size: 13px; font-style: italic; }
+
+
+  span.buttons { position: absolute; right: 20px; }
+
+  .comment {
+    white-space: pre-wrap;
+    position: relative;
+    font-size: 14px;
+    color: #333;
+    min-height: 77px;
+    padding: 5px;
+    margin: 0px auto 15px 80px;
+    background: #fff;
+    border-radius: 5px 5px 10px 5px;
+    border: #bbb solid 1px;
+    border-width: 1px 1px 3px 1px;
+  }
+
+  .comment::after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 6px 10px 3px 0px;
+    border-color: transparent #fff;
+    margin-top: -8px;
+    left: -10px;
+    top: 28px;
+  }
+
+  .comment::before {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 8px 10px 4px 0px;
+    border-color: transparent #bbb;
+    display: block;
+    margin-top: -8px;
+    left: -10px;
+    top: 28px;
+  }
+
+  .comment:nth-of-type(even) { background: #eee; border-color: #999; }
+  .comment:nth-of-type(even) span.info { border-color: #ccc; }
+  .comment:nth-of-type(even)::after { border-color: transparent #eee; }
+  .comment:nth-of-type(even)::before { border-color: transparent #999; }
+  .poster:nth-of-type(even) { background: #ddd; border-color: #aaa; }
+
+
+  .commentBox {
+    textarea {
+      min-height: 50px;
+    }
+    textarea, textarea:focus {
+      resize: none;
+      width: 100%;
+      border: none;
+      outline:none;
+      border-bottom: 1px solid #ddd;
+    }
+    .submit {
+      position: absolute;
+      right: 20px;
+      bottom: 0px;
+      padding: 0 5px 0 5px;
+      a {
+        text-decoration: none;
+        color: #666;
+      }
+    }
+  }
+
+  .userName {
+    color: $blue;
+  }
+}

@@ -1,0 +1,27 @@
+var Home = {};
+var Header = require('./_header.msx');
+var Menu = require('./_menu.msx');
+var Content = require('./_content.msx');
+var Right = require('./_right.msx');
+Home.controller = function(){
+  console.log("run home")
+};
+
+Home.view = function(ctrl){
+  return  [
+      Header(ctrl),
+      <div id="base">
+        <div className="offcanvas"></div>
+
+        {Content(ctrl)}
+        
+        {Menu(ctrl)}
+  
+        {Right(ctrl)}
+        
+      </div>
+  ]
+};
+
+
+module.exports = Home;

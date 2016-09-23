@@ -1,0 +1,142 @@
+var data = require('../core/_data.msx');
+
+
+var Login = function(ctrl){
+  return [
+    <div className="login-popup"
+         onclick={function(){
+           if ($('.wrapper-content:hover').length == 0) {
+             data.showSignin = false;
+             data.showSignup = false;
+           }
+         }}
+         style={(!data.showSignin)?"display: none":""}>
+      <div className="wrapper">
+        <div className="wrapper-content">
+          <h3>Đăng nhập</h3>
+          <form action="/signIn" method="POST">
+            <div>
+              <div className="label">
+                <label htmlFor="email">Email : </label>
+              </div>
+              <input type="email" className="user-email" id="email" name="email" />
+            </div>
+            <div>
+              <div className="label">
+                <label htmlFor="password">Password : </label>
+              </div>
+              <input type="password" className="user-password" id="password" name="password" />
+            </div>
+            <div>
+              <div className="label">
+                <label htmlFor="rememberMe">Remember me</label>
+              </div>
+              <input type="checkbox" id="rememberMe" name="rememberMe" value="true" checked="true"/>
+            </div>
+            <input type="hidden" name="csrfToken" value={data.token}/>
+            <div className="logout">
+              <div className="label">
+              </div>
+              <input type="submit" value="Đăng nhập"/>
+  
+              <div style="width: 40px; float: right; margin: 3px 10px 0 0;">
+                <a href={"/authenticate/google" + "?forward=" + m.route()} className="social-button" id="google-connect"> </a>
+              </div>
+              
+              <div style="width: 40px; float: right; margin: 3px 10px 0 0;">
+                <a href={"/authenticate/facebook" + "?forward=" + m.route()} className="social-button" id="facebook-connect"> </a>
+              </div>
+              
+            </div>
+          </form>
+          <div className="label"></div>
+          <span className="other">
+            <a href="#" className="forgot-pass"
+              onclick={function(){
+                data.showSignin = false;
+                data.showSignup = true;
+              }}
+            >Đăng ký</a>
+            <a href="#" className="forgot-pass">Quên mật khẩu?</a>
+          </span>
+          
+        </div>
+      </div>
+    </div>,
+    <div className="login-popup"
+         onclick={function(){
+           if ($('.wrapper-content:hover').length == 0) {
+             data.showSignin = false;
+             data.showSignup = false;
+           }
+         }}
+         style={(!data.showSignup)?"display: none":""}>
+      <div className="wrapper">
+        <div className="wrapper-content">
+          <h3>Đăng ký</h3>
+          <form action="/signUp" method="POST">
+            
+            <input type="hidden" name="csrfToken" value={data.token} />
+              
+              <div className="form-group  " id="firstName_field">
+                <div className="label">
+                  <label htmlFor="firstName">Họ : </label>
+                </div>
+                <input type="text" id="firstName" name="firstName" required="true" className="form-control form-control input-lg" placeholder="First name"/>
+              </div>
+              
+              <div className="form-group  " id="lastName_field">
+                <div className="label">
+                  <label htmlFor="lastName">Tên : </label>
+                </div>
+                <input type="text" id="lastName" name="lastName"  required="true" className="form-control form-control input-lg" placeholder="Last name"/>
+              </div>
+              
+              <div className="form-group  " id="email_field">
+                <div className="label">
+                  <label htmlFor="email">Email : </label>
+                </div>
+                <input type="text" id="email" name="email"  className="form-control form-control input-lg" placeholder="Email"/>
+              </div>
+              
+              <section>
+                <div className="form-group  " id="password_field">
+                  <div className="label">
+                    <label htmlFor="password">Mật khẩu : </label>
+                  </div>
+                  <input type="password" id="password" name="password"  required="true" className="form-control form-control input-lg"  placeholder="Password"/>
+                </div>
+              </section>
+      
+              <div className="form-group">
+                <div>
+                  <div className="label"></div>
+                  <button id="submit" type="submit" className="btn btn-lg btn-primary btn-block">Đăng ký</button>
+                  <div style="width: 40px; float: right; margin: 3px 10px 0 0;">
+                    <a href={"/authenticate/google" + "?forward=" + m.route()} className="social-button" id="google-connect"> </a>
+                  </div>
+  
+                  <div style="width: 40px; float: right; margin: 3px 10px 0 0;">
+                    <a href={"/authenticate/facebook" + "?forward=" + m.route()} className="social-button" id="facebook-connect"> </a>
+                  </div>
+                </div>
+                
+              </div>
+          </form>
+          <div className="label"></div>
+          <span className="other">
+            <span>Đã có tài khoản? </span>
+            <a href="#" className="forgot-pass"
+              onclick={function(){
+                data.showSignin = true;
+                data.showSignup = false;
+              }}
+            >Đăng nhập</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  ]
+};
+
+module.exports = Login;

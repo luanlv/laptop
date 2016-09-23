@@ -1,0 +1,110 @@
+.breadcrumb {
+  font-size: 0.9em;
+}
+
+.postWr {
+  .postTitle {
+    margin: 10px;
+  }
+  h1 {
+    color: $title-color;
+    font-size: 24px;
+    font-weight: bold;
+    word-wrap: break-word;
+  }
+
+  .postInfo {
+    min-height: 155px;
+    img {
+      float: left;
+    }
+    .t-left{
+      padding-right: 90px;
+    }
+    .t-right {
+      width: 90px;
+      float: right;
+    }
+  }
+
+  .postContent {
+    margin-top: 20px;
+    word-wrap: break-word;
+  }
+}
+
+.breadcrumb {
+  a {
+    font-style: italic;
+    color: #5f9eb3;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+      color: $orange !important;
+    }
+    &:visited {
+      color: #5f9eb3;
+    }
+  }
+}
+
+.down-box {
+  border-radius: 3px;
+  border: 1px solid rgba(100, 100, 100, 0.05);
+  background: rgba(100, 100, 100, 0.1);
+  padding: 5px;
+  -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+  span {
+    margin: 10px 0;
+    display: block;
+    &:before {
+      content: "Link tải: ";
+      font-style: italic;
+    }
+  }
+  h4 {
+    margin-left: 10px;
+    border-bottom: 2px solid #ddd;
+    font-size: 16px;
+  }
+  .inside {
+    border-radius: 3px;
+    padding: 10px;
+    -webkit-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.75);
+    background: #fff;
+    a:hover {
+      color: $orange;
+      &::after {
+        content:"↩";
+      }
+    }
+  }
+}
+
+.go-download {
+  align-content: right;
+  text-align: right;
+  padding-top: 10px;
+  span {
+    margin: 40px 20px 20px 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+    &:hover {
+      background: #ddd;
+    }
+  }
+  a {
+    font-weight: bold;
+    color: #333;
+    &:visited, &:hover{
+      color: #333;
+    }
+    text-decoration: none;
+  }
+}

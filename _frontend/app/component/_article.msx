@@ -1,0 +1,86 @@
+var fn = require('../core/_fn.msx');
+var data = require('../core/_data.msx');
+var Comments = require('./_comment.msx');
+
+var PostView = function(ctrl){
+  return <div className="main mh800">
+    {ctrl.request.ready()?[
+      <div>
+
+        <hr className="style3"/>
+        <div className="postWr">
+          <div className="postTitle">
+            <h1>{ctrl.article().article.title}</h1>
+          </div>
+          <hr className="style3"/>
+          <div className="postInfo cf">
+            <div className="meta-data">
+              
+              <span className="upload">{ctrl.article().article.author}</span>
+              <span className="category">
+                          {ctrl.article().article.tags.map(function(el){
+                              return <a href="javascript:void(0)">el</a>
+                            })
+                          }
+                      </span>
+              <span className="time">{moment(ctrl.article().article.time).format('L')}</span>
+            </div>
+            
+            <div className="t-left">
+              <a href="#"><img src={"/cover/get/" + ctrl.article().article.cover.id} alt={ctrl.article().article.cover.alt}/></a>
+            </div>
+            <div className="t-right">
+              <div className="rate-nav">RATING</div>
+              <div className="rate-num">{ctrl.article().article.nLike}</div>
+              <button className="rate-button"
+                      onclick={function(el){
+                        if(Window.user == undefined){
+                          data.showSignin = true;
+                        } else {
+                          if (!ctrl.voted) {
+                            $.ajax({
+                              type: "POST",
+                              url: "/blog/vote",
+                              data: JSON.stringify({
+                                "id": ctrl.slug,
+                              }),
+                              contentType: "application/json",
+                              dataType: "text",
+                              success: function (res) {
+                                ctrl.article().article.nLike += 1;
+                                m.redraw();
+                              }
+                            });
+                          }
+                          ctrl.voted = true;
+                        }
+                      }}
+              >+1</button>
+            </div>
+          </div>
+          <hr className="style3"/>
+          <div className="postContent">
+            {m.trust(marked(ctrl.article().article.body))}
+          </div>
+        </div>
+      </div>,
+      <hr className="style3"/>,
+      Comments(ctrl, ctrl.article(), ctrl.slug, "article")
+    
+    ]:[
+      <div className="loading">
+        <div class="loader">
+          <div class="inner one"></div>
+          <div class="inner two"></div>
+          <div class="inner three"></div>
+        </div>
+      </div>
+    ]
+    }
+  </div>
+  
+};
+
+
+
+module.exports = PostView;

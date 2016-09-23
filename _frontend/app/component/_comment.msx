@@ -1,0 +1,84 @@
+var data = require('../core/_data.msx');
+var fn = require('../core/_fn.msx');
+
+var Comments = function(ctrl, content, id, type){
+  return [
+    <div id="comment">
+      <h2 >Bình luận {(Window.user == undefined)?("(Bạn phải đăng nhập!)"):("")}</h2>
+      <hr className="style1"/>
+      <div className="commentWr">
+              <span class="poster">
+                <img src={(data.user != undefined)?(data.user.avatarURL):("/assets/images/silhouette.png")} class="icon"/>
+                <br/>
+              </span>
+        <div class="comment commentBox">
+                <textarea name="cmt" id="cmt"
+                          onclick={function(){
+                            if(Window.user == undefined){
+                              data.showSignin = true;
+                            }
+                          }}
+                          onchange={function(el){
+                            ctrl.comment($(el.target).val());
+                            console.log(ctrl.comment());
+                          }}
+                >
+                  {ctrl.comment()}
+                </textarea>
+          {(Window.user == undefined)?(
+            <span className="notUser">
+            Chưa đăng nhập
+            </span>
+          ):(<span className="isUser">
+            {Window.user.fullName}
+          </span>)}
+          <span className="submit">
+                  <a href="javascript:void(0)"
+                     onclick={function(){
+                       $.ajax({
+                         type: "POST",
+                         url: "/comment/" + id,
+                         data: JSON.stringify({
+                           "data" : ctrl.comment(),
+                           "type" : type
+                         }),
+                         contentType: "application/json",
+                         dataType: "json",
+                         success: function(res){
+                           content.comments.unshift(res);
+                           ctrl.comment('');
+                           m.redraw();
+                         }
+                       });
+                     }}
+                  > Gửi </a>
+                </span>
+        </div>
+      </div>
+    
+    
+    
+      {content.comments.map(function(el){
+        return <div className="commentWr">
+                <span class="poster">
+                  <img src={el.user.avatarURL} class="icon"/>
+                  <br/>
+                </span>
+          <div class="comment">
+                  <span class="info">
+                    <span className="userName">{el.user.fullName}</span> Posted July 9th 2016, 01:04 AM
+                    <span class="buttons">
+                      
+                    </span>
+                  </span>
+            {el.comment}
+          </div>
+        </div>
+      })}
+  
+  
+    </div>
+  ]
+};
+
+module.exports = Comments;

@@ -1,0 +1,61 @@
+var fn = require('../core/_fn.msx');
+var data = require('../core/_data.msx');
+
+var Menu = function(ctrl){
+    return [
+        <div className="menu">
+            <div className="menubar">
+                Tài khoản
+            </div>
+            <div className="login">
+                {(data.user !== undefined)?(
+                    <div className="userInfo">
+                        <div className="top">
+                            <div className="left">
+                                <img src={(data.user.avatarURL.length>0)?(data.user.avatarURL):("/assets/images/silhouette.png")} width="50" height="50" alt="avatar"/>
+                            </div>
+                                <div className="right">
+                                <div>Xin chào</div>
+                                <span>{data.user.fullName}</span>
+                            </div>
+                        </div>
+                        <div className="bot">
+                            <a href={"/signOut?forward=" + m.route()}>Đăng xuất</a>
+                        </div>
+                    </div>
+                ):(
+                    <div class="login-box">
+                        <div><a href="#"
+                                onclick={function(){
+                                    data.showSignin = true;
+                                    data.showSignup = false;
+                                }}
+                        ><span>Đăng nhập</span></a> /
+                            <a href="#"
+                               onclick={function(){
+                                   data.showSignin = false;
+                                   data.showSignup = true;
+                               }}
+                            ><span> Đăng ký</span></a></div>
+                        <span style="width: 20px;"></span>
+                        <a href={"/authenticate/facebook" + "?forward=" + m.route()} class="social-button" id="facebook-connect"> <span> Facebook</span></a>
+                        <a href={"/authenticate/google" + "?forward=" + m.route()} class="social-button" id="google-connect"> <span> Google</span></a>
+                    </div>
+                )}
+    
+            </div>
+            <hr className="style1"/>
+            <div className="menubar">
+                Menu
+            </div>
+            <div className="list-menu">
+                {fn.runCreateMenu(JSON.parse(Window.menu), 1)}
+            </div>
+        </div>
+    ];
+};
+
+
+
+
+module.exports = Menu;

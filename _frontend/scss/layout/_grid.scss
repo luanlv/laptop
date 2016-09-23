@@ -1,0 +1,109 @@
+*,
+*:after,
+*:before {
+  @include box-sizing(border-box);
+}
+
+
+.mh500{  min-height: 500px;  }
+.mh1000 {  min-height: 1000px; }
+.mh800 {  min-height: 800px; }
+.mh700 {  min-height: 700px; }
+.mh600 {  min-height: 600px; }
+.mh300 {  min-height: 300px; }
+
+.bg1 {
+  background: $aqua;
+}
+.bg2 {
+  background: $blue;
+}
+.bg3 {
+  background: $yellow;
+}
+.bg4 {
+  background: $silver;
+}
+
+a:hover {
+  color: $orange;
+}
+.cf {
+  @include clearfix();
+}
+
+body {
+  background: #f6f8f9;
+}
+
+.container {
+  @include container(100%);
+  max-width: 1000px;
+  position: relative;
+}
+//
+//body {
+//  font-family: 'Roboto', sans-serif;
+//  //font-size: 48px;
+//}
+
+
+
+.bodyWr{
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  //box-shadow: 2px 2px 5px 0px rgba(71,55,71,0.1);
+  width: 195px;
+  @include breakpoint($mobile){
+    transition: all 300ms;
+    left: -200px;
+    top: 5px;
+    border: none;
+  }
+
+  @include breakpoint($mobile){
+    width: span(200px static);
+  }
+}
+
+.content {
+  padding-left: span(200px static wide);
+  @include breakpoint($mobile){
+    padding: 0px;
+  }
+  @include min-breakpoint($table){
+    padding-right: span(200px static wide);
+  }
+}
+
+.side {
+  display: none;
+  width: span(200px static);
+  //border-radius: 5px;
+  //border: 1px solid $border-light-blue;
+  //border-right: none;
+  //box-shadow: -2px 2px 5px 0px rgba(71,55,71,0.1);
+  @include min-breakpoint($table) {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
+
+.containerBor {
+  @include min-breakpoint($mobile){
+    border: 1px solid $border-light-blue;
+  }
+  @include min-breakpoint(888){
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0px 5px 5px 0px rgba(23,22,23,0.3);
+  }
+
+  @include clearfix();
+  background: white;
+}
+

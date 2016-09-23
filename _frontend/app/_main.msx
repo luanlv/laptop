@@ -1,0 +1,31 @@
+var Main = Main || {};
+var fn = require('./core/_fn.msx');
+var data = require('./core/_data.msx');
+Main.Home = require('./main/home.msx');
+Main.Category = require('./main/category.msx');
+Main.Post = require('./main/post.msx');
+Main.Article = require('./main/article.msx');
+
+data.token = $(document.getElementsByName("csrfToken")).val();
+// alert($(token).val());
+$(document).ajaxSend(function(elm, xhr, s){
+  if (s.type == "POST") {
+    xhr.setRequestHeader('Csrf-Token', data.token);
+  }
+});
+
+Array.prototype.getItemByParam = function(paramPair) {
+  var key = Object.keys(paramPair)[0];
+  return this.find(function(item){return ((item[key] == paramPair[key]) ? true: false)});
+}
+
+
+m.route(document.querySelector('#app'), "/", {
+  "/": Main.Home,
+  "/post/:postID": Main.Post,
+  "/blog/:slug": Main.Article,
+  "/category/:categorySlug": Main.Category
+});
+
+
+module.exports = Main;

@@ -1,0 +1,196 @@
+.postContent, #render {
+  color: #444444;
+  line-height: 1;
+  max-width: 960px;
+  /* Code below this line is copyright Twitter Inc. */
+  /* override default chrome & firefox settings */
+  /* grey out placeholders */
+  /* buttons */ }
+.postContent h1, .postContent h2, .postContent h3, .postContent h4, #render h1, #render h2, #render h3, #render h4 {
+  color: #111111;
+  font-weight: 400; }
+.postContent h1, .postContent h2, .postContent h3, .postContent h4, .postContent h5, .postContent p, #render h1, #render h2, #render h3, #render h4, #render h5, #render p {
+  margin-bottom: 24px;
+  padding: 0; }
+.postContent h1, #render h1 {
+  font-size: 48px; }
+.postContent h2, #render h2 {
+  font-size: 36px;
+  /* The bottom margin is small. It's designed to be used with gray meta text
+   * below a post title. */
+  margin: 24px 0 6px; }
+.postContent h3, #render h3 {
+  font-size: 24px; }
+.postContent h4, #render h4 {
+  font-size: 21px; }
+.postContent h5, #render h5 {
+  font-size: 18px; }
+.postContent a, #render a {
+  color: #0099ff;
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline; }
+.postContent a:hover, #render a:hover {
+  text-decoration: none;
+  color: #ff6600; }
+.postContent a:visited, #render a:visited {
+  color: purple; }
+.postContent ul, .postContent ol, #render ul, #render ol {
+  padding: 0;
+  margin: 0; }
+.postContent li, #render li {
+  line-height: 24px; }
+.postContent li ul, .postContent li ul, #render li ul, #render li ul {
+  margin-left: 24px; }
+.postContent p, .postContent ul, .postContent ol, #render p, #render ul, #render ol {
+  font-size: 16px;
+  line-height: 24px;
+  max-width: 540px; }
+.postContent pre, #render pre {
+  padding: 0px 24px;
+  max-width: 800px;
+  white-space: pre-wrap; }
+.postContent code, #render code {
+  font-family: Consolas, Monaco, Andale Mono, monospace;
+  line-height: 1.5;
+  font-size: 13px; }
+.postContent aside, #render aside {
+  display: block;
+  float: right;
+  width: 390px; }
+.postContent blockquote, #render blockquote {
+  border-left: .5em solid #eee;
+  padding: 0 2em;
+  margin-left: 0;
+  max-width: 476px; }
+.postContent blockquote cite, #render blockquote cite {
+  font-size: 14px;
+  line-height: 20px;
+  color: #bfbfbf; }
+.postContent blockquote cite:before, #render blockquote cite:before {
+  content: '\2014 \00A0'; }
+.postContent blockquote p, #render blockquote p {
+  color: #666;
+  max-width: 460px; }
+.postContent hr, #render hr {
+  width: 540px;
+  text-align: left;
+  margin: 0 auto 0 0;
+  color: #999; }
+.postContent button,
+.postContent input,
+.postContent select,
+.postContent textarea, #render button,
+#render input,
+#render select,
+#render textarea {
+  font-size: 100%;
+  margin: 0;
+  vertical-align: baseline;
+  *vertical-align: middle; }
+.postContent button, .postContent input, #render button, #render input {
+  line-height: normal;
+  *overflow: visible; }
+.postContent button::-moz-focus-inner, .postContent input::-moz-focus-inner, #render button::-moz-focus-inner, #render input::-moz-focus-inner {
+  border: 0;
+  padding: 0; }
+.postContent button,
+.postContent input[type="button"],
+.postContent input[type="reset"],
+.postContent input[type="submit"], #render button,
+#render input[type="button"],
+#render input[type="reset"],
+#render input[type="submit"] {
+  cursor: pointer;
+  -webkit-appearance: button; }
+.postContent input[type=checkbox], .postContent input[type=radio], #render input[type=checkbox], #render input[type=radio] {
+  cursor: pointer; }
+.postContent input:not([type="image"]), .postContent textarea, #render input:not([type="image"]), #render textarea {
+  box-sizing: content-box; }
+.postContent input[type="search"], #render input[type="search"] {
+  -webkit-appearance: textfield;
+  box-sizing: content-box; }
+.postContent input[type="search"]::-webkit-search-decoration, #render input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none; }
+.postContent label,
+.postContent input,
+.postContent select,
+.postContent textarea, #render label,
+#render input,
+#render select,
+#render textarea {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: normal;
+  margin-bottom: 18px; }
+.postContent input[type=checkbox], .postContent input[type=radio], #render input[type=checkbox], #render input[type=radio] {
+  cursor: pointer;
+  margin-bottom: 0; }
+.postContent input[type=text],
+.postContent input[type=password],
+.postContent textarea,
+.postContent select, #render input[type=text],
+#render input[type=password],
+#render textarea,
+#render select {
+  display: inline-block;
+  width: 210px;
+  padding: 4px;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 18px;
+  height: 18px;
+  color: #808080;
+  border: 1px solid #ccc;
+  border-radius: 3px; }
+.postContent select, .postContent input[type=file], #render select, #render input[type=file] {
+  height: 27px;
+  line-height: 27px; }
+.postContent textarea, #render textarea {
+  height: auto; }
+.postContent :-moz-placeholder, #render :-moz-placeholder {
+  color: #bfbfbf; }
+.postContent ::-webkit-input-placeholder, #render ::-webkit-input-placeholder {
+  color: #bfbfbf; }
+.postContent input[type=text],
+.postContent input[type=password],
+.postContent select,
+.postContent textarea, #render input[type=text],
+#render input[type=password],
+#render select,
+#render textarea {
+  transition: border linear 0.2s, box-shadow linear 0.2s;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); }
+.postContent input[type=text]:focus, .postContent input[type=password]:focus, .postContent textarea:focus, #render input[type=text]:focus, #render input[type=password]:focus, #render textarea:focus {
+  outline: none;
+  border-color: rgba(82, 168, 236, 0.8);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(82, 168, 236, 0.6); }
+.postContent button, #render button {
+  display: inline-block;
+  padding: 4px 14px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  background-color: #0064cd;
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, left, right);
+  background-image: linear-gradient(top, #049cdb, #0064cd);
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  border: 1px solid #004b9a;
+  border-bottom-color: #003f81;
+  transition: 0.1s linear all;
+  border-color: #0064cd #0064cd #003f81;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25); }
+.postContent button:hover, #render button:hover {
+  color: #fff;
+  background-position: 0 -15px;
+  text-decoration: none; }
+.postContent button:active, #render button:active {
+  box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05); }
+.postContent button::-moz-focus-inner, #render button::-moz-focus-inner {
+  padding: 0;
+  border: 0; }
