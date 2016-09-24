@@ -9,11 +9,11 @@ GET         /                                controllers.ApplicationController.i
 
 GET /admin  controllers.Admin.index
 
-POST  /admin/newCategory controllers.Admin.doCategory
+POST  /admin/newCategory controllers.CategoryController.doCategory
 
 POST  /admin/menu controllers.Admin.doMenu
 GET  /setup/menu controllers.SetupController.getMenu
-GET /admin/category/listParent controllers.CategoryController.listParent
+GET /admin/category/listcategory controllers.CategoryController.listcategory
 
 
 

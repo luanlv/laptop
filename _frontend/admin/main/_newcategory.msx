@@ -3,14 +3,8 @@ var fn = require('./fn.msx');
 var input = m.prop("");
 
 var data = m.prop({
-  "slug": "",
-  "name" : "",
-  "description": "",
-  "sku": {
-    "parent_id" : "NONE",
-    "name" : "NONE",
-    "slug" : "NONE"
-  }
+  "_id": "",
+  "name" : ""
 });
 
 var NewCategory = function(ctrl){
@@ -33,6 +27,10 @@ var NewCategory = function(ctrl){
                       contentType: "application/json",
                       dataType: "json",
                       success: function(data){
+                        alert("Đã thêm thành công");
+                        data()._id = "";
+                        data()._name = "";
+                        m.redraw();
                       }
                     });
                     
@@ -47,9 +45,9 @@ var NewCategory = function(ctrl){
                   <div className="col-sm-10">
                       <input type="text" className="form-control" id="url" name="title"
                              onchange={function(el){
-                               data().slug = $(el.target).val()
+                               data()._id = $(el.target).val()
                              }}
-                             value={data().slug}
+                             value={data()._id}
                       />
                   <div className="form-control-line"></div>
                   </div>
@@ -61,61 +59,13 @@ var NewCategory = function(ctrl){
                       <input type="text" className="form-control" id="url" name="title"
                              onchange={function(el){
                                data().name = $(el.target).val();
-                               data().slug = fn.slug(data().name);
+                               data()._id = fn.slug(data().name);
                              }}
                              value={(data().name === undefined)?"":(data().name)}
                       />
                     <div className="form-control-line"></div>
                   </div>
                 </div>
-  
-                <div className="form-group">
-                  <label htmlFor="textarea" className="col-sm-2 control-label">Description</label>
-                  <div className="col-sm-10">
-                    <textarea name="textarea" id="textarea" className="form-control" rows="3" placeholder=""
-                              config={function(el, isInit, ctx){
-                                if(!isInit) {
-                                  $(el).val(data().description)
-                                }
-                              }}
-                              onkeydown={function(el){
-                                data().description = $(el.target).val();
-                              }}
-                    ></textarea>
-      
-                    <div className="form-control-line"></div>
-                  </div>
-                </div>
-  
-  
-                <div className="form-group">
-                  <label htmlFor="categories" className="col-sm-2 control-label">Category</label>
-                  <div className="col-sm-5 control-label">
-                    <select className="form-control" size="7" id="categories" name="categories"
-                            onchange={function(el){
-                              
-                            }}
-                    >
-                      {
-                        ctrl.categories().map(function(el){
-                          return <option
-                              value={el._id}
-                              onclick = {function(){
-                                data().sku = {
-                                  "parent_id": el.slug,
-                                  "name": el.name,
-                                  "slug": el.slug
-                                };
-                              }}
-                          > {el.name} </option>
-                        })
-                      }
-                    </select>
-                  </div>
-                 
-                </div>
-                
-                
               </form>
             </div>
           </div>
@@ -123,44 +73,11 @@ var NewCategory = function(ctrl){
           <div className="row">
             
           </div>
-  
-          <div className="offcanvas">
-            <div id="offcanvas-demo-size4" className={"offcanvas-pane width-12 " + (ctrl.showImgList?"active":"")} style={"width: 800px; " + (ctrl.showImgList?"transform: translate(-800px, 0px)":(""))}>
-            <div className="offcanvas-head">
-              <header>Images controller </header>
-              <div className="offcanvas-tools">
-                <a className="btn btn-icon-toggle btn-default-light pull-right" data-dismiss="offcanvas"
-                  onclick={function(){
-                    {/*ctrl.showImgList = false;*/}
-                  }}
-                >
-                  <i className="md md-close"></i>
-                </a>
-              </div>
-            </div>
-            <div className="nano has-scrollbar" style="height: 90vh;">
-              <div className="nano-content" tabindex="0" style="right: -15px;">
-                <div className="offcanvas-body">
-                  <div className="card-body">
-                    test
-                  </div>
-                  
-                
-                </div>
-              </div>
-            </div>
-            </div>
-          </div>
         
           
         </div>
       </section>
-    </div>,
-    ctrl.showImgList?(<div className="backdrop"
-      onclick={function(){
-        ctrl.showImgList = false;
-      }}
-    ></div>):""
+    </div>
   ]
 };
 

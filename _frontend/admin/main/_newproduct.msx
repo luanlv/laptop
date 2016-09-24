@@ -11,7 +11,7 @@ var data = m.prop({
   "guarantee": 12,
   "image" : [
   ],
-  "info": String
+  "info": "<p>Hello world</p>"
 });
 
 var NewProduct = function(ctrl){
@@ -142,7 +142,11 @@ var NewProduct = function(ctrl){
                   <div className="col-sm-5 control-label img-cover">
                     {(data().image.length>0)?[
                         data().image.map(function(el){
-                          return <img src={"/cover/get/" + el._id} alt={el.alt} />
+                          return <img src={"/cover/get/" + el._id} alt={el.alt}
+                            onclick={function(){
+                              data().image.splice(fn.getIndexByParam(data().image, "_id", el._id) ,1)
+                            }}
+                          />
                         })
                     ]:(
                         <img src="http://localhost:9000/assets/images/laptop.jpg"  alt=""/>
@@ -154,10 +158,28 @@ var NewProduct = function(ctrl){
               </form>
             </div>
           </div>
+          
+          <div className="card card-body">
+            <div id="summernote"
+              config={function (el, isInited) {
+                if (!isInited) {
+                  
+                  $('#summernote').summernote({
+                    callbacks: {
+                      onChange: function(contents, $editable) {
+                        data().info = $('#summernote').summernote('code');
+                      }
+                    }
+                  });
   
+                  $('#summernote').summernote('code', data().info);
+                }
+              }
+              }
+            ></div>
+          </div>
   
-          <div id="uploadImage" className="modal fade" role="dialog"
-          >
+          <div id="uploadImage" className="modal fade" role="dialog">
             <div className="modal-dialog uploadImage">
               <div className="modal-content ">
                 <div className="modal-header">
@@ -176,7 +198,8 @@ var NewProduct = function(ctrl){
           </div>
   
   
-          <div id="selectImage" className="modal fade" role="dialog">
+          <div id="selectImage" className="modal fade" role="dialog"
+          >
             <div className="modal-dialog uploadImage">
               <div className="modal-content">
                 <div className="modal-header">
@@ -194,7 +217,7 @@ var NewProduct = function(ctrl){
                             ></span>
                             <a class="thumbnail" href="javascript:void(0)"
                               onclick={function(){
-                                if(fn.getItemByParam(data().image, "_id", item._id) == undefined){
+                                if(fn.getItemByParam(data().image, "_id", item._id) == undefined && data().image.length<5){
                                   data().image.push({"_id": item._id, "alt" : item.alt})
                                 }
                               }}
@@ -228,6 +251,7 @@ var NewProduct = function(ctrl){
                             }}
                     >Trang sau</button>
                   </div>
+                  <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
               </div>
     
@@ -236,28 +260,9 @@ var NewProduct = function(ctrl){
           
         </div>
       </section>
-    </div>,
-    ctrl.showImgList?(<div className="backdrop"
-      onclick={function(){
-        ctrl.showImgList = false;
-      }}
-    ></div>):""
+    </div>
   ]
-}
+};
 
-
-var list =[
-    "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1"
-]
 
 module.exports = NewProduct;

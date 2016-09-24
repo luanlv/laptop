@@ -14,7 +14,7 @@ trait CategoryDAO {
 
   def find(id: String): Future[Option[Category]]
 
-  def listParent: Future[List[Category]]
+  def listCategory: Future[List[Category]]
 
   def save(category: Category): Future[Category]
 
@@ -26,8 +26,8 @@ class CategoryDAOImpl @Inject() (repository: CategoryRepository) extends Categor
   def find(id: String) =
     repository.findOne(Json.obj("_id" -> id))
 
-  def listParent =
-    repository.listParent()
+  def listCategory =
+    repository.listCategory()
 
   def save(category: Category) = {
     repository.insert(category)

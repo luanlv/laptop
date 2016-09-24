@@ -210,12 +210,13 @@
   content: "✖"
 }
 .selected span:after{
-  background: rgba(100, 100, 100, 0.5);
-  border-radius: 5px;
-  padding: 5px 10px;
+  background: lightskyblue;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 5px 15px;
   text-align: center;
   content: "✔";
-  color: cadetblue;
+  color: red;
   font-size: 25px;
 }
 .img-cover img {
@@ -223,7 +224,16 @@
   height: 50px;
   width: 50px;
 }
+
+.img-cover img:hover {
+  cursor:no-drop;
+}
 .img-cover img:first-child{
   height: 150px;
   width: 150px;
 }
+
+body .backdrop{
+  display: none !important;
+}
+

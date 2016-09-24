@@ -13,7 +13,7 @@ trait CategoryService {
 
   def save(category: Category): Future[Category]
 
-  def listParent: Future[List[Category]]
+  def listCategory: Future[List[Category]]
 
 }
 
@@ -23,6 +23,6 @@ class CategoryServiceImpl @Inject() (categoryDAO: CategoryDAO) extends CategoryS
 
   def save(category: Category) = categoryDAO.save(category)
 
-  def listParent = categoryDAO.listParent
+  def listCategory = categoryDAO.listParent
 
 }

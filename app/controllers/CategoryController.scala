@@ -8,9 +8,9 @@ import com.mohiva.play.silhouette.api.{ LogoutEvent, Silhouette }
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import com.sksamuel.scrimage
 import com.sksamuel.scrimage.ScaleMethod.Bicubic
-import models.Image
+import models.{ Category, Image }
 import models.services.{ CategoryService, ImageService }
-import play.api.libs.json.Json
+import play.api.libs.json.{ JsObject, Json }
 import utils.silhouette.MyEnv
 //import com.sksamuel.scrimage.Image
 //import com.sksamuel.scrimage.ScaleMethod.Bicubic
@@ -34,9 +34,23 @@ class CategoryController @Inject() (
   implicit val webJarAssets: WebJarAssets)
   extends Controller with I18nSupport {
 
-  def listParent = Action.async {
-    categoryService.listParent map { categories =>
+  def listCategory = Action.async {
+    categoryService.listCategory map { categories =>
       Ok(Json.toJson(categories))
+    }
+  }
+
+  def doCategory = Action.async(parse.json) { implicit request =>
+    request.body.asOpt[JsObject].map { category =>
+      val newCategory = Category(
+        _id = (category \ "_id").get.as[String],
+        name = (category \ "name").get.as[String]
+      )
+      categoryService.save(newCategory).map { category =>
+        Ok(Json.toJson(category))
+      }
+    }.getOrElse {
+      Future.successful(BadRequest("not json"))
     }
   }
 

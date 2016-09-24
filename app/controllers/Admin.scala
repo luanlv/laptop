@@ -46,22 +46,6 @@ class Admin @Inject() (
     Future.successful(Ok(views.html.admin.index("Trang chu")))
   }
 
-  def doCategory = Action(parse.json) { implicit request =>
-    request.body.asOpt[JsObject].map { category =>
-      val newCategory = Category(
-        _id = (category \ "slug").get.asOpt[String],
-        slug = (category \ "slug").get.as[String],
-        name = (category \ "name").get.as[String],
-        sku = (category \ "sku").asOpt[Sku],
-        description = (category \ "description").get.as[String]
-      )
-      categoryService.save(newCategory)
-      Ok("ok")
-    }.getOrElse {
-      BadRequest("not json")
-    }
-  }
-
   def doMenu = Action(parse.json) { implicit request =>
     request.body.asOpt[JsValue].map { menu =>
       var newMenu = Setup(

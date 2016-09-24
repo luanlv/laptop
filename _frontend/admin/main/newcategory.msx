@@ -18,8 +18,8 @@ NewProduct.controller = function(){
     // ctrl.showImgList = true;
     m.redraw();
   };
-  ctrl.categories = m.prop([]);
-  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
+  // ctrl.categories = m.prop([]);
+  // ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
 };
 
 

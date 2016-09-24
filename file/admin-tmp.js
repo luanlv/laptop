@@ -752,14 +752,8 @@ var fn = require('./fn.msx');
 var input = m.prop("");
 
 var data = m.prop({
-  "slug": "",
-  "name" : "",
-  "description": "",
-  "sku": {
-    "parent_id" : "NONE",
-    "name" : "NONE",
-    "slug" : "NONE"
-  }
+  "_id": "",
+  "name" : ""
 });
 
 var NewCategory = function(ctrl){
@@ -782,6 +776,10 @@ var NewCategory = function(ctrl){
                       contentType: "application/json",
                       dataType: "json",
                       success: function(data){
+                        alert("Đã thêm thành công");
+                        data()._id = "";
+                        data()._name = "";
+                        m.redraw();
                       }
                     });
                     
@@ -796,9 +794,9 @@ var NewCategory = function(ctrl){
                   {tag: "div", attrs: {className:"col-sm-10"}, children: [
                       {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"title", 
                              onchange:function(el){
-                               data().slug = $(el.target).val()
+                               data()._id = $(el.target).val()
                              }, 
-                             value:data().slug}
+                             value:data()._id}
                       }, 
                   {tag: "div", attrs: {className:"form-control-line"}}
                   ]}
@@ -810,106 +808,25 @@ var NewCategory = function(ctrl){
                       {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"title", 
                              onchange:function(el){
                                data().name = $(el.target).val();
-                               data().slug = fn.slug(data().name);
+                               data()._id = fn.slug(data().name);
                              }, 
                              value:(data().name === undefined)?"":(data().name)}
                       }, 
                     {tag: "div", attrs: {className:"form-control-line"}}
                   ]}
-                ]}, 
-  
-                {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"textarea", className:"col-sm-2 control-label"}, children: ["Description"]}, 
-                  {tag: "div", attrs: {className:"col-sm-10"}, children: [
-                    {tag: "textarea", attrs: {name:"textarea", id:"textarea", className:"form-control", rows:"3", placeholder:"", 
-                              config:function(el, isInit, ctx){
-                                if(!isInit) {
-                                  $(el).val(data().description)
-                                }
-                              }, 
-                              onkeydown:function(el){
-                                data().description = $(el.target).val();
-                              }
-                    }}, 
-      
-                    {tag: "div", attrs: {className:"form-control-line"}}
-                  ]}
-                ]}, 
-  
-  
-                {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"categories", className:"col-sm-2 control-label"}, children: ["Category"]}, 
-                  {tag: "div", attrs: {className:"col-sm-5 control-label"}, children: [
-                    {tag: "select", attrs: {className:"form-control", size:"7", id:"categories", name:"categories", 
-                            onchange:function(el){
-                              
-                            }
-                    }, children: [
-                      
-                        ctrl.categories().map(function(el){
-                          return {tag: "option", attrs: {
-                              value:el._id, 
-                              onclick:function(){
-                                data().sku = {
-                                  "parent_id": el.slug,
-                                  "name": el.name,
-                                  "slug": el.slug
-                                };
-                              }
-                          }, children: [" ", el.name, " "]}
-                        })
-                      
-                    ]}
-                  ]}
-                 
                 ]}
-                
-                
               ]}
             ]}
           ]}, 
           
           {tag: "div", attrs: {className:"row"}
             
-          }, 
-  
-          {tag: "div", attrs: {className:"offcanvas"}, children: [
-            {tag: "div", attrs: {id:"offcanvas-demo-size4", className:"offcanvas-pane width-12 " + (ctrl.showImgList?"active":""), style:"width: 800px; " + (ctrl.showImgList?"transform: translate(-800px, 0px)":(""))}, children: [
-            {tag: "div", attrs: {className:"offcanvas-head"}, children: [
-              {tag: "header", attrs: {}, children: ["Images controller "]}, 
-              {tag: "div", attrs: {className:"offcanvas-tools"}, children: [
-                {tag: "a", attrs: {className:"btn btn-icon-toggle btn-default-light pull-right", "data-dismiss":"offcanvas", 
-                  onclick:function(){
-                    {/*ctrl.showImgList = false;*/}
-                  }
-                }, children: [
-                  {tag: "i", attrs: {className:"md md-close"}}
-                ]}
-              ]}
-            ]}, 
-            {tag: "div", attrs: {className:"nano has-scrollbar", style:"height: 90vh;"}, children: [
-              {tag: "div", attrs: {className:"nano-content", tabindex:"0", style:"right: -15px;"}, children: [
-                {tag: "div", attrs: {className:"offcanvas-body"}, children: [
-                  {tag: "div", attrs: {className:"card-body"}, children: [
-                    "test"
-                  ]}
-                  
-                
-                ]}
-              ]}
-            ]}
-            ]}
-          ]}
+          }
         
           
         ]}
       ]}
-    ]},
-    ctrl.showImgList?({tag: "div", attrs: {className:"backdrop", 
-      onclick:function(){
-        ctrl.showImgList = false;
-      }
-    }}):""
+    ]}
   ]
 };
 
@@ -947,7 +864,7 @@ var data = m.prop({
   "guarantee": 12,
   "image" : [
   ],
-  "info": String
+  "info": "<p>Hello world</p>"
 });
 
 var NewProduct = function(ctrl){
@@ -1078,7 +995,11 @@ var NewProduct = function(ctrl){
                   {tag: "div", attrs: {className:"col-sm-5 control-label img-cover"}, children: [
                     (data().image.length>0)?[
                         data().image.map(function(el){
-                          return {tag: "img", attrs: {src:"/cover/get/" + el._id, alt:el.alt}}
+                          return {tag: "img", attrs: {src:"/cover/get/" + el._id, alt:el.alt, 
+                            onclick:function(){
+                              data().image.splice(fn.getIndexByParam(data().image, "_id", el._id) ,1)
+                            }}
+                          }
                         })
                     ]:(
                         {tag: "img", attrs: {src:"http://localhost:9000/assets/images/laptop.jpg", alt:""}}
@@ -1090,10 +1011,28 @@ var NewProduct = function(ctrl){
               ]}
             ]}
           ]}, 
+          
+          {tag: "div", attrs: {className:"card card-body"}, children: [
+            {tag: "div", attrs: {id:"summernote", 
+              config:function (el, isInited) {
+                if (!isInited) {
+                  
+                  $('#summernote').summernote({
+                    callbacks: {
+                      onChange: function(contents, $editable) {
+                        data().info = $('#summernote').summernote('code');
+                      }
+                    }
+                  });
   
+                  $('#summernote').summernote('code', data().info);
+                }
+              }
+              
+            }}
+          ]}, 
   
-          {tag: "div", attrs: {id:"uploadImage", className:"modal fade", role:"dialog"
-          }, children: [
+          {tag: "div", attrs: {id:"uploadImage", className:"modal fade", role:"dialog"}, children: [
             {tag: "div", attrs: {className:"modal-dialog uploadImage"}, children: [
               {tag: "div", attrs: {className:"modal-content "}, children: [
                 {tag: "div", attrs: {className:"modal-header"}, children: [
@@ -1112,7 +1051,8 @@ var NewProduct = function(ctrl){
           ]}, 
   
   
-          {tag: "div", attrs: {id:"selectImage", className:"modal fade", role:"dialog"}, children: [
+          {tag: "div", attrs: {id:"selectImage", className:"modal fade", role:"dialog"
+          }, children: [
             {tag: "div", attrs: {className:"modal-dialog uploadImage"}, children: [
               {tag: "div", attrs: {className:"modal-content"}, children: [
                 {tag: "div", attrs: {className:"modal-header"}, children: [
@@ -1130,7 +1070,7 @@ var NewProduct = function(ctrl){
                             }}, 
                             {tag: "a", attrs: {class:"thumbnail", href:"javascript:void(0)", 
                               onclick:function(){
-                                if(fn.getItemByParam(data().image, "_id", item._id) == undefined){
+                                if(fn.getItemByParam(data().image, "_id", item._id) == undefined && data().image.length<5){
                                   data().image.push({"_id": item._id, "alt" : item.alt})
                                 }
                               }
@@ -1163,7 +1103,8 @@ var NewProduct = function(ctrl){
                               }, ctrl.imgListTmp, ctrl.setupNext);
                             }
                     }, children: ["Trang sau"]}
-                  ]}
+                  ]}, 
+                  {tag: "button", attrs: {type:"button", className:"btn btn-default", "data-dismiss":"modal"}, children: ["Close"]}
                 ]}
               ]}
     
@@ -1172,29 +1113,10 @@ var NewProduct = function(ctrl){
           
         ]}
       ]}
-    ]},
-    ctrl.showImgList?({tag: "div", attrs: {className:"backdrop", 
-      onclick:function(){
-        ctrl.showImgList = false;
-      }
-    }}):""
+    ]}
   ]
-}
+};
 
-
-var list =[
-    "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1",
-  "1"
-]
 
 module.exports = NewProduct;
 },{"./fn.msx":11}],10:[function(require,module,exports){
@@ -1747,8 +1669,8 @@ NewProduct.controller = function(){
     // ctrl.showImgList = true;
     m.redraw();
   };
-  ctrl.categories = m.prop([]);
-  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
+  // ctrl.categories = m.prop([]);
+  // ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
 };
 
 
@@ -1811,7 +1733,7 @@ Product.controller = function(){
   
   
   ctrl.categories = m.prop([]);
-  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
+  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listcategory"}, ctrl.categories, ctrl.setup);
   
 };
 
