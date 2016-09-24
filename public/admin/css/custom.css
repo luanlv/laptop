@@ -199,3 +199,31 @@
 .uploadImage {
   width: 90% !important;
 }
+
+.selected span{
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
+}
+.selected span:hover::after {
+  content: "✖"
+}
+.selected span:after{
+  background: rgba(100, 100, 100, 0.5);
+  border-radius: 5px;
+  padding: 5px 10px;
+  text-align: center;
+  content: "✔";
+  color: cadetblue;
+  font-size: 25px;
+}
+.img-cover img {
+  float: left;
+  height: 50px;
+  width: 50px;
+}
+.img-cover img:first-child{
+  height: 150px;
+  width: 150px;
+}

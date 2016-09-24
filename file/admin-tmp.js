@@ -1075,18 +1075,13 @@ var NewProduct = function(ctrl){
                             }
                     }, children: ["Chọn ảnh"]}
                   ]}, 
-                  {tag: "div", attrs: {className:"col-sm-2 control-label"}, children: [
+                  {tag: "div", attrs: {className:"col-sm-5 control-label img-cover"}, children: [
                     (data().image.length>0)?[
-                      {tag: "img", attrs: {src:"/cover/get/" + data().image._id, alt:data().image.alt, 
-                           style:"cursor: pointer", 
-                           onclick:function(){
-                             ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
-                             ctrl.showImgList = true;
-    
-                           }}
-                      }
+                        data().image.map(function(el){
+                          return {tag: "img", attrs: {src:"/cover/get/" + el._id, alt:el.alt}}
+                        })
                     ]:(
-                        {tag: "img", attrs: {src:"http://localhost:9000/assets/images/laptop.jpg", width:"150", height:"150", alt:""}}
+                        {tag: "img", attrs: {src:"http://localhost:9000/assets/images/laptop.jpg", alt:""}}
                     )
                     
                   ]}
@@ -1127,8 +1122,19 @@ var NewProduct = function(ctrl){
                 {tag: "div", attrs: {className:"modal-body clearfix"}, children: [
                     ctrl.imgList().map(function(item){
                       return (
-                          {tag: "div", attrs: {class:"col-lg-2 col-md-3 col-xs-4 thumb"}, children: [
-                            {tag: "a", attrs: {class:"thumbnail", href:"javascript:void(0)"}, children: [
+                          {tag: "div", attrs: {className:"col-lg-2 col-md-3 col-xs-4 thumb " + ((fn.getItemByParam(data().image, "_id", item._id) == undefined)?"":"selected")}, children: [
+                            {tag: "span", attrs: {
+                              onclick:function(){
+                                data().image.splice(fn.getIndexByParam(data().image, "_id", item._id) ,1)
+                              }
+                            }}, 
+                            {tag: "a", attrs: {class:"thumbnail", href:"javascript:void(0)", 
+                              onclick:function(){
+                                if(fn.getItemByParam(data().image, "_id", item._id) == undefined){
+                                  data().image.push({"_id": item._id, "alt" : item.alt})
+                                }
+                              }
+                            }, children: [
                               {tag: "img", attrs: {class:"img-responsive", src:"/cover/get/" + item._id, alt:""}}
                             ]}
                           ]}
@@ -1136,7 +1142,28 @@ var NewProduct = function(ctrl){
                     })
                 ]}, 
                 {tag: "div", attrs: {className:"modal-footer"}, children: [
-                  {tag: "div", attrs: {}, children: ["footer"]}
+                  {tag: "div", attrs: {class:"btn-group", role:"group", "aria-label":"..."}, children: [
+                    {tag: "button", attrs: {type:"button", class:"btn btn-default", style:"margin-left: 5px", 
+                      onclick:function(){
+                        if(ctrl.imgPage >1) {
+                          ctrl.request2 = fn.requestWithFeedback({
+                            method: "GET",
+                            url: "/image/list/" + (ctrl.imgPage - 1)
+                          }, ctrl.imgList, ctrl.setupPrev);
+                        }
+                      }
+                    }, children: ["Trang trước"]}, 
+                    {tag: "button", attrs: {type:"button", class:"btn btn-default", style:"margin-left: 5px"}, children: [ctrl.imgPage]}, 
+                    
+                    {tag: "button", attrs: {type:"button", class:"btn btn-default", style:"margin-left: 5px", 
+                            onclick:function(){
+                              ctrl.request2 = fn.requestWithFeedback({
+                                method: "GET",
+                                url: "/image/list/" + (ctrl.imgPage + 1)
+                              }, ctrl.imgListTmp, ctrl.setupNext);
+                            }
+                    }, children: ["Trang sau"]}
+                  ]}
                 ]}
               ]}
     
@@ -1547,6 +1574,29 @@ Fn.bindOnce = (function() {
 }())
 
 
+Fn.getItemByParam = function(list, key, value){
+  var result = undefined;
+  var length = list.length;
+  for(var i=0; i<length; i++){
+    if(list[i][key] == value){
+      result = list[i]
+      break;
+    }
+  }
+  return result;
+};
+
+Fn.getIndexByParam = function(list, key, value){
+  var result = -1;
+  var length = list.length;
+  for(var i=0; i<length; i++){
+    if(list[i][key] == value){
+      result = i;
+      break;
+    }
+  }
+  return result;
+};
 
 module.exports = Fn;
 },{}],12:[function(require,module,exports){
@@ -1735,13 +1785,25 @@ Product.controller = function(){
   var ctrl = this;
   ctrl.showImgList = false;
   ctrl.imgList = m.prop([]);
-  
+  ctrl.imgListTmp = m.prop([]);
+  ctrl.imgPage = 1;
   ctrl.setup2 = function(){
     ctrl.imgList(ctrl.request2.data());
     ctrl.showImgList = true;
     m.redraw();
   };
-  
+  ctrl.setupPrev = function(){
+    ctrl.imgList(ctrl.request2.data());
+    ctrl.Page -=1;
+    m.redraw();
+  };
+  ctrl.setupNext = function(){
+    if(ctrl.imgListTmp().length>0) {
+      ctrl.imgList(ctrl.imgListTmp());
+      ctrl.Page += 1;
+    }
+    m.redraw();
+  };
   ctrl.setup = function(){
     ctrl.categories(ctrl.request.data());
     m.redraw();

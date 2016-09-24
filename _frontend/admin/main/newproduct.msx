@@ -12,13 +12,25 @@ Product.controller = function(){
   var ctrl = this;
   ctrl.showImgList = false;
   ctrl.imgList = m.prop([]);
-  
+  ctrl.imgListTmp = m.prop([]);
+  ctrl.imgPage = 1;
   ctrl.setup2 = function(){
     ctrl.imgList(ctrl.request2.data());
     ctrl.showImgList = true;
     m.redraw();
   };
-  
+  ctrl.setupPrev = function(){
+    ctrl.imgList(ctrl.request2.data());
+    ctrl.Page -=1;
+    m.redraw();
+  };
+  ctrl.setupNext = function(){
+    if(ctrl.imgListTmp().length>0) {
+      ctrl.imgList(ctrl.imgListTmp());
+      ctrl.Page += 1;
+    }
+    m.redraw();
+  };
   ctrl.setup = function(){
     ctrl.categories(ctrl.request.data());
     m.redraw();

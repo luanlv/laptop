@@ -133,5 +133,28 @@ Fn.bindOnce = (function() {
 }())
 
 
+Fn.getItemByParam = function(list, key, value){
+  var result = undefined;
+  var length = list.length;
+  for(var i=0; i<length; i++){
+    if(list[i][key] == value){
+      result = list[i]
+      break;
+    }
+  }
+  return result;
+};
+
+Fn.getIndexByParam = function(list, key, value){
+  var result = -1;
+  var length = list.length;
+  for(var i=0; i<length; i++){
+    if(list[i][key] == value){
+      result = i;
+      break;
+    }
+  }
+  return result;
+};
 
 module.exports = Fn;

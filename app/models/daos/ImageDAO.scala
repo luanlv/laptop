@@ -34,7 +34,7 @@ class ImageDAOImpl @Inject() (repository: ImageRepository) extends ImageDAO {
   }
 
   def getList(page: Int) = {
-    repository.findImage(sort = Json.obj("createAt" -> -1), page = page, num = 20)
+    repository.findImage(sort = Json.obj("createAt" -> -1), page = page, num = 10)
   }
 
 }

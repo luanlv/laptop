@@ -36,7 +36,7 @@ abstract class DocumentDao[T <: TemporalModel](reactiveMongoApi: ReactiveMongoAp
 
   def findImage(query: JsObject = Json.obj(), sort: JsObject = Json.obj(), page: Int, num: Int)(implicit reader: Reads[T]): Future[List[T]] = {
     Logger.debug(s"Finding documents: [collection=$collectionName, query=$query]")
-    collection.flatMap(_.find(query).sort(sort).options(QueryOpts((page - 1) * num)).cursor[T](ReadPreference.nearest).collect[List]())
+    collection.flatMap(_.find(query).sort(sort).options(QueryOpts((page - 1) * num)).cursor[T](ReadPreference.nearest).collect[List](num))
   }
 
   def getList(query: JsObject = Json.obj(), sort: JsObject = Json.obj(), page: Int, num: Int)(implicit reader: Reads[T]): Future[List[T]] = {
