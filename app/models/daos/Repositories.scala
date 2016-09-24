@@ -45,7 +45,17 @@ class ImageRepository @Inject() (reactiveMongoApi: ReactiveMongoApi) extends Doc
 
   override def collectionName = "image"
 
-  override def ensureIndexes: Future[Boolean] = ensureIndex(List("filename" -> IndexType.Ascending), unique = true)
+  override def ensureIndexes: Future[Boolean] = ensureIndex(List("id" -> IndexType.Ascending), unique = true)
+
+  ensureIndexes
+}
+
+@Singleton
+class ProductRepository @Inject() (reactiveMongoApi: ReactiveMongoApi) extends DocumentDao[Product](reactiveMongoApi) with Repository[Product] {
+
+  override def collectionName = "product"
+
+  override def ensureIndexes: Future[Boolean] = ensureIndex(List("name" -> IndexType.Ascending), unique = true)
 
   ensureIndexes
 }

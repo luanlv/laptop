@@ -28,5 +28,5 @@ case class Product(
 object Product {
   import reactivemongo.play.json.BSONFormats.BSONObjectIDFormat // This is required
 
-  implicit val productFormat = Json.format[Product]
+  implicit val pFormat = Json.format[Product]
 }
