@@ -17,9 +17,9 @@ case class Product(
   price: Int,
   extra: String,
   available: Boolean,
-  Guarantee: Int,
-  Image: List[Image],
-  Info: String,
+  guarantee: Int,
+  image: List[LightImage],
+  info: String,
   createAt: DateTime = DateTime.now()
 ) extends Identity with TemporalModel {
 
@@ -28,5 +28,19 @@ case class Product(
 object Product {
   import reactivemongo.play.json.BSONFormats.BSONObjectIDFormat // This is required
 
+  implicit val lightImageFormat = Json.format[LightImage]
   implicit val pFormat = Json.format[Product]
+}
+
+case class LightImage(
+  _id: String,
+  alt: String
+) extends Identity with TemporalModel {
+
+}
+
+object LightImage {
+  import reactivemongo.play.json.BSONFormats.BSONObjectIDFormat // This is required
+
+  implicit val lightImageFormat = Json.format[LightImage]
 }

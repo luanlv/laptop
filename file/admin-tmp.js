@@ -857,7 +857,7 @@ var input = m.prop("");
 var data = m.prop({
   "_id" : "",
   "name": "",
-  "categories": [],
+  "category": "none",
   "price": 0,
   "extra": "",
   "available": false,
@@ -879,16 +879,16 @@ var NewProduct = function(ctrl){
                 
                 {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised btn-primary", style:"float: right", 
                   onclick:function(){
-                    console.log(data())
-                    {/*$.ajax({*/}
-                      {/*type: "POST",*/}
-                      {/*url: "/admin/post",*/}
-                      {/*data: JSON.stringify(data()),*/}
-                      {/*contentType: "application/json",*/}
-                      {/*dataType: "json",*/}
-                      {/*success: function(data){*/}
-                      {/*}*/}
-                    {/*});*/}
+                    {/*console.log(data());*/}
+                    $.ajax({
+                      type: "POST",
+                      url: "/admin/product",
+                      data: JSON.stringify(data()),
+                      contentType: "application/json",
+                      dataType: "json",
+                      success: function(data){
+                      }
+                    });
                     
                   }
                 }, children: ["Thêm laptop"]}, 
@@ -947,11 +947,13 @@ var NewProduct = function(ctrl){
                   {tag: "div", attrs: {className:"col-sm-5 control-label"}, children: [
                     {tag: "select", attrs: {className:"form-control", id:"categories", name:"categories", 
                       onchange:function(el){
-                        data().categoriy = $(el.target).val();
+                        data().category = $(el.target).val();
                       }
                     }, children: [
-                      {tag: "option", attrs: {value:"abc"}, children: ["abc"]}, 
-                      {tag: "option", attrs: {value:"def"}, children: ["def"]}
+                      ctrl.categories().map(function(el){
+                        return  {tag: "option", attrs: {value:el._id}, children: [el.name]}
+                      }), 
+                      {tag: "option", attrs: {value:"none", selected:(data().category == "none")?"true":""}, children: ["Chưa chọn"]}
                     ]}
                   ]}
                   /*<label htmlFor="image" className="col-sm-1 control-label">Cover</label>*/
@@ -1714,6 +1716,7 @@ Product.controller = function(){
     ctrl.showImgList = true;
     m.redraw();
   };
+  ctrl.categories = m.prop([]);
   ctrl.setupPrev = function(){
     ctrl.imgList(ctrl.request2.data());
     ctrl.Page -=1;

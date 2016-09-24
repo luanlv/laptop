@@ -14,7 +14,7 @@ class CategoryRepository @Inject() (reactiveMongoApi: ReactiveMongoApi) extends 
 
   override def collectionName = "category"
 
-  override def ensureIndexes: Future[Boolean] = ensureIndex(List("slug" -> IndexType.Ascending), unique = true)
+  override def ensureIndexes: Future[Boolean] = ensureIndex(List(), unique = true)
 
   ensureIndexes
 }

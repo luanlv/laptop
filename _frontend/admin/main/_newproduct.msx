@@ -4,7 +4,7 @@ var input = m.prop("");
 var data = m.prop({
   "_id" : "",
   "name": "",
-  "categories": [],
+  "category": "none",
   "price": 0,
   "extra": "",
   "available": false,
@@ -26,16 +26,16 @@ var NewProduct = function(ctrl){
                 
                 <button type="button" className="btn ink-reaction btn-raised btn-primary" style="float: right"
                   onclick={function(){
-                    console.log(data())
-                    {/*$.ajax({*/}
-                      {/*type: "POST",*/}
-                      {/*url: "/admin/post",*/}
-                      {/*data: JSON.stringify(data()),*/}
-                      {/*contentType: "application/json",*/}
-                      {/*dataType: "json",*/}
-                      {/*success: function(data){*/}
-                      {/*}*/}
-                    {/*});*/}
+                    {/*console.log(data());*/}
+                    $.ajax({
+                      type: "POST",
+                      url: "/admin/product",
+                      data: JSON.stringify(data()),
+                      contentType: "application/json",
+                      dataType: "json",
+                      success: function(data){
+                      }
+                    });
                     
                   }}
                 >Thêm laptop</button>
@@ -94,11 +94,13 @@ var NewProduct = function(ctrl){
                   <div className="col-sm-5 control-label">
                     <select className="form-control" id="categories" name="categories"
                       onchange={function(el){
-                        data().categoriy = $(el.target).val();
+                        data().category = $(el.target).val();
                       }}
                     >
-                      <option value="abc">abc</option>
-                      <option value="def">def</option>
+                      {ctrl.categories().map(function(el){
+                        return  <option value={el._id} >{el.name}</option>
+                      })}
+                      <option value="none" selected={(data().category == "none")?"true":""}>Chưa chọn</option>
                     </select>
                   </div>
                   {/*<label htmlFor="image" className="col-sm-1 control-label">Cover</label>*/}

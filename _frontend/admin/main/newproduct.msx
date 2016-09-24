@@ -19,6 +19,7 @@ Product.controller = function(){
     ctrl.showImgList = true;
     m.redraw();
   };
+  ctrl.categories = m.prop([]);
   ctrl.setupPrev = function(){
     ctrl.imgList(ctrl.request2.data());
     ctrl.Page -=1;

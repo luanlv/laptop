@@ -23,6 +23,6 @@ class CategoryServiceImpl @Inject() (categoryDAO: CategoryDAO) extends CategoryS
 
   def save(category: Category) = categoryDAO.save(category)
 
-  def listCategory = categoryDAO.listParent
+  def listCategory = categoryDAO.listCategory
 
 }
