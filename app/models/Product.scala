@@ -10,16 +10,23 @@ import play.api.libs.json._
 //import reactivemongo.bson.BSONObjectID
 import reactivemongo.bson.BSONObjectID
 
-case class Link(
+case class Product(
   _id: String,
-  url: String,
-  postID: String
+  name: String,
+  category: String,
+  price: Int,
+  extra: String,
+  available: Boolean,
+  Guarantee: Int,
+  Image: List[Image],
+  Info: String,
+  createAt: DateTime = DateTime.now()
 ) extends Identity with TemporalModel {
 
 }
 
-object Link {
+object Product {
   import reactivemongo.play.json.BSONFormats.BSONObjectIDFormat // This is required
 
-  implicit val linkFormat = Json.format[Link]
+  implicit val productFormat = Json.format[Product]
 }

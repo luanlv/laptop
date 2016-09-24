@@ -37,7 +37,7 @@ var Menu = function(ctrl){
             <a href="/admin#/newProduct"
             >
               <div className="gui-icon"><i className="md md-web"></i></div>
-              <span className="title">Post</span>
+              <span className="title">New Product</span>
             </a>
           </li>
   

@@ -5,7 +5,7 @@ import javax.inject.{ Inject, Singleton }
 import com.mohiva.play.silhouette.api.{ LogoutEvent, Silhouette }
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import models.Setup
-import models.services.{ ArticleService, CategoryService, PostService, SetupService }
+import models.services.{ CategoryService, SetupService }
 import play.api.i18n.{ I18nSupport, MessagesApi }
 import play.api.libs.json.Json
 import play.api.libs.ws.{ WS, WSClient }
@@ -23,8 +23,6 @@ class ApplicationController @Inject() (
   val messagesApi: MessagesApi,
   setupService: SetupService,
   categoryService: CategoryService,
-  postService: PostService,
-  articleService: ArticleService,
   socialProviderRegistry: SocialProviderRegistry) extends AuthController {
 
   /**

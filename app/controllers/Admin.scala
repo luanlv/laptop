@@ -9,7 +9,6 @@ import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import com.sksamuel.scrimage
 import com.sksamuel.scrimage.ScaleMethod.Bicubic
 import com.sksamuel.scrimage.nio.JpegWriter
-import models.Link
 import models._
 import models.services._
 import org.apache.commons.io.FilenameUtils
@@ -34,10 +33,8 @@ class Admin @Inject() (
   val silhouette: Silhouette[MyEnv],
   val messagesApi: MessagesApi,
   imageService: ImageService,
-  postService: PostService,
   categoryService: CategoryService,
   setupService: SetupService,
-  linkService: LinkService,
   socialProviderRegistry: SocialProviderRegistry) extends AuthController {
 
   /**
@@ -45,46 +42,8 @@ class Admin @Inject() (
    *
    * @return The result to display.
    */
-  def index = silhouette.SecuredAction(WithService("master")).async { implicit request =>
-    //    println("==========================" + request.identity.email)
-    if (request.identity.email.getOrElse("") == "admin@vndocs.com") {
-      Future.successful(Redirect(routes.ApplicationController.index()))
-    } else {
-      Future.successful(Ok(views.html.admin.index("Trang chu")))
-    }
-  }
-
-  def doPost = Action(parse.json) { implicit request =>
-
-    request.body.asOpt[JsObject].map { post =>
-      val postID = (post \ "id").get.as[String]
-      val link = (post \ "link").asOpt[List[LinkInfo]].getOrElse(List()).map {
-        el =>
-          {
-            val uuid = UUID.randomUUID().toString
-            val securityLink = models.Link(
-              _id = uuid,
-              url = el.url,
-              postID = postID
-            )
-            linkService.save(securityLink)
-            el.copy(url = uuid)
-          }
-      }
-      val newPost = Post(
-        _id = postID,
-        title = (post \ "title").get.as[String],
-        categories = (post \ "categories").get.as[List[String]],
-        description = (post \ "description").get.as[String],
-        content = (post \ "content").get.as[String],
-        link = link,
-        cover = (post \ "cover").asOpt[Cover]
-      )
-      postService.save(newPost)
-      Ok("ok")
-    }.getOrElse {
-      BadRequest("not json")
-    }
+  def index = silhouette.UnsecuredAction.async { implicit request =>
+    Future.successful(Ok(views.html.admin.index("Trang chu")))
   }
 
   def doCategory = Action(parse.json) { implicit request =>

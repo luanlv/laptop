@@ -3,7 +3,7 @@ package models.services
 import javax.inject.Inject
 
 import models.daos.CategoryDAO
-import models.{ Category, Post }
+import models.{ Category }
 
 import scala.concurrent.Future
 

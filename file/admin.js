@@ -444,7 +444,7 @@ var Menu = function(ctrl){
             {tag: "a", attrs: {href:"/admin#/newProduct"
             }, children: [
               {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-web"}}]}, 
-              {tag: "span", attrs: {className:"title"}, children: ["Post"]}
+              {tag: "span", attrs: {className:"title"}, children: ["New Product"]}
             ]}
           ]}, 
   
