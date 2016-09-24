@@ -10,6 +10,7 @@ import play.api.libs.json.JsObject
 import utils.silhouette.MyEnv
 
 import scala.concurrent.Future
+import scala.util.{ Failure, Success }
 //import com.sksamuel.scrimage.Image
 //import com.sksamuel.scrimage.ScaleMethod.Bicubic
 //import com.sksamuel.scrimage.nio.JpegWriter
@@ -43,8 +44,15 @@ class ProductController @Inject() (
         image = (product \ "image").get.as[List[LightImage]],
         info = (product \ "info").get.as[String]
       )
-      productService.save(newProduct)
-      Future.successful(Ok("ok"))
+      productService.save(newProduct).map {
+        tryProduct =>
+          tryProduct match {
+            case Success(product) => {
+              Ok("ok")
+            }
+            case Failure(ex) => BadRequest(s"Error: ${ex.getMessage}")
+          }
+      }
     }.getOrElse {
       Future.successful(BadRequest("not json"))
     }

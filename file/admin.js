@@ -189,6 +189,7 @@ var CreateMenu = function(ctrl){
                     {tag: "br", attrs: {}}, 
                     {tag: "button", attrs: {id:"update", 
                       onclick:function(el){
+                        console.log(" Zzzzzzzzzzzzzz ")
                         $(document).on('click', '#update', (function(){
                           var request = $.ajax({
                             type: "POST",
@@ -204,7 +205,7 @@ var CreateMenu = function(ctrl){
                             alert( "Request failed: " + textStatus );
                           }));
                         }));
-                        console.log(ctrl.domenu.toJson());
+                        {/*console.log(ctrl.domenu.toJson());*/}
                       }
                           
                     }, children: ["Update"]}, 
@@ -858,13 +859,13 @@ var data = m.prop({
   "_id" : "",
   "name": "",
   "category": "none",
+  "extra": "normal",
   "price": 0,
-  "extra": "",
-  "available": false,
+  "available": true,
   "guarantee": 12,
   "image" : [
   ],
-  "info": "<p>Hello world</p>"
+  "info": ""
 });
 
 var NewProduct = function(ctrl){
@@ -879,7 +880,7 @@ var NewProduct = function(ctrl){
                 
                 {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised btn-primary", style:"float: right", 
                   onclick:function(){
-                    {/*console.log(data());*/}
+                    console.log(data());
                     $.ajax({
                       type: "POST",
                       url: "/admin/product",
@@ -1018,7 +1019,6 @@ var NewProduct = function(ctrl){
             {tag: "div", attrs: {id:"summernote", 
               config:function (el, isInited) {
                 if (!isInited) {
-                  
                   $('#summernote').summernote({
                     callbacks: {
                       onChange: function(contents, $editable) {
@@ -1073,7 +1073,7 @@ var NewProduct = function(ctrl){
                             {tag: "a", attrs: {class:"thumbnail", href:"javascript:void(0)", 
                               onclick:function(){
                                 if(fn.getItemByParam(data().image, "_id", item._id) == undefined && data().image.length<5){
-                                  data().image.push({"_id": item._id, "alt" : item.alt})
+                                  data().image.push({"_id": item._id, "alt" : item.filename})
                                 }
                               }
                             }, children: [
@@ -1570,14 +1570,14 @@ MenuController.controller = function(){
   ctrl.menu = m.prop([]);
   
   ctrl.setup = function(){
-    ctrl.menu(ctrl.request.data());
-    console.log(ctrl.menu())
-    ctrl.domenu = $('#domenu-0').domenu({
-      onDomenuInitialized: [function() {
-        console.log('event: onDomenuInitialized', 'arguments:', arguments, 'context:', this);
-      }],
-      data: JSON.stringify(ctrl.menu())
-    }).parseJson();
+      console.log(ctrl.menu())
+      ctrl.domenu = $('#domenu-0').domenu({
+        onDomenuInitialized: [function() {
+          console.log('event: onDomenuInitialized', 'arguments:', arguments, 'context:', this);
+        }],
+        maxDepth: 2,
+        data: JSON.stringify(ctrl.menu())
+      }).parseJson()
     
   };
   

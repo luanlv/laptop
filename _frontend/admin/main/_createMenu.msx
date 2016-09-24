@@ -54,6 +54,7 @@ var CreateMenu = function(ctrl){
                     <br/>
                     <button id="update"
                       onclick={function(el){
+                        console.log(" Zzzzzzzzzzzzzz ")
                         $(document).on('click', '#update', function(){
                           var request = $.ajax({
                             type: "POST",
@@ -69,7 +70,7 @@ var CreateMenu = function(ctrl){
                             alert( "Request failed: " + textStatus );
                           });
                         });
-                        console.log(ctrl.domenu.toJson());
+                        {/*console.log(ctrl.domenu.toJson());*/}
                       }}
                           
                     >Update</button>

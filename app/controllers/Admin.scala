@@ -50,7 +50,7 @@ class Admin @Inject() (
     request.body.asOpt[JsValue].map { menu =>
       var newMenu = Setup(
         _id = "menu",
-        value = menu.toString().replaceAll("\\\"", "\"")
+        value = menu.as[List[Menu]]
       )
       setupService.save(newMenu)
       Ok("ok")

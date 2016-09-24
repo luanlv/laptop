@@ -16,14 +16,14 @@ MenuController.controller = function(){
   ctrl.menu = m.prop([]);
   
   ctrl.setup = function(){
-    ctrl.menu(ctrl.request.data());
-    console.log(ctrl.menu())
-    ctrl.domenu = $('#domenu-0').domenu({
-      onDomenuInitialized: [function() {
-        console.log('event: onDomenuInitialized', 'arguments:', arguments, 'context:', this);
-      }],
-      data: JSON.stringify(ctrl.menu())
-    }).parseJson();
+      console.log(ctrl.menu())
+      ctrl.domenu = $('#domenu-0').domenu({
+        onDomenuInitialized: [function() {
+          console.log('event: onDomenuInitialized', 'arguments:', arguments, 'context:', this);
+        }],
+        maxDepth: 2,
+        data: JSON.stringify(ctrl.menu())
+      }).parseJson()
     
   };
   

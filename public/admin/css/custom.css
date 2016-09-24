@@ -237,3 +237,7 @@ body .backdrop{
   display: none !important;
 }
 
+.note-editable {
+  min-height: 50px !important;
+}
+

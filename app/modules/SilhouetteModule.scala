@@ -51,6 +51,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[ImageService].to[ImageServiceImpl]
     bind[CategoryService].to[CategoryServiceImpl]
     bind[SetupService].to[SetupServiceImpl]
+    bind[ProductService].to[ProductServiceImpl]
     bind[UserDAO].to[UserDAOImpl]
     bind[ImageDAO].to[ImageDAOImpl]
     bind[CategoryDAO].to[CategoryDAOImpl]

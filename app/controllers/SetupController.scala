@@ -8,9 +8,9 @@ import com.mohiva.play.silhouette.api.{ LogoutEvent, Silhouette }
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import com.sksamuel.scrimage
 import com.sksamuel.scrimage.ScaleMethod.Bicubic
-import models.Image
+import models.{ Image, Menu }
 import models.services.{ ImageService, SetupService }
-import play.api.libs.json.{ JsObject, JsValue, Json }
+import play.api.libs.json.{ JsArray, JsObject, JsValue, Json }
 import utils.silhouette.MyEnv
 //import com.sksamuel.scrimage.Image
 //import com.sksamuel.scrimage.ScaleMethod.Bicubic
@@ -37,7 +37,13 @@ class SetupController @Inject() (
   def getMenu = Action.async { implicit request =>
 
     setupService.retrieve("menu").map { menu =>
-      Ok(menu.get.value)
+      menu match {
+        case Some(menu) => {
+          println(menu.value)
+          Ok(Json.toJson(menu.value))
+        }
+        case None => Ok(Json.toJson(JsArray()))
+      }
     }
 
   }
