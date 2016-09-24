@@ -3,8 +3,7 @@ package models.daos
 import javax.inject.Inject
 
 import com.google.inject.Singleton
-import models.{ Category, Image, Setup, User }
-//import models.daos.{ DocumentDao, Repository }
+import models.{ Category, Image, Setup, User, Product }
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.indexes.IndexType
 

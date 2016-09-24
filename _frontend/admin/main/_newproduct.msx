@@ -2,24 +2,16 @@ var fn = require('./fn.msx');
 
 var input = m.prop("");
 var data = m.prop({
-  "id" : "",
-  "title": "new file",
-  "categories": ["1", "2"],
-  "time": 1464226633054,
-  "description" : "abc",
-  "link": [
-    {
-        "url": "",
-        "shortUrl": "",
-        "filename": "",
-        "filesize" : 0
-    }
+  "_id" : "",
+  "name": "",
+  "categories": [],
+  "price": 0,
+  "extra": "",
+  "available": false,
+  "guarantee": 12,
+  "image" : [
   ],
-  "content": "## Noi dung",
-  "cover" : {
-    "id" : "ec97531f-6aa0-4374-87d4-77b6a030a854",
-    "alt" : "anh dai dien"
-  }
+  "info": String
 });
 
 var NewProduct = function(ctrl){
@@ -34,346 +26,186 @@ var NewProduct = function(ctrl){
                 
                 <button type="button" className="btn ink-reaction btn-raised btn-primary" style="float: right"
                   onclick={function(){
-                    {/*console.log(data());*/}
-                    delete data().time;
-                    $.ajax({
-                      type: "POST",
-                      url: "/admin/post",
-                      data: JSON.stringify(data()),
-                      contentType: "application/json",
-                      dataType: "json",
-                      success: function(data){
-                      }
-                    });
+                    console.log(data())
+                    {/*$.ajax({*/}
+                      {/*type: "POST",*/}
+                      {/*url: "/admin/post",*/}
+                      {/*data: JSON.stringify(data()),*/}
+                      {/*contentType: "application/json",*/}
+                      {/*dataType: "json",*/}
+                      {/*success: function(data){*/}
+                      {/*}*/}
+                    {/*});*/}
                     
                   }}
-                >Publish</button>
+                >Thêm laptop</button>
+                
                 <button type="button" className="btn ink-reaction btn-raised" style="float: right; margin-right: 20px;">Save</button>
+                
                 <br/>
                 <br/>
   
                 <div className="form-group">
-                  <label htmlFor="url" className="col-sm-2 control-label">Url</label>
+                  <label htmlFor="url" className="col-sm-2 control-label">Url :</label>
                   <div className="col-sm-10">
-                    {(data().id === undefined)?(
-                        <input type="text" className="form-control" id="url" name="title"/>
-                    ):(
-                        <input type="text" className="form-control" id="url" name="title"
-                               onchange={function(el){
-                                 data().id = $(el.target).val()
-                               }}
-                               value={data().id}
-                        />
-                    )}
+                    <input type="text" className="form-control" id="url" name="title"
+                           onchange={function(el){
+                             data()._id = $(el.target).val()
+                           }}
+                           value={data()._id}
+                    />
                     <div className="form-control-line"></div>
                   </div>
                 </div>
                 
                 <div className="form-group">
-                  <label htmlFor="title" className="col-sm-2 control-label">Title</label>
+                  <label htmlFor="title" className="col-sm-2 control-label">Tên laptop :</label>
                   <div className="col-sm-10">
-                    {(data().title === undefined)?(
-                        <input type="text" className="form-control" id="title" name="title"/>
-                    ):(
-                        <input type="text" className="form-control" id="title" name="title"
-                        onchange={function(el){
-                          data().title = $(el.target).val();
-                          data().id = fn.slug(data().title);
-                        }}
-                        value={data().title}
-                        />
-                    )}
-                    <div className="form-control-line"></div>
-                  </div>
-                </div>
-  
-                <div className="form-group">
-                  <label htmlFor="date" className="col-sm-2 control-label">Upload Date</label>
-                  <div className="col-sm-2">
-                    <input type="date" className="form-control" id="date" disabled
-                       value={(data().time !== undefined)?(moment.unix(data().time/1000).format("YYYY-MM-DD")):(moment().format("YYYY-MM-DD"))}
+                    <input type="text" className="form-control" id="title" name="title"
+                    onchange={function(el){
+                      data().name = $(el.target).val();
+                      data()._id = fn.slug(data().name);
+                    }}
+                    value={data().name}
                     />
                     <div className="form-control-line"></div>
                   </div>
                 </div>
   
                 <div className="form-group">
-                  <label htmlFor="categories" className="col-sm-2 control-label">Category</label>
+                  <label htmlFor="title" className="col-sm-2 control-label">Loại hàng :</label>
                   <div className="col-sm-5 control-label">
-                    <select multiple className="form-control" size="7" id="categories" name="categories"
+                    <select className="form-control" id="categories" name="categories"
+                            onchange={function(el){
+                              data().extra = $(el.target).val();
+                            }}
+                    >
+                      <option value="normal" selected={(data().extra == "normal")?"true":""}>Bình thường</option>
+                      <option value="hot" selected={(data().extra == "hot")?"true":""}>Hàng Hot</option>
+                      <option value="new" selected={(data().extra == "new")?"true":""}>Hàng mới về</option>
+                      <option value="sale" selected={(data().extra == "sale")?"true":""}>Hàng khuyến mãi</option>
+                    </select>
+  
+                  </div>
+                </div>
+  
+                <div className="form-group">
+                  <label htmlFor="categories" className="col-sm-2 control-label">Danh mục :</label>
+                  <div className="col-sm-5 control-label">
+                    <select className="form-control" id="categories" name="categories"
                       onchange={function(el){
-                        data().categories = $(el.target).val();
+                        data().categoriy = $(el.target).val();
                       }}
                     >
-                      {(data().categories === undefined)?[
-                        ctrl.categories().map(function(el){
-                            return <option
-                                value={el._id}
-                            > {el.name} </option>
-                          })
-                      ]:[
-                        ctrl.categories().map(function(el){
-                          return <option
-                              value={el._id}
-                              selected={
-                                (data().categories.indexOf(el._id) >= 0)?"true":""
-                              }
-                          > {el.name} </option>
-                        })
-                      ]}
+                      <option value="abc">abc</option>
+                      <option value="def">def</option>
                     </select>
                   </div>
                   {/*<label htmlFor="image" className="col-sm-1 control-label">Cover</label>*/}
-                  <div className="col-sm-2 control-label">
-                    <img src={"/cover/get/" + data().cover.id} alt={data().cover.alt}
-                      style="cursor: pointer"
-                      onclick={function(){
-                        ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
-                        ctrl.showImgList = true;
-                        
-                      }}
-                    />
-                  </div>
                 </div>
                 
                 <div className="form-group">
-                  <label htmlFor="textarea" className="col-sm-2 control-label">Description</label>
-                  <div className="col-sm-10">
-                    <textarea name="textarea" id="textarea" className="form-control" rows="3" placeholder=""
-                      config={function(el, isInit, ctx){
-                        if(!isInit) {
-                          $(el).val(data().description)
-                        }
-                      }}
-                      onchange={function(el){
-                        data().description = $(el.target).val();
-                      }}
-                    ></textarea>
-                    
-                    <div className="form-control-line"></div>
+                  <label htmlFor="" className="col-sm-2 control-label">Tình trạng :</label>
+                  <div className="col-sm-5 control-label">
+                    <select className="form-control" id="categories" name="categories"
+                            onchange={function(el){
+                              data().available = ($(el.target).val() == "true")?true:false;
+                            }}
+                    >
+                      <option value="true" selected={(data().available == true)?"true":""}>Còn hàng</option>
+                      <option value="false" selected={(data().available == false)?"true":""}>Hết hàng</option>
+                    </select>
                   </div>
                 </div>
   
-                {(data().link === undefined)?[
-                  <div className="form-group">
-                    <label htmlFor="url" className="col-sm-2 control-label">File 1</label>
-                    <div className="col-sm-3">
-                      <input type="text" className="form-control" id="url" name="url" placeholder="URL"/><div className="form-control-line"></div>
-                    </div>
-                    <div className="col-sm-5">
-                      <input type="text" className="form-control" id="" placeholder="File name"/><div className="form-control-line"></div>
-                    </div>
-                    <div className="col-sm-2">
-                      <input disabled type="text" className="form-control" id="" placeholder="File size"/><div className="form-control-line"></div>
-                    </div>
+                <div className="form-group">
+                  <label htmlFor="" className="col-sm-2 control-label">Bảo hành :</label>
+                  <div className="col-sm-1 control-label">
+                    <input type="number"
+                           onchange={function(el){
+                             data().guarantee = $(el.target).val();
+                           }}
+                           value={data().guarantee}/>
                   </div>
-                ]:[
-                    data().link.map(function(el, index){
-                      return (
-                          <div className="form-group">
-                            <label htmlFor={"url" + (index+1)} className="col-sm-2 control-label">File {index + 1}</label>
-                            <div className="col-sm-2">
-                              <input type="text" className="form-control" id={"url" + (index+1)} name={"url" + (index+1)} placeholder="URL"
-                                     onchange={function(item){
-                                       data().link[index].url = $(item.target).val();
-                                       $.ajax({
-                                         type: "POST",
-                                         url: "/file/getSize",
-                                         data: JSON.stringify({"url" : data().link[index].url}),
-                                         contentType: "application/json",
-                                         dataType: "json",
-                                         success: function(res){
-                                           data().link[index].filesize = res.size;
-                                           console.log(data().link[index])
-                                           m.redraw();
-                                         }
-                                       });
-                                     }}
-                                     value={el.url}
-                              /><div className="form-control-line"></div>
-                            </div>
-                            <div className="col-sm-2">
-                              <input type="text" className="form-control"   placeholder="Short Url"
-                                     onchange={function(item){
-                                       data().link[index].shortUrl = $(item.target).val();
-                                     }}
-                                     value={el.shortUrl}
-                              /><div className="form-control-line"></div>
-                            </div>
-                            <div className="col-sm-3">
-                              <input type="text" className="form-control" id="" placeholder="File name"
-                                     onchange={function(item){
-                                       data().link[index].filename = $(item.target).val();
-                                     }}
-                                     value={el.filename}
-                              /><div className="form-control-line"></div>
-                            </div>
-                            <div className="col-sm-2">
-                              <input disabled type="number" className="form-control" id="" placeholder="File size"
-                                     value={(el.filesize>0)?(el.filesize):""}
-                              /><div className="form-control-line"></div>
-                            </div>
-                            <div className="col-sm-1">
-                              <button type="button" className="btn btn-floating-action"
-                                onclick={function(){
-                                  data().link.splice(index, 1);
-                                }}
-                              ><i className="glyphicon glyphicon-remove"></i></button>
-                            </div>
-                          </div>
-                      )
-                    })
-                  
-                ]}
+                </div>
   
-                <button type="button" className="btn ink-reaction btn-flat btn-primary btn-loading-state" style="float: right"
-                  onclick={function(el){
-                    data().link.push(
-                        {
-                          "url": "",
-                          "shortUrl": "",
-                          "filename": "",
-                          "filesize" : 0
-                        }
-                    )
-                  }}
-                >Add new file</button>
+                <div className="row">
+                  <label htmlFor="" className="col-sm-2 control-label">Ảnh đại diện</label>
+                  <div className="col-sm-3">
+                    <button type="button" className="btn" style="float:left" data-toggle="modal" data-target="#uploadImage">Up ảnh</button>
+                    <button type="button" className="btn" style="float: left; margin-left: 5px;" data-toggle="modal" data-target="#selectImage"
+                            onclick={function(){
+                              ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
+                            }}
+                    >Chọn ảnh</button>
+                  </div>
+                  <div className="col-sm-2 control-label">
+                    {(data().image.length>0)?[
+                      <img src={"/cover/get/" + data().image._id} alt={data().image.alt}
+                           style="cursor: pointer"
+                           onclick={function(){
+                             ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
+                             ctrl.showImgList = true;
+    
+                           }}
+                      />
+                    ]:(
+                        <img src="http://localhost:9000/assets/images/laptop.jpg" width="150" height="150" alt=""/>
+                    )}
+                    
+                  </div>
+                </div>
                 
               </form>
             </div>
           </div>
-          
-          <div className="row">
-            <div className="col-md-6">
-              <div className="card">
-                <div className="card-body">
-                  <div id="editor"
-                       
-                   config = {
-                     function(el, initOK ){
-                         if(!initOK) {
-                           var editor = ace.edit("editor");
-                           editor.getSession().on('change', function () {
-                             data().content = editor.getSession().getValue();
-                             m.redraw();
-                           });
-                           {/*input(editor.getSession().getValue());*/}
-                           data().content = editor.getSession().getValue()
-                           m.redraw();
-                           editor.$blockScrolling = Infinity;
-                           editor.setOptions({
-                             maxLines: Infinity,
-                             wrap: true
-                           });
-                           editor.focus();
   
-                           document.getElementById('editor').style.fontSize='14px';
-                           document.getElementById('editor').style.lineHeight='20px';
   
-                           fn.setupAce(editor);
-                           
-                         }
-                      }
-                    }
-                       
-                  >
-                    {data().content}
-                  </div>
+          <div id="uploadImage" className="modal fade" role="dialog"
+          >
+            <div className="modal-dialog uploadImage">
+              <div className="modal-content ">
+                <div className="modal-header">
+                  <button type="button" className="close" data-dismiss="modal">&times;</button>
+                  <h4 className="modal-title">upload Image!</h4>
+                </div>
+                <div className="modal-body">
+                  <input id="file-0a" class="file" type="file" multiple  data-max-file-count="5" data-upload-url="/upload/image"/>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
               </div>
-              
+    
             </div>
+          </div>
   
   
-            <div className="col-md-6">
-              <div className="card">
-                <div id="render" className="card-body">
-                  {
-                    m("div", m.trust(marked(data().content)))
-                  }
+          <div id="selectImage" className="modal fade" role="dialog">
+            <div className="modal-dialog uploadImage">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <button type="button" className="close" data-dismiss="modal">&times;</button>
+                  <h4 className="modal-title">select Image!</h4>
                 </div>
-              </div>
-  
-            </div>
-            
-          </div>
-          <div className="row">
-            
-          </div>
-  
-          <div className="offcanvas">
-            <div id="offcanvas-demo-size4" className={"offcanvas-pane width-12 " + (ctrl.showImgList?"active":"")} style={"width: 800px; " + (ctrl.showImgList?"transform: translate(-800px, 0px)":(""))}>
-            <div className="offcanvas-head">
-              <header>Images controller </header>
-              <div className="offcanvas-tools">
-                <a className="btn btn-icon-toggle btn-default-light pull-right" data-dismiss="offcanvas"
-                  onclick={function(){
-                    ctrl.showImgList = false;
-                  }}
-                >
-                  <i className="md md-close"></i>
-                </a>
-              </div>
-            </div>
-            <div className="nano has-scrollbar" style="height: 90vh;">
-              <div className="nano-content" tabindex="0" style="right: -15px;">
-                <div className="offcanvas-body">
-                  <div className="card-body">
-                    {ctrl.imgList().map(function(el){
-                      return <a href="javascript:void(0)"
-                        onclick={function(){
-                          data().cover.id=el.id;
-                          data().cover.alt=el.filename;
-                          ctrl.showImgList = false;
-                        }
-                        }
-                      ><img  src={"/cover/get/" + el.id} alt={el.filename}/></a>
+                <div className="modal-body clearfix">
+                    {ctrl.imgList().map(function(item){
+                      return (
+                          <div class="col-lg-2 col-md-3 col-xs-4 thumb">
+                            <a class="thumbnail" href="javascript:void(0)">
+                              <img class="img-responsive" src={"/cover/get/" + item._id} alt=""/>
+                            </a>
+                          </div>
+                      )
                     })}
-                  </div>
-                  
-                  
-                  
-                  <div className="card-body">
-                    <div className="btn-group">
-                      <button type="button" className="btn ink-reaction btn-default-bright">1</button>
-                      <button type="button" className="btn ink-reaction btn-default-bright">2</button>
-                      <button type="button" className="btn ink-reaction btn-default-bright">3</button>
-                      <button type="button" className="btn ink-reaction btn-default-bright">4</button>
-                      <button type="button" className="btn ink-reaction btn-default-bright">5</button>
-                      <button type="button" className="btn ink-reaction btn-default-bright">6</button>
-                      <input className="btn ink-reaction btn-default-bright" name="file" id="file" type="file" accept="/image/*"
-                        onchange={function(){
-                          var file = $('#file').get(0).files[0];
-                          var formData = new FormData();
-                          formData.append('file', file);
-                          $.ajax({
-                            url: '/upload/image',
-                            data: formData,
-                            type: 'POST',
-                            contentType: false,
-                            processData: false,
-                            beforeSend: function (data) {
-                              alert('Are you sure you want to upload image?');
-                            },
-                            success: function (data) {
-                              ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                              alert(textStatus + ': ' + errorThrown);
-                            }
-                          });
-                        }}
-                      />
-                  
-                    </div>
-                  </div>
-                
+                </div>
+                <div className="modal-footer">
+                  <div>footer</div>
                 </div>
               </div>
-            </div>
+    
             </div>
           </div>
-        
           
         </div>
       </section>
@@ -387,6 +219,18 @@ var NewProduct = function(ctrl){
 }
 
 
-
+var list =[
+    "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1"
+]
 
 module.exports = NewProduct;

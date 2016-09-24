@@ -11,7 +11,7 @@ import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 
 case class Image(
-  id: String,
+  _id: String,
   filename: String,
   contentType: Option[String],
   path: String,

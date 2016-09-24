@@ -75,38 +75,4 @@ class Admin @Inject() (
     }
   }
 
-  def uploadImage = Action.async(parse.multipartFormData) { implicit request =>
-    val uuid = UUID.randomUUID().toString
-    request.body.file("file").map { picture =>
-      import java.io.File
-      val filename = picture.filename
-      val contentType = picture.contentType
-      val path = s"/home/lvl/image/$uuid.jpg"
-      resize(picture.ref.moveTo(new File(path)))
-      val image = models.Image(
-        id = uuid,
-        filename = filename,
-        contentType = contentType,
-        path = path
-      )
-      imageService.save(image)
-      Future.successful(Ok("File uploaded"))
-    }.getOrElse {
-      Future.successful(BadRequest("error"))
-    }
-  }
-
-  def listImage(page: Int) = Action.async { implicit request =>
-    imageService.getList(page).map { images =>
-      Ok(Json.toJson(images))
-    }
-  }
-
-  private def resize(file: File) = {
-
-    import com.sksamuel.scrimage._
-    implicit val writer = JpegWriter().withCompression(80).withProgressive(true)
-    scrimage.Image.fromFile(file).scaleTo(94, 128, Bicubic).output(file)
-  }
-
 }

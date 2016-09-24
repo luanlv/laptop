@@ -938,24 +938,16 @@ var fn = require('./fn.msx');
 
 var input = m.prop("");
 var data = m.prop({
-  "id" : "",
-  "title": "new file",
-  "categories": ["1", "2"],
-  "time": 1464226633054,
-  "description" : "abc",
-  "link": [
-    {
-        "url": "",
-        "shortUrl": "",
-        "filename": "",
-        "filesize" : 0
-    }
+  "_id" : "",
+  "name": "",
+  "categories": [],
+  "price": 0,
+  "extra": "",
+  "available": false,
+  "guarantee": 12,
+  "image" : [
   ],
-  "content": "## Noi dung",
-  "cover" : {
-    "id" : "ec97531f-6aa0-4374-87d4-77b6a030a854",
-    "alt" : "anh dai dien"
-  }
+  "info": String
 });
 
 var NewProduct = function(ctrl){
@@ -970,346 +962,186 @@ var NewProduct = function(ctrl){
                 
                 {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised btn-primary", style:"float: right", 
                   onclick:function(){
-                    {/*console.log(data());*/}
-                    delete data().time;
-                    $.ajax({
-                      type: "POST",
-                      url: "/admin/post",
-                      data: JSON.stringify(data()),
-                      contentType: "application/json",
-                      dataType: "json",
-                      success: function(data){
-                      }
-                    });
+                    console.log(data())
+                    {/*$.ajax({*/}
+                      {/*type: "POST",*/}
+                      {/*url: "/admin/post",*/}
+                      {/*data: JSON.stringify(data()),*/}
+                      {/*contentType: "application/json",*/}
+                      {/*dataType: "json",*/}
+                      {/*success: function(data){*/}
+                      {/*}*/}
+                    {/*});*/}
                     
                   }
-                }, children: ["Publish"]}, 
+                }, children: ["Thêm laptop"]}, 
+                
                 {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised", style:"float: right; margin-right: 20px;"}, children: ["Save"]}, 
+                
                 {tag: "br", attrs: {}}, 
                 {tag: "br", attrs: {}}, 
   
                 {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"url", className:"col-sm-2 control-label"}, children: ["Url"]}, 
+                  {tag: "label", attrs: {htmlFor:"url", className:"col-sm-2 control-label"}, children: ["Url :"]}, 
                   {tag: "div", attrs: {className:"col-sm-10"}, children: [
-                    (data().id === undefined)?(
-                        {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"title"}}
-                    ):(
-                        {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"title", 
-                               onchange:function(el){
-                                 data().id = $(el.target).val()
-                               }, 
-                               value:data().id}
-                        }
-                    ), 
+                    {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"title", 
+                           onchange:function(el){
+                             data()._id = $(el.target).val()
+                           }, 
+                           value:data()._id}
+                    }, 
                     {tag: "div", attrs: {className:"form-control-line"}}
                   ]}
                 ]}, 
                 
                 {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"title", className:"col-sm-2 control-label"}, children: ["Title"]}, 
+                  {tag: "label", attrs: {htmlFor:"title", className:"col-sm-2 control-label"}, children: ["Tên laptop :"]}, 
                   {tag: "div", attrs: {className:"col-sm-10"}, children: [
-                    (data().title === undefined)?(
-                        {tag: "input", attrs: {type:"text", className:"form-control", id:"title", name:"title"}}
-                    ):(
-                        {tag: "input", attrs: {type:"text", className:"form-control", id:"title", name:"title", 
-                        onchange:function(el){
-                          data().title = $(el.target).val();
-                          data().id = fn.slug(data().title);
-                        }, 
-                        value:data().title}
-                        }
-                    ), 
-                    {tag: "div", attrs: {className:"form-control-line"}}
-                  ]}
-                ]}, 
-  
-                {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"date", className:"col-sm-2 control-label"}, children: ["Upload Date"]}, 
-                  {tag: "div", attrs: {className:"col-sm-2"}, children: [
-                    {tag: "input", attrs: {type:"date", className:"form-control", id:"date", disabled:true,
-                       value:(data().time !== undefined)?(moment.unix(data().time/1000).format("YYYY-MM-DD")):(moment().format("YYYY-MM-DD"))}
+                    {tag: "input", attrs: {type:"text", className:"form-control", id:"title", name:"title", 
+                    onchange:function(el){
+                      data().name = $(el.target).val();
+                      data()._id = fn.slug(data().name);
+                    }, 
+                    value:data().name}
                     }, 
                     {tag: "div", attrs: {className:"form-control-line"}}
                   ]}
                 ]}, 
   
                 {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"categories", className:"col-sm-2 control-label"}, children: ["Category"]}, 
+                  {tag: "label", attrs: {htmlFor:"title", className:"col-sm-2 control-label"}, children: ["Loại hàng :"]}, 
                   {tag: "div", attrs: {className:"col-sm-5 control-label"}, children: [
-                    {tag: "select", attrs: {multiple:true,className:"form-control", size:"7", id:"categories", name:"categories", 
-                      onchange:function(el){
-                        data().categories = $(el.target).val();
-                      }
+                    {tag: "select", attrs: {className:"form-control", id:"categories", name:"categories", 
+                            onchange:function(el){
+                              data().extra = $(el.target).val();
+                            }
                     }, children: [
-                      (data().categories === undefined)?[
-                        ctrl.categories().map(function(el){
-                            return {tag: "option", attrs: {
-                                value:el._id
-                            }, children: [" ", el.name, " "]}
-                          })
-                      ]:[
-                        ctrl.categories().map(function(el){
-                          return {tag: "option", attrs: {
-                              value:el._id, 
-                              selected:
-                                (data().categories.indexOf(el._id) >= 0)?"true":""
-                              
-                          }, children: [" ", el.name, " "]}
-                        })
-                      ]
+                      {tag: "option", attrs: {value:"normal", selected:(data().extra == "normal")?"true":""}, children: ["Bình thường"]}, 
+                      {tag: "option", attrs: {value:"hot", selected:(data().extra == "hot")?"true":""}, children: ["Hàng Hot"]}, 
+                      {tag: "option", attrs: {value:"new", selected:(data().extra == "new")?"true":""}, children: ["Hàng mới về"]}, 
+                      {tag: "option", attrs: {value:"sale", selected:(data().extra == "sale")?"true":""}, children: ["Hàng khuyến mãi"]}
                     ]}
-                  ]}, 
-                  /*<label htmlFor="image" className="col-sm-1 control-label">Cover</label>*/
-                  {tag: "div", attrs: {className:"col-sm-2 control-label"}, children: [
-                    {tag: "img", attrs: {src:"/cover/get/" + data().cover.id, alt:data().cover.alt, 
-                      style:"cursor: pointer", 
-                      onclick:function(){
-                        ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
-                        ctrl.showImgList = true;
-                        
-                      }}
-                    }
-                  ]}
-                ]}, 
-                
-                {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"textarea", className:"col-sm-2 control-label"}, children: ["Description"]}, 
-                  {tag: "div", attrs: {className:"col-sm-10"}, children: [
-                    {tag: "textarea", attrs: {name:"textarea", id:"textarea", className:"form-control", rows:"3", placeholder:"", 
-                      config:function(el, isInit, ctx){
-                        if(!isInit) {
-                          $(el).val(data().description)
-                        }
-                      }, 
-                      onchange:function(el){
-                        data().description = $(el.target).val();
-                      }
-                    }}, 
-                    
-                    {tag: "div", attrs: {className:"form-control-line"}}
+  
                   ]}
                 ]}, 
   
-                (data().link === undefined)?[
-                  {tag: "div", attrs: {className:"form-group"}, children: [
-                    {tag: "label", attrs: {htmlFor:"url", className:"col-sm-2 control-label"}, children: ["File 1"]}, 
-                    {tag: "div", attrs: {className:"col-sm-3"}, children: [
-                      {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"url", placeholder:"URL"}}, {tag: "div", attrs: {className:"form-control-line"}}
-                    ]}, 
-                    {tag: "div", attrs: {className:"col-sm-5"}, children: [
-                      {tag: "input", attrs: {type:"text", className:"form-control", id:"", placeholder:"File name"}}, {tag: "div", attrs: {className:"form-control-line"}}
-                    ]}, 
-                    {tag: "div", attrs: {className:"col-sm-2"}, children: [
-                      {tag: "input", attrs: {disabled:true,type:"text", className:"form-control", id:"", placeholder:"File size"}}, {tag: "div", attrs: {className:"form-control-line"}}
+                {tag: "div", attrs: {className:"form-group"}, children: [
+                  {tag: "label", attrs: {htmlFor:"categories", className:"col-sm-2 control-label"}, children: ["Danh mục :"]}, 
+                  {tag: "div", attrs: {className:"col-sm-5 control-label"}, children: [
+                    {tag: "select", attrs: {className:"form-control", id:"categories", name:"categories", 
+                      onchange:function(el){
+                        data().categoriy = $(el.target).val();
+                      }
+                    }, children: [
+                      {tag: "option", attrs: {value:"abc"}, children: ["abc"]}, 
+                      {tag: "option", attrs: {value:"def"}, children: ["def"]}
                     ]}
                   ]}
-                ]:[
-                    data().link.map(function(el, index){
+                  /*<label htmlFor="image" className="col-sm-1 control-label">Cover</label>*/
+                ]}, 
+                
+                {tag: "div", attrs: {className:"form-group"}, children: [
+                  {tag: "label", attrs: {htmlFor:"", className:"col-sm-2 control-label"}, children: ["Tình trạng :"]}, 
+                  {tag: "div", attrs: {className:"col-sm-5 control-label"}, children: [
+                    {tag: "select", attrs: {className:"form-control", id:"categories", name:"categories", 
+                            onchange:function(el){
+                              data().available = ($(el.target).val() == "true")?true:false;
+                            }
+                    }, children: [
+                      {tag: "option", attrs: {value:"true", selected:(data().available == true)?"true":""}, children: ["Còn hàng"]}, 
+                      {tag: "option", attrs: {value:"false", selected:(data().available == false)?"true":""}, children: ["Hết hàng"]}
+                    ]}
+                  ]}
+                ]}, 
+  
+                {tag: "div", attrs: {className:"form-group"}, children: [
+                  {tag: "label", attrs: {htmlFor:"", className:"col-sm-2 control-label"}, children: ["Bảo hành :"]}, 
+                  {tag: "div", attrs: {className:"col-sm-1 control-label"}, children: [
+                    {tag: "input", attrs: {type:"number", 
+                           onchange:function(el){
+                             data().guarantee = $(el.target).val();
+                           }, 
+                           value:data().guarantee}}
+                  ]}
+                ]}, 
+  
+                {tag: "div", attrs: {className:"row"}, children: [
+                  {tag: "label", attrs: {htmlFor:"", className:"col-sm-2 control-label"}, children: ["Ảnh đại diện"]}, 
+                  {tag: "div", attrs: {className:"col-sm-3"}, children: [
+                    {tag: "button", attrs: {type:"button", className:"btn", style:"float:left", "data-toggle":"modal", "data-target":"#uploadImage"}, children: ["Up ảnh"]}, 
+                    {tag: "button", attrs: {type:"button", className:"btn", style:"float: left; margin-left: 5px;", "data-toggle":"modal", "data-target":"#selectImage", 
+                            onclick:function(){
+                              ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
+                            }
+                    }, children: ["Chọn ảnh"]}
+                  ]}, 
+                  {tag: "div", attrs: {className:"col-sm-2 control-label"}, children: [
+                    (data().image.length>0)?[
+                      {tag: "img", attrs: {src:"/cover/get/" + data().image._id, alt:data().image.alt, 
+                           style:"cursor: pointer", 
+                           onclick:function(){
+                             ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
+                             ctrl.showImgList = true;
+    
+                           }}
+                      }
+                    ]:(
+                        {tag: "img", attrs: {src:"http://localhost:9000/assets/images/laptop.jpg", width:"150", height:"150", alt:""}}
+                    )
+                    
+                  ]}
+                ]}
+                
+              ]}
+            ]}
+          ]}, 
+  
+  
+          {tag: "div", attrs: {id:"uploadImage", className:"modal fade", role:"dialog"
+          }, children: [
+            {tag: "div", attrs: {className:"modal-dialog uploadImage"}, children: [
+              {tag: "div", attrs: {className:"modal-content "}, children: [
+                {tag: "div", attrs: {className:"modal-header"}, children: [
+                  {tag: "button", attrs: {type:"button", className:"close", "data-dismiss":"modal"}, children: ["×"]}, 
+                  {tag: "h4", attrs: {className:"modal-title"}, children: ["upload Image!"]}
+                ]}, 
+                {tag: "div", attrs: {className:"modal-body"}, children: [
+                  {tag: "input", attrs: {id:"file-0a", class:"file", type:"file", multiple:true,"data-max-file-count":"5", "data-upload-url":"/upload/image"}}
+                ]}, 
+                {tag: "div", attrs: {className:"modal-footer"}, children: [
+                  {tag: "button", attrs: {type:"button", className:"btn btn-default", "data-dismiss":"modal"}, children: ["Close"]}
+                ]}
+              ]}
+    
+            ]}
+          ]}, 
+  
+  
+          {tag: "div", attrs: {id:"selectImage", className:"modal fade", role:"dialog"}, children: [
+            {tag: "div", attrs: {className:"modal-dialog uploadImage"}, children: [
+              {tag: "div", attrs: {className:"modal-content"}, children: [
+                {tag: "div", attrs: {className:"modal-header"}, children: [
+                  {tag: "button", attrs: {type:"button", className:"close", "data-dismiss":"modal"}, children: ["×"]}, 
+                  {tag: "h4", attrs: {className:"modal-title"}, children: ["select Image!"]}
+                ]}, 
+                {tag: "div", attrs: {className:"modal-body clearfix"}, children: [
+                    ctrl.imgList().map(function(item){
                       return (
-                          {tag: "div", attrs: {className:"form-group"}, children: [
-                            {tag: "label", attrs: {htmlFor:"url" + (index+1), className:"col-sm-2 control-label"}, children: ["File ", index + 1]}, 
-                            {tag: "div", attrs: {className:"col-sm-2"}, children: [
-                              {tag: "input", attrs: {type:"text", className:"form-control", id:"url" + (index+1), name:"url" + (index+1), placeholder:"URL", 
-                                     onchange:function(item){
-                                       data().link[index].url = $(item.target).val();
-                                       $.ajax({
-                                         type: "POST",
-                                         url: "/file/getSize",
-                                         data: JSON.stringify({"url" : data().link[index].url}),
-                                         contentType: "application/json",
-                                         dataType: "json",
-                                         success: function(res){
-                                           data().link[index].filesize = res.size;
-                                           console.log(data().link[index])
-                                           m.redraw();
-                                         }
-                                       });
-                                     }, 
-                                     value:el.url}
-                              }, {tag: "div", attrs: {className:"form-control-line"}}
-                            ]}, 
-                            {tag: "div", attrs: {className:"col-sm-2"}, children: [
-                              {tag: "input", attrs: {type:"text", className:"form-control", placeholder:"Short Url", 
-                                     onchange:function(item){
-                                       data().link[index].shortUrl = $(item.target).val();
-                                     }, 
-                                     value:el.shortUrl}
-                              }, {tag: "div", attrs: {className:"form-control-line"}}
-                            ]}, 
-                            {tag: "div", attrs: {className:"col-sm-3"}, children: [
-                              {tag: "input", attrs: {type:"text", className:"form-control", id:"", placeholder:"File name", 
-                                     onchange:function(item){
-                                       data().link[index].filename = $(item.target).val();
-                                     }, 
-                                     value:el.filename}
-                              }, {tag: "div", attrs: {className:"form-control-line"}}
-                            ]}, 
-                            {tag: "div", attrs: {className:"col-sm-2"}, children: [
-                              {tag: "input", attrs: {disabled:true,type:"number", className:"form-control", id:"", placeholder:"File size", 
-                                     value:(el.filesize>0)?(el.filesize):""}
-                              }, {tag: "div", attrs: {className:"form-control-line"}}
-                            ]}, 
-                            {tag: "div", attrs: {className:"col-sm-1"}, children: [
-                              {tag: "button", attrs: {type:"button", className:"btn btn-floating-action", 
-                                onclick:function(){
-                                  data().link.splice(index, 1);
-                                }
-                              }, children: [{tag: "i", attrs: {className:"glyphicon glyphicon-remove"}}]}
+                          {tag: "div", attrs: {class:"col-lg-2 col-md-3 col-xs-4 thumb"}, children: [
+                            {tag: "a", attrs: {class:"thumbnail", href:"javascript:void(0)"}, children: [
+                              {tag: "img", attrs: {class:"img-responsive", src:"/cover/get/" + item._id, alt:""}}
                             ]}
                           ]}
                       )
                     })
-                  
-                ], 
-  
-                {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-flat btn-primary btn-loading-state", style:"float: right", 
-                  onclick:function(el){
-                    data().link.push(
-                        {
-                          "url": "",
-                          "shortUrl": "",
-                          "filename": "",
-                          "filesize" : 0
-                        }
-                    )
-                  }
-                }, children: ["Add new file"]}
-                
-              ]}
-            ]}
-          ]}, 
-          
-          {tag: "div", attrs: {className:"row"}, children: [
-            {tag: "div", attrs: {className:"col-md-6"}, children: [
-              {tag: "div", attrs: {className:"card"}, children: [
-                {tag: "div", attrs: {className:"card-body"}, children: [
-                  {tag: "div", attrs: {id:"editor", 
-                       
-                   config:
-                     function(el, initOK ){
-                         if(!initOK) {
-                           var editor = ace.edit("editor");
-                           editor.getSession().on('change', function () {
-                             data().content = editor.getSession().getValue();
-                             m.redraw();
-                           });
-                           {/*input(editor.getSession().getValue());*/}
-                           data().content = editor.getSession().getValue()
-                           m.redraw();
-                           editor.$blockScrolling = Infinity;
-                           editor.setOptions({
-                             maxLines: Infinity,
-                             wrap: true
-                           });
-                           editor.focus();
-  
-                           document.getElementById('editor').style.fontSize='14px';
-                           document.getElementById('editor').style.lineHeight='20px';
-  
-                           fn.setupAce(editor);
-                           
-                         }
-                      }
-                    
-                       
-                  }, children: [
-                    data().content
-                  ]}
+                ]}, 
+                {tag: "div", attrs: {className:"modal-footer"}, children: [
+                  {tag: "div", attrs: {}, children: ["footer"]}
                 ]}
               ]}
-              
-            ]}, 
-  
-  
-            {tag: "div", attrs: {className:"col-md-6"}, children: [
-              {tag: "div", attrs: {className:"card"}, children: [
-                {tag: "div", attrs: {id:"render", className:"card-body"}, children: [
-                  
-                    m("div", m.trust(marked(data().content)))
-                  
-                ]}
-              ]}
-  
-            ]}
-            
-          ]}, 
-          {tag: "div", attrs: {className:"row"}
-            
-          }, 
-  
-          {tag: "div", attrs: {className:"offcanvas"}, children: [
-            {tag: "div", attrs: {id:"offcanvas-demo-size4", className:"offcanvas-pane width-12 " + (ctrl.showImgList?"active":""), style:"width: 800px; " + (ctrl.showImgList?"transform: translate(-800px, 0px)":(""))}, children: [
-            {tag: "div", attrs: {className:"offcanvas-head"}, children: [
-              {tag: "header", attrs: {}, children: ["Images controller "]}, 
-              {tag: "div", attrs: {className:"offcanvas-tools"}, children: [
-                {tag: "a", attrs: {className:"btn btn-icon-toggle btn-default-light pull-right", "data-dismiss":"offcanvas", 
-                  onclick:function(){
-                    ctrl.showImgList = false;
-                  }
-                }, children: [
-                  {tag: "i", attrs: {className:"md md-close"}}
-                ]}
-              ]}
-            ]}, 
-            {tag: "div", attrs: {className:"nano has-scrollbar", style:"height: 90vh;"}, children: [
-              {tag: "div", attrs: {className:"nano-content", tabindex:"0", style:"right: -15px;"}, children: [
-                {tag: "div", attrs: {className:"offcanvas-body"}, children: [
-                  {tag: "div", attrs: {className:"card-body"}, children: [
-                    ctrl.imgList().map(function(el){
-                      return {tag: "a", attrs: {href:"javascript:void(0)", 
-                        onclick:function(){
-                          data().cover.id=el.id;
-                          data().cover.alt=el.filename;
-                          ctrl.showImgList = false;
-                        }
-                        
-                      }, children: [{tag: "img", attrs: {src:"/cover/get/" + el.id, alt:el.filename}}]}
-                    })
-                  ]}, 
-                  
-                  
-                  
-                  {tag: "div", attrs: {className:"card-body"}, children: [
-                    {tag: "div", attrs: {className:"btn-group"}, children: [
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["1"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["2"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["3"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["4"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["5"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["6"]}, 
-                      {tag: "input", attrs: {className:"btn ink-reaction btn-default-bright", name:"file", id:"file", type:"file", accept:"/image/*", 
-                        onchange:function(){
-                          var file = $('#file').get(0).files[0];
-                          var formData = new FormData();
-                          formData.append('file', file);
-                          $.ajax({
-                            url: '/upload/image',
-                            data: formData,
-                            type: 'POST',
-                            contentType: false,
-                            processData: false,
-                            beforeSend: function (data) {
-                              alert('Are you sure you want to upload image?');
-                            },
-                            success: function (data) {
-                              ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                              alert(textStatus + ': ' + errorThrown);
-                            }
-                          });
-                        }}
-                      }
-                  
-                    ]}
-                  ]}
-                
-                ]}
-              ]}
-            ]}
+    
             ]}
           ]}
-        
           
         ]}
       ]}
@@ -1323,7 +1155,19 @@ var NewProduct = function(ctrl){
 }
 
 
-
+var list =[
+    "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1"
+]
 
 module.exports = NewProduct;
 },{"./fn.msx":11}],10:[function(require,module,exports){

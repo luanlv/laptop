@@ -8,6 +8,7 @@ import com.mohiva.play.silhouette.api.{ LogoutEvent, Silhouette }
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import com.sksamuel.scrimage
 import com.sksamuel.scrimage.ScaleMethod.Bicubic
+import com.sksamuel.scrimage.nio.JpegWriter
 import models.Image
 import models.services.ImageService
 import play.api.libs.json.Json
@@ -40,6 +41,39 @@ class ImageController @Inject() (
       file,
       inline = true
     )
+  }
+
+  def listImage(page: Int) = Action.async { implicit request =>
+    imageService.getList(page).map { images =>
+      Ok(Json.toJson(images))
+    }
+  }
+
+  def upload = Action(parse.multipartFormData) { request =>
+    val uuid = UUID.randomUUID().toString
+    request.body.file("file_data").map { picture =>
+      import java.io.File
+      val filename = picture.filename
+      val contentType = picture.contentType
+      val path = s"/home/lvl/image/$uuid.jpg"
+      resize(picture.ref.moveTo(new File(path)))
+      val image = models.Image(
+        _id = uuid,
+        filename = filename,
+        contentType = contentType,
+        path = path
+      )
+      imageService.save(image)
+      Ok(Json.obj("status" -> "File uploaded!"))
+    }.getOrElse {
+      Ok(Json.obj("error" -> "You are not allowed to upload such a file."))
+    }
+  }
+
+  private def resize(file: File) = {
+    import com.sksamuel.scrimage._
+    implicit val writer = JpegWriter().withProgressive(true)
+    scrimage.Image.fromFile(file).scaleTo(500, 500, Bicubic).output(file)
   }
 
 }

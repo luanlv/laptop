@@ -194,3 +194,8 @@
 .postContent button::-moz-focus-inner, #render button::-moz-focus-inner {
   padding: 0;
   border: 0; }
+
+
+.uploadImage {
+  width: 90% !important;
+}

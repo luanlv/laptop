@@ -18,8 +18,8 @@ GET /admin/category/listParent controllers.CategoryController.listParent
 
 
 GET   /cover/get/:id  controllers.ImageController.getCover(id: String)
-GET   /image/list/:page   controllers.Admin.listImage(page: Int)
-POST  /upload/image controllers.Admin.uploadImage
+GET   /image/list/:page   controllers.ImageController.listImage(page: Int)
+POST  /upload/image controllers.ImageController.upload
 
 POST  /file/getSize   controllers.FileController.getSize
 
