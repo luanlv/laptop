@@ -18,7 +18,8 @@ m.route(document.querySelector('#app'), "/", {
   "/newProduct": Main.NewProduct,
   "/newArticle": Main.NewArticle,
   "/category/create": Main.NewCategory,
-  "/setup/category": Main.SetupCategoryController
+  "/setup/category": Main.SetupCategoryController,
+  "/setup/nav": Main.SetupCategoryController
 });
 
 // m.route('/menu');
@@ -193,7 +194,7 @@ var CreateMenu = function(ctrl){
                         $(document).on('click', '#update', (function(){
                           var request = $.ajax({
                             type: "POST",
-                            url: "/setup/category",
+                            url: "/setup/" + ctrl.setupID,
                             data: ctrl.domenu.toJson(),
                             contentType: "application/json; charset=utf-8",
                             dataType: "text"
@@ -445,7 +446,7 @@ var Menu = function(ctrl){
             {tag: "a", attrs: {href:"/admin#/newProduct"
             }, children: [
               {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-web"}}]}, 
-              {tag: "span", attrs: {className:"title"}, children: ["New Product"]}
+              {tag: "span", attrs: {className:"title"}, children: ["Thêm laptop"]}
             ]}
           ]}, 
   
@@ -461,7 +462,7 @@ var Menu = function(ctrl){
             {tag: "a", attrs: {href:"/admin#/category/create"
             }, children: [
               {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-web"}}]}, 
-              {tag: "span", attrs: {className:"title"}, children: ["New Category"]}
+              {tag: "span", attrs: {className:"title"}, children: ["Thêm danh mục"]}
             ]}
           ]}, 
   
@@ -471,8 +472,15 @@ var Menu = function(ctrl){
               {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-web"}}]}, 
               {tag: "span", attrs: {className:"title"}, children: ["Menu sản phẩm"]}
             ]}
+          ]}, 
+  
+          {tag: "li", attrs: {}, children: [
+            {tag: "a", attrs: {href:"/admin#/setup/nav"
+            }, children: [
+              {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-web"}}]}, 
+              {tag: "span", attrs: {className:"title"}, children: ["Menu chính"]}
+            ]}
           ]}
-          
           
         ]}, 
         
@@ -1720,20 +1728,19 @@ MenuController.controller = function(){
   ctrl.showImgList = false;
   ctrl.imgList = m.prop([]);
   ctrl.menu = m.prop([]);
-  
+  ctrl.setupID = (m.route() == "/setup/category")?"category":"nav";
   ctrl.setup = function(){
-      console.log(ctrl.menu())
       ctrl.domenu = $('#domenu-0').domenu({
         onDomenuInitialized: [function() {
           console.log('event: onDomenuInitialized', 'arguments:', arguments, 'context:', this);
         }],
-        maxDepth: 2,
+        maxDepth: (ctrl.setupID == "category")?2:1,
         data: JSON.stringify(ctrl.menu())
       }).parseJson()
     
   };
   
-  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/setup/category"}, ctrl.menu, ctrl.setup);
+  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/setup/" + ctrl.setupID}, ctrl.menu, ctrl.setup);
   // ctrl.menu = [{"title":"SẢN PHẨM PHẦN CỨNG","http":"/c/sp-phan-cung","parent":"NONE","children":[{"title":"CBUS","http":"/c/sp-phan-cung/cbus","parent":"sp-phan-cung","children":[{"title":"CBUS HOST","http":"/c/sp-phan-cung/cbus/cbus-host","parent":"CBUS"},{"title":"cBUS AddOn","http":"/c/sp-phan-cung/cbus/cbus-addon","parent":"cbus"}]}]},{"title":"Development Board","http":"/c/sp-phan-cung/development-board","parent":"sp-phan-cung","children":[{"title":"Microcontroller","http":"/c/sp-phan-cung/development-board/microcontroller","parent":"development-board"},{"title":"Arduino","http":"/c/sp-phan-cung/development-board/arduino","parent":"development-board"},{"title":"ARM","http":"/c/sp-phan-cung/development-board/arm","parent":"development-board"}]}]
   // ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
   

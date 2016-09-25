@@ -37,7 +37,7 @@ var Menu = function(ctrl){
             <a href="/admin#/newProduct"
             >
               <div className="gui-icon"><i className="md md-web"></i></div>
-              <span className="title">New Product</span>
+              <span className="title">Thêm laptop</span>
             </a>
           </li>
   
@@ -53,7 +53,7 @@ var Menu = function(ctrl){
             <a href="/admin#/category/create"
             >
               <div className="gui-icon"><i className="md md-web"></i></div>
-              <span className="title">New Category</span>
+              <span className="title">Thêm danh mục</span>
             </a>
           </li>
   
@@ -64,7 +64,14 @@ var Menu = function(ctrl){
               <span className="title">Menu sản phẩm</span>
             </a>
           </li>
-          
+  
+          <li>
+            <a href="/admin#/setup/nav"
+            >
+              <div className="gui-icon"><i className="md md-web"></i></div>
+              <span className="title">Menu chính</span>
+            </a>
+          </li>
           
         </div>
         

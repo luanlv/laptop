@@ -34,14 +34,14 @@ class SetupController @Inject() (
   implicit val webJarAssets: WebJarAssets)
   extends Controller with I18nSupport {
 
-  def postSetupCategory = Action(parse.json) { implicit request =>
+  def postSetup(setupID: String) = Action(parse.json) { implicit request =>
     request.body.asOpt[JsValue].map { category =>
       {
-        var newSetupCategory = SetupCategory(
-          _id = "category",
+        var newSetup = SetupCategory(
+          _id = setupID,
           value = category.as[List[CategoryMenu]]
         )
-        setupCategoryService.save(newSetupCategory)
+        setupCategoryService.save(newSetup)
         Ok("ok")
       }
     }.getOrElse {
@@ -49,12 +49,12 @@ class SetupController @Inject() (
     }
   }
 
-  def getSetupCategory = Action.async { implicit request =>
+  def getSetup(setupID: String) = Action.async { implicit request =>
 
-    setupCategoryService.retrieve("category").map { category =>
-      category match {
-        case Some(category) => {
-          Ok(Json.toJson(category.value))
+    setupCategoryService.retrieve(setupID).map { opSetup =>
+      opSetup match {
+        case Some(opSetup) => {
+          Ok(Json.toJson(opSetup.value))
         }
         case None => Ok(Json.toJson(JsArray()))
       }

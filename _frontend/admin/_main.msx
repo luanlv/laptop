@@ -17,7 +17,8 @@ m.route(document.querySelector('#app'), "/", {
   "/newProduct": Main.NewProduct,
   "/newArticle": Main.NewArticle,
   "/category/create": Main.NewCategory,
-  "/setup/category": Main.SetupCategoryController
+  "/setup/category": Main.SetupCategoryController,
+  "/setup/nav": Main.SetupCategoryController
 });
 
 // m.route('/menu');
