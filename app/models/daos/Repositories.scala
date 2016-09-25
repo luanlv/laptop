@@ -28,6 +28,15 @@ class SetupCategoryRepository @Inject() (reactiveMongoApi: ReactiveMongoApi) ext
 
   ensureIndexes
 }
+@Singleton
+class IndexProductRepository @Inject() (reactiveMongoApi: ReactiveMongoApi) extends DocumentDao[IndexProduct](reactiveMongoApi) with Repository[IndexProduct] {
+
+  override def collectionName = "indexProduct"
+
+  override def ensureIndexes: Future[Boolean] = ensureIndex(List(), unique = true)
+
+  ensureIndexes
+}
 
 @Singleton
 class UserRepository @Inject() (reactiveMongoApi: ReactiveMongoApi) extends DocumentDao[User](reactiveMongoApi) with Repository[User] {

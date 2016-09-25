@@ -241,3 +241,25 @@ body .backdrop{
   min-height: 50px !important;
 }
 
+.drag-n-drop li {
+  border: 1px solid #666;
+  border-radius: 10px;
+  padding: 5px 10px;
+  background: #ddd;
+  margin-top: 3px;
+}
+
+.drag-n-drop li:hover {
+  cursor: move;
+}
+
+.drag-n-drop li div.edit, .drag-n-drop li div.delete {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 0 5px;
+  margin-left: 10px;
+}
+
+.drag-n-drop li div.edit:hover, .drag-n-drop li div.delete:hover {
+  background: blue;
+}

@@ -15,6 +15,9 @@ POST  /admin/product controllers.ProductController.newProduct
 POST  /setup/:setupID controllers.SetupController.postSetup(setupID: String)
 GET  /setup/:setupID controllers.SetupController.getSetup(setupID: String)
 
+POST  /indexbuild controllers.IndexBuildController.postIndexProduct
+GET  /indexbuild controllers.IndexBuildController.getIndexProduct
+
 GET /admin/category/listcategory controllers.CategoryController.listCategory
 
 

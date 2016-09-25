@@ -7,6 +7,7 @@ Main.NewProduct = require('./main/newproduct.msx');
 Main.NewArticle = require('./main/newarticle.msx');
 Main.NewCategory = require('./main/newcategory.msx');
 Main.SetupCategoryController = require('./main/setup_category_controller.msx');
+Main.IndexController = require('./main/buildindex.msx');
 //Main.Dashboard = require('./main/_dashboard.msx');
 // Main.Product = require('./main/_product.msx');
 // Main.Category = require('./main/_category.msx');
@@ -19,14 +20,15 @@ m.route(document.querySelector('#app'), "/", {
   "/newArticle": Main.NewArticle,
   "/category/create": Main.NewCategory,
   "/setup/category": Main.SetupCategoryController,
-  "/setup/nav": Main.SetupCategoryController
+  "/setup/nav": Main.SetupCategoryController,
+  "/productShow": Main.IndexController
 });
 
 // m.route('/menu');
 
 
 module.exports = Main;
-},{"./main/home.msx":12,"./main/newarticle.msx":13,"./main/newcategory.msx":14,"./main/newproduct.msx":15,"./main/setup_category_controller.msx":16}],2:[function(require,module,exports){
+},{"./main/buildindex.msx":12,"./main/home.msx":14,"./main/newarticle.msx":15,"./main/newcategory.msx":16,"./main/newproduct.msx":17,"./main/setup_category_controller.msx":18}],2:[function(require,module,exports){
 "use strict";
 
 window.token = $(document.getElementsByName("csrfToken")).val();
@@ -270,7 +272,7 @@ var CreateMenu = function(ctrl){
 
 
 module.exports = CreateMenu;
-},{"./fn.msx":11}],5:[function(require,module,exports){
+},{"./fn.msx":13}],5:[function(require,module,exports){
 
 
 var Header = function(ctrl){
@@ -407,6 +409,159 @@ var Header = function(ctrl){
 
 module.exports = Header;
 },{}],6:[function(require,module,exports){
+var fn = require('./fn.msx');
+
+var input = m.prop("");
+var input2 = m.prop("");
+var data = m.prop({
+  "_id" : "",
+  "title": "",
+  "body": "",
+  "tags": ["huong-dan"],
+  "cover": {
+    "id" : "ec97531f-6aa0-4374-87d4-77b6a030a854",
+    "alt" : "anh dai dien"
+  }
+});
+
+var IndexBuilder = function(ctrl){
+  return [
+    {tag: "hr", attrs: {className:"ruler-xxl"}},
+    {tag: "div", attrs: {className:"content"}, children: [
+      {tag: "section", attrs: {}, children: [
+        {tag: "div", attrs: {className:"section-body"}, children: [
+          {tag: "div", attrs: {className:"card"}, children: [
+            {tag: "div", attrs: {className:"card-body"}, children: [
+                {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised btn-primary", style:"float: right", 
+                        onclick:function(){
+                          $.ajax({
+                            type: "POST",
+                            url: "/indexbuild",
+                            data: JSON.stringify(ctrl.items.colors()),
+                            contentType: "application/json",
+                            dataType: "json",
+                            success: function(data){
+                            }
+                          });
+                        }
+                }, children: ["Publish"]}, 
+                {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised", style:"float: right; margin-right: 20px;"}, children: ["Save"]}, 
+                {tag: "br", attrs: {}}, 
+                {tag: "br", attrs: {}}
+            ]}
+          ]}, 
+          
+          {tag: "div", attrs: {className:"row"}, children: [
+            {tag: "div", attrs: {className:"col-md-6"}, children: [
+              {tag: "div", attrs: {className:"card"}, children: [
+                {tag: "div", attrs: {className:"card-body"}, children: [
+                  {tag: "input", attrs: {type:"text", value:input(), 
+                     onchange: m.withAttr("value", input)}
+                  }, 
+                  {tag: "input", attrs: {type:"button", value:"Thêm mới", 
+                    onclick:function(){
+                      ctrl.items.colors().push({"name": input(), listID: []});
+                      input("")
+                    }}
+                  }, 
+                  {tag: "div", attrs: {className:"drag-n-drop"}, children: [
+                    {tag: "ol", attrs: {}, children: [
+                      ctrl.items.colors().map((function(item, i) {
+                        var dragging = (i == ctrl.items.dragging()) ? 'dragging' : '';
+                        return m('li', {
+                          'data-id': i,
+                          class: dragging,
+                          draggable: 'true',
+                          ondragstart: ctrl.dragStart.bind(ctrl),
+                          ondragover: ctrl.dragOver.bind(ctrl),
+                          ondragend: ctrl.dragEnd.bind(ctrl)
+                        }, [ item.name,
+                          {tag: "div", attrs: {className:"edit pull-right", 
+                            onclick:function(){
+                              ctrl.listProduct.product(item.listID)
+                              ctrl.listProduct.name(item.name)
+                            }
+                          }, children: ["Sửa"]},
+                          {tag: "div", attrs: {className:"delete pull-right", 
+                            onclick:function(){
+                              var r = confirm("Xác nhận xóa");
+                              if (r == true) {
+                                ctrl.items.colors().splice(i ,1)
+                              }
+                            }
+                          }, children: ["Xóa"]}
+                        ])
+                      }))
+                      
+                      /*<pre>*/
+                        /*App State: {[JSON.stringify(ctrl.items,0,2)]}*/
+                      /*</pre>*/
+                    ]}
+                  ]}
+                ]}
+              ]}
+              
+            ]}, 
+  
+  
+            {tag: "div", attrs: {className:"col-md-6"}, children: [
+              {tag: "div", attrs: {className:"card"}, children: [
+                {tag: "div", attrs: {className:"card-body"}, children: [
+                  {tag: "div", attrs: {className:"drag-n-drop"}, children: [
+                    
+                    (ctrl.listProduct.name().length > 0)?[{tag: "input", attrs: {type:"text", value:input(), 
+                           onchange: m.withAttr("value", input2)}
+                    },
+                    {tag: "input", attrs: {type:"button", value:"Thêm mới", 
+                           onclick:function(){
+                             ctrl.listProduct.product().push(input2())
+                             input2("")
+                           }}
+                    }]:(""), 
+                    
+                    {tag: "ol", attrs: {}, children: [
+                      ctrl.listProduct.product().map((function(item, i) {
+                        var dragging = (i == ctrl.listProduct.dragging()) ? 'dragging' : '';
+                        return m('li', {
+                          'data-id': i,
+                          class: dragging,
+                          draggable: 'true',
+                          ondragstart: ctrl.dragStart2.bind(ctrl),
+                          ondragover: ctrl.dragOver2.bind(ctrl),
+                          ondragend: ctrl.dragEnd2.bind(ctrl)
+                        }, [ item,
+                          {tag: "div", attrs: {className:"delete pull-right", 
+                               onclick:function(){
+                                 var r = confirm("Xác nhận xóa");
+                                 if (r == true) {
+                                   ctrl.listProduct.product().splice(i ,1)
+                                 }
+                               }
+                          }, children: ["Xóa"]}
+                        ])
+                      }))
+                      
+                      /*<pre>*/
+                      /*App State: {[JSON.stringify(ctrl.items,0,2)]}*/
+                      /*</pre>*/
+                    ]}
+                  ]}
+                ]}
+              ]}
+  
+            ]}
+            
+          ]}
+          
+        ]}
+      ]}
+    ]}
+  ]
+};
+
+
+module.exports = IndexBuilder;
+},{"./fn.msx":13}],7:[function(require,module,exports){
 var Menu = function(ctrl){
   return [
     {tag: "div", attrs: {id:"menubar", className:"menubar-inverse "}, children: [
@@ -497,7 +652,7 @@ var Menu = function(ctrl){
 }
 
 module.exports = Menu;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 var fn = require('./fn.msx');
 
 var input = m.prop("");
@@ -755,7 +910,7 @@ var NewArticle = function(ctrl){
 
 
 module.exports = NewArticle;
-},{"./fn.msx":11}],8:[function(require,module,exports){
+},{"./fn.msx":13}],9:[function(require,module,exports){
 var fn = require('./fn.msx');
 
 var input = m.prop("");
@@ -859,7 +1014,7 @@ var categories = [
 
 
 module.exports = NewCategory;
-},{"./fn.msx":11}],9:[function(require,module,exports){
+},{"./fn.msx":13}],10:[function(require,module,exports){
 var fn = require('./fn.msx');
 
 var input = m.prop("");
@@ -1129,7 +1284,7 @@ var NewProduct = function(ctrl){
 
 
 module.exports = NewProduct;
-},{"./fn.msx":11}],10:[function(require,module,exports){
+},{"./fn.msx":13}],11:[function(require,module,exports){
 var Right = function(ctrl){
   return [
     {tag: "div", attrs: {className:"offcanvas"}, children: [
@@ -1370,7 +1525,120 @@ var Right = function(ctrl){
 };
 
 module.exports = Right;
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
+var IndexController = {};
+var Header = require('./_header.msx');
+var Menu = require('./_menu.msx');
+var Index = require('./_indexbuilder.msx');
+var Right = require('./_right.msx');
+var fn = require('./fn.msx');
+
+var postData = {"ok": "data"}
+
+var Sortable = {};
+
+Sortable.ListItems = function() {
+  this.dragging = m.prop(undefined);
+    this.colors = m.prop([
+  ]);
+};
+
+Sortable.ListItems2 = function() {
+  this.dragging = m.prop(undefined);
+  this.name = m.prop("");
+  this.product = m.prop([
+  ]);
+};
+
+
+IndexController.controller = function(){
+  var ctrl = this;
+  this.items = new Sortable.ListItems();
+  this.listProduct = new Sortable.ListItems2();
+  
+  // ==============================
+  this.sort = function(colors, dragging) {
+    this.items.colors(colors);
+    this.items.dragging(dragging);
+  };
+  this.dragStart = function(e) {
+    this.dragged = Number(e.currentTarget.dataset.id);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', null);
+  };
+  this.dragOver = function(e) {
+    e.preventDefault();
+    var over = e.currentTarget,
+        dragging = this.items.dragging(),
+        from = isFinite(dragging) ? dragging : this.dragged,
+        to = Number(over.dataset.id);
+    if((e.clientY - over.offsetTop) > (over.offsetHeight / 2)) to++;
+    if(from < to) to--;
+    
+    var colors = this.items.colors();
+    colors.splice(to, 0, colors.splice(from, 1)[0]);
+    this.sort(colors, to);
+  };
+  this.dragEnd = function() {
+    this.sort(this.items.colors(), undefined);
+  };
+  // ==============================
+  
+  
+  // ==============================
+  this.sort2 = function(colors, dragging) {
+    this.listProduct.product(colors);
+    this.listProduct.dragging(dragging);
+  };
+  this.dragStart2 = function(e) {
+    this.dragged = Number(e.currentTarget.dataset.id);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', null);
+  };
+  this.dragOver2 = function(e) {
+    e.preventDefault();
+    var over = e.currentTarget,
+        dragging = this.listProduct.dragging(),
+        from = isFinite(dragging) ? dragging : this.dragged,
+        to = Number(over.dataset.id);
+    if((e.clientY - over.offsetTop) > (over.offsetHeight / 2)) to++;
+    if(from < to) to--;
+    
+    var colors = this.listProduct.product();
+    colors.splice(to, 0, colors.splice(from, 1)[0]);
+    this.sort2(colors, to);
+  };
+  this.dragEnd2 = function() {
+    this.sort2(this.listProduct.product(), undefined);
+  };
+  // ==============================
+  
+  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/indexbuild"}, ctrl.items.colors, ctrl.setup);
+  ctrl.setup = function(){
+    m.redraw();
+  }
+};
+
+
+
+IndexController.view = function(ctrl){
+  return  [
+    Header(ctrl),
+    {tag: "div", attrs: {id:"base"}, children: [
+      
+      Index(ctrl), 
+      
+      Menu(ctrl), 
+      
+      Right(ctrl)
+    
+    ]}
+  ]
+};
+
+
+module.exports = IndexController;
+},{"./_header.msx":5,"./_indexbuilder.msx":6,"./_menu.msx":7,"./_right.msx":11,"./fn.msx":13}],13:[function(require,module,exports){
 var Fn = {};
 
 
@@ -1511,7 +1779,7 @@ Fn.getItemByParam = function(list, key, value){
   var length = list.length;
   for(var i=0; i<length; i++){
     if(list[i][key] == value){
-      result = list[i]
+      result = list[i];
       break;
     }
   }
@@ -1531,7 +1799,7 @@ Fn.getIndexByParam = function(list, key, value){
 };
 
 module.exports = Fn;
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var Home = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1559,7 +1827,7 @@ Home.view = function(ctrl){
 
 
 module.exports = Home;
-},{"./_content.msx":3,"./_header.msx":5,"./_menu.msx":6,"./_right.msx":10}],13:[function(require,module,exports){
+},{"./_content.msx":3,"./_header.msx":5,"./_menu.msx":7,"./_right.msx":11}],15:[function(require,module,exports){
 var Article = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1602,7 +1870,7 @@ Article.view = function(ctrl){
 
 
 module.exports = Article;
-},{"./_header.msx":5,"./_menu.msx":6,"./_newarticle.msx":7,"./_right.msx":10,"./fn.msx":11}],14:[function(require,module,exports){
+},{"./_header.msx":5,"./_menu.msx":7,"./_newarticle.msx":8,"./_right.msx":11,"./fn.msx":13}],16:[function(require,module,exports){
 var NewProduct = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1646,7 +1914,7 @@ NewProduct.view = function(ctrl){
 
 
 module.exports = NewProduct;
-},{"./_header.msx":5,"./_menu.msx":6,"./_newcategory.msx":8,"./_right.msx":10,"./fn.msx":11}],15:[function(require,module,exports){
+},{"./_header.msx":5,"./_menu.msx":7,"./_newcategory.msx":9,"./_right.msx":11,"./fn.msx":13}],17:[function(require,module,exports){
 var Product = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1711,7 +1979,7 @@ Product.view = function(ctrl){
 
 
 module.exports = Product;
-},{"./_header.msx":5,"./_menu.msx":6,"./_newproduct.msx":9,"./_right.msx":10,"./fn.msx":11}],16:[function(require,module,exports){
+},{"./_header.msx":5,"./_menu.msx":7,"./_newproduct.msx":10,"./_right.msx":11,"./fn.msx":13}],18:[function(require,module,exports){
 var MenuController = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1766,4 +2034,4 @@ MenuController.view = function(ctrl){
 
 
 module.exports = MenuController;
-},{"./_createSetupCategory.msx":4,"./_header.msx":5,"./_menu.msx":6,"./_right.msx":10,"./fn.msx":11}]},{},[2])
+},{"./_createSetupCategory.msx":4,"./_header.msx":5,"./_menu.msx":7,"./_right.msx":11,"./fn.msx":13}]},{},[2])

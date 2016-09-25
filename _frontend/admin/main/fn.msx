@@ -138,7 +138,7 @@ Fn.getItemByParam = function(list, key, value){
   var length = list.length;
   for(var i=0; i<length; i++){
     if(list[i][key] == value){
-      result = list[i]
+      result = list[i];
       break;
     }
   }
