@@ -5,7 +5,7 @@ import javax.inject.Inject
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import models.{ LightImage, Product }
-import models.services.{ ProductService, SetupService }
+import models.services.{ ProductService }
 import play.api.libs.json.JsObject
 import utils.silhouette.MyEnv
 
@@ -25,7 +25,6 @@ class ProductController @Inject() (
   ws: WSClient,
   val messagesApi: MessagesApi,
   silhouette: Silhouette[MyEnv],
-  setupService: SetupService,
   productService: ProductService,
   socialProviderRegistry: SocialProviderRegistry,
   implicit val webJarAssets: WebJarAssets)

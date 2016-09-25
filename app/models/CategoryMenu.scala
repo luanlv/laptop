@@ -10,22 +10,22 @@ import play.api.libs.json._
 //import reactivemongo.bson.BSONObjectID
 import reactivemongo.bson.BSONObjectID
 
-case class Menu(
+case class CategoryMenu(
   id: Int,
   http: String,
   title: String,
-  children: Option[List[SubMenu]]
+  children: Option[List[SubCategoryMenu]]
 ) extends Identity with TemporalModel {
 
 }
 
-object Menu {
+object CategoryMenu {
   import reactivemongo.play.json.BSONFormats.BSONObjectIDFormat // This is required
-  implicit val subMenuFormat = Json.format[SubMenu]
-  implicit val menuFormat = Json.format[Menu]
+  implicit val subSetupCategoryFormat = Json.format[SubCategoryMenu]
+  implicit val setupCategoryFormat = Json.format[CategoryMenu]
 }
 
-case class SubMenu(
+case class SubCategoryMenu(
   id: Int,
   http: String,
   title: String
@@ -33,8 +33,8 @@ case class SubMenu(
 
 }
 
-object SubMenu {
+object SubCategoryMenu {
   import reactivemongo.play.json.BSONFormats.BSONObjectIDFormat // This is required
 
-  implicit val subMenuFormat = Json.format[SubMenu]
+  implicit val subMenuFormat = Json.format[SubCategoryMenu]
 }

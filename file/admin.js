@@ -6,7 +6,7 @@ Main.Home = require('./main/home.msx');
 Main.NewProduct = require('./main/newproduct.msx');
 Main.NewArticle = require('./main/newarticle.msx');
 Main.NewCategory = require('./main/newcategory.msx');
-Main.MenuController = require('./main/menucontroller.msx');
+Main.SetupCategoryController = require('./main/setup_category_controller.msx');
 //Main.Dashboard = require('./main/_dashboard.msx');
 // Main.Product = require('./main/_product.msx');
 // Main.Category = require('./main/_category.msx');
@@ -18,14 +18,14 @@ m.route(document.querySelector('#app'), "/", {
   "/newProduct": Main.NewProduct,
   "/newArticle": Main.NewArticle,
   "/category/create": Main.NewCategory,
-  "/menu": Main.MenuController
+  "/setup/category": Main.SetupCategoryController
 });
 
 // m.route('/menu');
 
 
 module.exports = Main;
-},{"./main/home.msx":12,"./main/menucontroller.msx":13,"./main/newarticle.msx":14,"./main/newcategory.msx":15,"./main/newproduct.msx":16}],2:[function(require,module,exports){
+},{"./main/home.msx":12,"./main/newarticle.msx":13,"./main/newcategory.msx":14,"./main/newproduct.msx":15,"./main/setup_category_controller.msx":16}],2:[function(require,module,exports){
 "use strict";
 
 window.token = $(document.getElementsByName("csrfToken")).val();
@@ -193,7 +193,7 @@ var CreateMenu = function(ctrl){
                         $(document).on('click', '#update', (function(){
                           var request = $.ajax({
                             type: "POST",
-                            url: "/admin/menu",
+                            url: "/setup/category",
                             data: ctrl.domenu.toJson(),
                             contentType: "application/json; charset=utf-8",
                             dataType: "text"
@@ -466,10 +466,10 @@ var Menu = function(ctrl){
           ]}, 
   
           {tag: "li", attrs: {}, children: [
-            {tag: "a", attrs: {href:"/admin#/menu"
+            {tag: "a", attrs: {href:"/admin#/setup/category"
             }, children: [
               {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-web"}}]}, 
-              {tag: "span", attrs: {className:"title"}, children: ["Menu"]}
+              {tag: "span", attrs: {className:"title"}, children: ["Menu sản phẩm"]}
             ]}
           ]}
           
@@ -1552,62 +1552,6 @@ Home.view = function(ctrl){
 
 module.exports = Home;
 },{"./_content.msx":3,"./_header.msx":5,"./_menu.msx":6,"./_right.msx":10}],13:[function(require,module,exports){
-var MenuController = {};
-var Header = require('./_header.msx');
-var Menu = require('./_menu.msx');
-var CreateMenu = require('./_createMenu.msx');
-var Right = require('./_right.msx');
-var fn = require('./fn.msx');
-
-var postData = {"ok": "data"};
-
-
-MenuController.controller = function(){
-  console.log("run menu")
-  var ctrl = this;
-  ctrl.showImgList = false;
-  ctrl.imgList = m.prop([]);
-  ctrl.menu = m.prop([]);
-  
-  ctrl.setup = function(){
-      console.log(ctrl.menu())
-      ctrl.domenu = $('#domenu-0').domenu({
-        onDomenuInitialized: [function() {
-          console.log('event: onDomenuInitialized', 'arguments:', arguments, 'context:', this);
-        }],
-        maxDepth: 2,
-        data: JSON.stringify(ctrl.menu())
-      }).parseJson()
-    
-  };
-  
-  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/setup/menu"}, ctrl.menu, ctrl.setup);
-  // ctrl.menu = [{"title":"SẢN PHẨM PHẦN CỨNG","http":"/c/sp-phan-cung","parent":"NONE","children":[{"title":"CBUS","http":"/c/sp-phan-cung/cbus","parent":"sp-phan-cung","children":[{"title":"CBUS HOST","http":"/c/sp-phan-cung/cbus/cbus-host","parent":"CBUS"},{"title":"cBUS AddOn","http":"/c/sp-phan-cung/cbus/cbus-addon","parent":"cbus"}]}]},{"title":"Development Board","http":"/c/sp-phan-cung/development-board","parent":"sp-phan-cung","children":[{"title":"Microcontroller","http":"/c/sp-phan-cung/development-board/microcontroller","parent":"development-board"},{"title":"Arduino","http":"/c/sp-phan-cung/development-board/arduino","parent":"development-board"},{"title":"ARM","http":"/c/sp-phan-cung/development-board/arm","parent":"development-board"}]}]
-  // ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
-  
-  
-};
-
-
-
-MenuController.view = function(ctrl){
-  return  [
-    Header(ctrl),
-    {tag: "div", attrs: {id:"base"}, children: [
-      
-      CreateMenu(ctrl), 
-      
-      Menu(ctrl), 
-      
-      Right(ctrl)
-    
-    ]}
-  ]
-};
-
-
-module.exports = MenuController;
-},{"./_createMenu.msx":4,"./_header.msx":5,"./_menu.msx":6,"./_right.msx":10,"./fn.msx":11}],14:[function(require,module,exports){
 var Article = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1650,7 +1594,7 @@ Article.view = function(ctrl){
 
 
 module.exports = Article;
-},{"./_header.msx":5,"./_menu.msx":6,"./_newarticle.msx":7,"./_right.msx":10,"./fn.msx":11}],15:[function(require,module,exports){
+},{"./_header.msx":5,"./_menu.msx":6,"./_newarticle.msx":7,"./_right.msx":10,"./fn.msx":11}],14:[function(require,module,exports){
 var NewProduct = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1694,7 +1638,7 @@ NewProduct.view = function(ctrl){
 
 
 module.exports = NewProduct;
-},{"./_header.msx":5,"./_menu.msx":6,"./_newcategory.msx":8,"./_right.msx":10,"./fn.msx":11}],16:[function(require,module,exports){
+},{"./_header.msx":5,"./_menu.msx":6,"./_newcategory.msx":8,"./_right.msx":10,"./fn.msx":11}],15:[function(require,module,exports){
 var Product = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1759,4 +1703,60 @@ Product.view = function(ctrl){
 
 
 module.exports = Product;
-},{"./_header.msx":5,"./_menu.msx":6,"./_newproduct.msx":9,"./_right.msx":10,"./fn.msx":11}]},{},[2])
+},{"./_header.msx":5,"./_menu.msx":6,"./_newproduct.msx":9,"./_right.msx":10,"./fn.msx":11}],16:[function(require,module,exports){
+var MenuController = {};
+var Header = require('./_header.msx');
+var Menu = require('./_menu.msx');
+var Main = require('./_createSetupCategory.msx');
+var Right = require('./_right.msx');
+var fn = require('./fn.msx');
+
+var postData = {"ok": "data"};
+
+
+MenuController.controller = function(){
+  console.log("run menu")
+  var ctrl = this;
+  ctrl.showImgList = false;
+  ctrl.imgList = m.prop([]);
+  ctrl.menu = m.prop([]);
+  
+  ctrl.setup = function(){
+      console.log(ctrl.menu())
+      ctrl.domenu = $('#domenu-0').domenu({
+        onDomenuInitialized: [function() {
+          console.log('event: onDomenuInitialized', 'arguments:', arguments, 'context:', this);
+        }],
+        maxDepth: 2,
+        data: JSON.stringify(ctrl.menu())
+      }).parseJson()
+    
+  };
+  
+  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/setup/category"}, ctrl.menu, ctrl.setup);
+  // ctrl.menu = [{"title":"SẢN PHẨM PHẦN CỨNG","http":"/c/sp-phan-cung","parent":"NONE","children":[{"title":"CBUS","http":"/c/sp-phan-cung/cbus","parent":"sp-phan-cung","children":[{"title":"CBUS HOST","http":"/c/sp-phan-cung/cbus/cbus-host","parent":"CBUS"},{"title":"cBUS AddOn","http":"/c/sp-phan-cung/cbus/cbus-addon","parent":"cbus"}]}]},{"title":"Development Board","http":"/c/sp-phan-cung/development-board","parent":"sp-phan-cung","children":[{"title":"Microcontroller","http":"/c/sp-phan-cung/development-board/microcontroller","parent":"development-board"},{"title":"Arduino","http":"/c/sp-phan-cung/development-board/arduino","parent":"development-board"},{"title":"ARM","http":"/c/sp-phan-cung/development-board/arm","parent":"development-board"}]}]
+  // ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
+  
+  
+};
+
+
+
+MenuController.view = function(ctrl){
+  return  [
+    Header(ctrl),
+    {tag: "div", attrs: {id:"base"}, children: [
+      
+      Main(ctrl), 
+      
+      Menu(ctrl), 
+      
+      Right(ctrl)
+    
+    ]}
+  ]
+};
+
+
+module.exports = MenuController;
+},{"./_createSetupCategory.msx":4,"./_header.msx":5,"./_menu.msx":6,"./_right.msx":10,"./fn.msx":11}]},{},[2])

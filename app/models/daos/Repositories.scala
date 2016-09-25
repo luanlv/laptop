@@ -3,7 +3,7 @@ package models.daos
 import javax.inject.Inject
 
 import com.google.inject.Singleton
-import models.{ Category, Image, Setup, User, Product }
+import models._
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.indexes.IndexType
 
@@ -20,11 +20,11 @@ class CategoryRepository @Inject() (reactiveMongoApi: ReactiveMongoApi) extends 
 }
 
 @Singleton
-class SetupRepository @Inject() (reactiveMongoApi: ReactiveMongoApi) extends DocumentDao[Setup](reactiveMongoApi) with Repository[Setup] {
+class SetupCategoryRepository @Inject() (reactiveMongoApi: ReactiveMongoApi) extends DocumentDao[SetupCategory](reactiveMongoApi) with Repository[SetupCategory] {
 
-  override def collectionName = "setup"
+  override def collectionName = "setupCateogry"
 
-  override def ensureIndexes: Future[Boolean] = ensureIndex(List("name" -> IndexType.Ascending), unique = true)
+  override def ensureIndexes: Future[Boolean] = ensureIndex(List(), unique = true)
 
   ensureIndexes
 }

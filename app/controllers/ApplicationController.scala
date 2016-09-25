@@ -4,8 +4,7 @@ import javax.inject.{ Inject, Singleton }
 
 import com.mohiva.play.silhouette.api.{ LogoutEvent, Silhouette }
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
-import models.Setup
-import models.services.{ CategoryService, SetupService }
+import models.services.{ CategoryService }
 import play.api.i18n.{ I18nSupport, MessagesApi }
 import play.api.libs.json.Json
 import play.api.libs.ws.{ WS, WSClient }
@@ -21,7 +20,6 @@ import scala.concurrent.Future
 class ApplicationController @Inject() (
   val silhouette: Silhouette[MyEnv],
   val messagesApi: MessagesApi,
-  setupService: SetupService,
   categoryService: CategoryService,
   socialProviderRegistry: SocialProviderRegistry) extends AuthController {
 

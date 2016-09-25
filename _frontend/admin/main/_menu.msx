@@ -58,10 +58,10 @@ var Menu = function(ctrl){
           </li>
   
           <li>
-            <a href="/admin#/menu"
+            <a href="/admin#/setup/category"
             >
               <div className="gui-icon"><i className="md md-web"></i></div>
-              <span className="title">Menu</span>
+              <span className="title">Menu sản phẩm</span>
             </a>
           </li>
           

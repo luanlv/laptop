@@ -34,7 +34,6 @@ class Admin @Inject() (
   val messagesApi: MessagesApi,
   imageService: ImageService,
   categoryService: CategoryService,
-  setupService: SetupService,
   socialProviderRegistry: SocialProviderRegistry) extends AuthController {
 
   /**
@@ -44,19 +43,6 @@ class Admin @Inject() (
    */
   def index = silhouette.UnsecuredAction.async { implicit request =>
     Future.successful(Ok(views.html.admin.index("Trang chu")))
-  }
-
-  def doMenu = Action(parse.json) { implicit request =>
-    request.body.asOpt[JsValue].map { menu =>
-      var newMenu = Setup(
-        _id = "menu",
-        value = menu.as[List[Menu]]
-      )
-      setupService.save(newMenu)
-      Ok("ok")
-    }.getOrElse {
-      BadRequest("not json")
-    }
   }
 
 }

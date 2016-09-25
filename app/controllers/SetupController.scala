@@ -8,8 +8,8 @@ import com.mohiva.play.silhouette.api.{ LogoutEvent, Silhouette }
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import com.sksamuel.scrimage
 import com.sksamuel.scrimage.ScaleMethod.Bicubic
-import models.{ Image, Menu }
-import models.services.{ ImageService, SetupService }
+import models.{ CategoryMenu, Image, SetupCategory }
+import models.services.{ ImageService, SetupCategoryService }
 import play.api.libs.json.{ JsArray, JsObject, JsValue, Json }
 import utils.silhouette.MyEnv
 //import com.sksamuel.scrimage.Image
@@ -29,18 +29,32 @@ class SetupController @Inject() (
   ws: WSClient,
   val messagesApi: MessagesApi,
   silhouette: Silhouette[MyEnv],
-  setupService: SetupService,
+  setupCategoryService: SetupCategoryService,
   socialProviderRegistry: SocialProviderRegistry,
   implicit val webJarAssets: WebJarAssets)
   extends Controller with I18nSupport {
 
-  def getMenu = Action.async { implicit request =>
+  def postSetupCategory = Action(parse.json) { implicit request =>
+    request.body.asOpt[JsValue].map { category =>
+      {
+        var newSetupCategory = SetupCategory(
+          _id = "category",
+          value = category.as[List[CategoryMenu]]
+        )
+        setupCategoryService.save(newSetupCategory)
+        Ok("ok")
+      }
+    }.getOrElse {
+      BadRequest("not json")
+    }
+  }
 
-    setupService.retrieve("menu").map { menu =>
-      menu match {
-        case Some(menu) => {
-          println(menu.value)
-          Ok(Json.toJson(menu.value))
+  def getSetupCategory = Action.async { implicit request =>
+
+    setupCategoryService.retrieve("category").map { category =>
+      category match {
+        case Some(category) => {
+          Ok(Json.toJson(category.value))
         }
         case None => Ok(Json.toJson(JsArray()))
       }

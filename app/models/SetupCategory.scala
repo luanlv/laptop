@@ -10,16 +10,16 @@ import play.api.libs.json._
 //import reactivemongo.bson.BSONObjectID
 import reactivemongo.bson.BSONObjectID
 
-case class Setup(
+case class SetupCategory(
   _id: String,
-  value: List[Menu]
+  value: List[CategoryMenu]
 ) extends Identity with TemporalModel {
 
 }
 
-object Setup {
+object SetupCategory {
   import reactivemongo.play.json.BSONFormats.BSONObjectIDFormat // This is required
 
-  implicit val menuFormat = Json.format[Menu]
-  implicit val SetupFormat = Json.format[Setup]
+  implicit val categoryMenuFormat = Json.format[models.CategoryMenu]
+  implicit val setupCategoryFormat = Json.format[models.SetupCategory]
 }
