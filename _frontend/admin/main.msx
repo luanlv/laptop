@@ -19,7 +19,7 @@ window.mobilecheck = function() {
 window.isMobile = window.mobilecheck();
 
 
-m.route.mode = "hash";
+m.route.mode = "search";
 
 //window.Nav = require('./_nav.msx');
 window.Main = require('./_main.msx');

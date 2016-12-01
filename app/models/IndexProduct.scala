@@ -11,9 +11,9 @@ import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 
 case class IndexProduct(
-                          _id: String,
-                          value: List[ListProduct]
-                        ) extends Identity with TemporalModel {
+  _id: String,
+  value: List[ListProduct]
+) extends Identity with TemporalModel {
 
 }
 
@@ -25,9 +25,9 @@ object IndexProduct {
 }
 
 case class ListProduct(
-                         name: String,
-                         listID: List[String]
-                       ) extends Identity with TemporalModel {
+  name: String,
+  listID: List[String]
+) extends Identity with TemporalModel {
 
 }
 

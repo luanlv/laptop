@@ -6,11 +6,25 @@
 #GET         /identifying                                controllers.ApplicationController.indexLogged
 GET         /                                controllers.ApplicationController.index
 
+GET /search controllers.ProductController.search(keyword: String)
 
+GET /san-pham/:categorySlug/:productID  controllers.ProductController.index(categorySlug: String, productID: String)
+GET /san-pham/:categorySlug  controllers.ProductController.indexCategory(categorySlug: String, page: Int = 1)
+
+
+GET /product/list/:page controllers.ProductController.getList(page: Int)
+GET /product/get/:ID controllers.ProductController.getProduct(ID: String)
+POST /product/delete/:ID controllers.ProductController.delete(ID: String)
+
+GET /article/:articleID controllers.ArticleController.index(articleID: String)
+GET /article/get/:ID controllers.ArticleController.getArticle(ID: String)
+GET /article/list/:page controllers.ArticleController.getList(page: Int)
+POST /article/delete/:ID controllers.ArticleController.delete(ID: String)
 GET /admin  controllers.Admin.index
 
 POST  /admin/newCategory controllers.CategoryController.doCategory
 POST  /admin/product controllers.ProductController.newProduct
+POST  /admin/article controllers.ArticleController.newArticle
 
 POST  /setup/:setupID controllers.SetupController.postSetup(setupID: String)
 GET  /setup/:setupID controllers.SetupController.getSetup(setupID: String)

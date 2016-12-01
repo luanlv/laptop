@@ -1,0 +1,164 @@
+@(product: Product, productsInCategory: List[Product], categoryMenu: List[CategoryMenu], nav: List[CategoryMenu])(implicit user: Option[User], request: RequestHeader, messages: Messages)
+
+@main(product.name, categoryMenu, nav){
+  <div class="row">
+  <div class="col-md-12">
+    <div class="section-prod">
+      <div class="prod-detail-parth">
+        <a href="/">Trang chủ</a> >>
+        @product.name
+      </div>
+
+      <div class="prod-detail">
+        <div class="col-md-3 col-sm-3">
+          <h2 class="name">
+          @product.name
+          </h2>
+          <div class="warranty">Bảo hành: @product.guarantee  tháng</div>
+          <div class="price">Giá: @java.text.NumberFormat.getIntegerInstance.format(product.price) VNĐ</div>
+          <div class="btn_buy">
+            <div class="pay-title" style="color: #555; float: left; font-size: 1em; height: auto; margin: 0px 0 10px; text-align: center; width: 100%;">
+              ĐỊA CHỈ MUA HÀNG
+            </div>
+            <p style="font-size:12px">
+              Tầng 4 số nhà 42 ngách 8 ngõ 95 Chùa Bộc - Phường Trung Liệt- Quận Đống Đa – Hà Nội ( cạnh sân bóng Thủy Lợi )  <br />
+              <span style="color:#e35500; font-size:13px">0972.789.283 - 016.9895.9895 - 0986.481.286 </span><br />
+              <br />
+            </p>
+          </div>
+          @if(product.driver.getOrElse("").length > 0) {<div class="hotline"><a href="@product.driver.get">Link tải driver </a></div>}
+          @if(product.youtube.getOrElse("").length > 0) {
+            <div>
+              <iframe width="100%" height="150"
+              src=@{"https://www.youtube.com/embed/" + product.youtube.get}>
+              </iframe>
+            </div>
+          }
+          <div class="pay">
+            <div class="pay-title">T&Agrave;I KHOẢN NHẬN THANH TO&Aacute;N</div>
+              BIDV: Vũ Thế Kiểm <br>
+              Số tài khoản: 21610000131887
+          </div>
+        </div>
+        <div class="col-md-7 col-sm-7">
+
+          <div class="medium-img">
+            <img height="400" width="555" class="img_prod" src=@{"/cover/get/" + product.image.head._id} alt="" />
+          </div>
+
+          <ul class="list-img gal">
+            @product.image.map { image =>
+              <li class="img_co">
+                <a class="" rel="" href="#">
+                  <img alt=""
+                  src=@{"/cover/get/" + image._id} /></a></li>
+            }
+          </ul>
+
+        </div>
+        <script>
+                $('.gal a').click(function (e) {
+                  e.preventDefault();
+                  var a = $(this), src = a.find('img').attr('src');
+                  $(".img_prod").attr('src', src);
+                })
+                $('.gal a').eq(0).click();
+        </script>
+        <div class="col-md-2 col-sm-2">
+          <ul class="prod-service">
+            @*<li><img src="/assets/images/img_ship.jpg" alt="" /><span>Giao h&agrave;ng <b> miễn ph&iacute;</b></span></li>*@
+            <li><img src="/assets/images/img_guarantee.jpg" alt="" /><span>Bảo h&agrave;nh <b> 1 đổi 1 </b></span></li>
+            <li><img src="/assets/images/img_commitment.jpg" alt="" /><span>Cam kết <b> Chất lượng</b></span></li>
+          </ul>
+        </div>
+
+
+        <div class="prod-content">
+          <div class="prod-content-title">
+            <div class="col-md-6 col-sm-4">
+              CHI TIẾT SẢN PHẨM
+            </div>
+            <div class="col-md-6 col-sm-8">
+              <div style="color: #222; display: inline-block">MUA HÀNG ONLINE:</div>
+              <span>0972.789.283 - 016.9895.9895</span>
+            </div>
+          </div>
+          <div class="col-md-9 col-sm-9">
+            @Html(product.info)
+            @*<div class="prodx-driver">*@
+              @*<div class="prod-content-title prodx-driver">*@
+                @*Tải Driver*@
+              @*</div>*@
+            @*</div>*@
+
+          </div>
+          <div class="col-md-3 col-sm-3">
+
+            <div class="new-branch">
+              <div class="blink">KHU VỰC HÀ NỘI : <br />
+                <span style="display: block;font-weight: normal;margin: 5px 0 ; text-align: center; ">Tầng 4 số nhà 42 ngách 8 ngõ 95 Chùa Bộc - Phường Trung Liệt- Quận Đống Đa – Hà Nội ( cạnh sân bóng Thủy Lợi ) </span>  HOTLINE: 0972.789.283 - 016.9895.9895</div>
+            </div>
+            <div class="prod-detail-help">
+              <img alt="" src="/assets/images/img_support.jpg" />
+              <ul>
+                <li><a href="/article/chinh-sach-bao-hanh">Ch&iacute;nh s&aacute;ch bảo h&agrave;nh</a></li>
+                <li><a href="/article/ban-do">Bản đồ đường đi</a></li>
+              </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="prod-detail-orther">
+      <div class="section-prod-list">
+        <div class="col-md-12">
+          <div class="widget-title prod-orther-title">
+            <span>CÁC SẢN PHẨM KHÁC</span>
+          </div>
+
+          <div class="all-product">
+
+            @productsInCategory.map { product =>
+              <div class="col-sm-3 col-md-2 col-xs-6 " style="">
+                <div class="product-item  ">
+                  <a href="@{"/san-pham/" + product.category + "/" + product._id}">
+                    <img class="icon_status" onerror="$(this).remove()" src="/Upload/image/article/normal-khong-duoc-xoa-a_30-07-2015-09-45-09.png" />
+
+                    <div class="thumb" id="orther-thumb">
+                      <div class="square">
+                        <img src="@{"/cover/get/" + product.image.head._id}" alt="@product.image.head.alt" />
+                      </div>
+                    </div>
+
+
+                    <div class="prod-info">
+                      <p>@product.name</p>
+                      <div class="price">@java.text.NumberFormat.getIntegerInstance.format(product.price) VNĐ</div>
+                      <div class="status">
+                        Bảo hành: @product.guarantee  tháng
+                        <span>( Còn hàng )</span>
+                      </div>
+                    </div>
+                    <div class="name">@product.name </div>
+                    <span>@java.text.NumberFormat.getIntegerInstance.format(product.price) VNĐ</span>
+                    <div class="wanl">Bảo hành: @product.guarantee  tháng</div>
+                  </a>
+                </div>
+              </div>
+            }
+
+
+
+          </div>
+        </div>
+
+      </div>
+      <script type="text/javascript">
+              var h = $("#orther-thumb").css('width');
+              $(".square").css("height", h);
+      </script>
+    </div>
+  </div>
+</div>
+}

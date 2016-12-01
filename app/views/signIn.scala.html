@@ -1,42 +1,69 @@
-@(signInForm: Form[forms.SignInForm.Data], socialProviders: com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry)(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@(signInForm: Form[forms.SignInForm.Data], socialProviders: com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry)(implicit user: Option[User], request: RequestHeader, messages: Messages)
 
-@import com.mohiva.play.silhouette.impl.providers.oauth2.ClefProvider
-@import b3.inline.fieldConstructor
+  @import com.mohiva.play.silhouette.impl.providers.oauth2.ClefProvider
+  @import b3.inline.fieldConstructor
 
-@main(Messages("sign.in.title")) {
-    <fieldset class="col-md-6 col-md-offset-3">
-        <legend>@Messages("sign.in.credentials")</legend>
-        @helper.form(action = routes.SignInController.submit()) {
+<!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+      <title>Dang nhap</title>
+      <link href="//fonts.googleapis.com/css?family=Roboto|Montserrat:400,700|Open+Sans:400,300,600" rel="stylesheet">
+      <link href="//cdnjs.cloudflare.com/ajax/libs/ionicons/1.5.2/css/ionicons.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css">
+      <link rel="stylesheet" href="@routes.Assets.at("styles/main.css")">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+            <![endif]-->
+    </head>
+    <body>
+
+      <main class="container">
+        <div class="starter-template row">
+          @request.flash.get("error").map { msg =>
+            <div class="col-md-6 col-md-offset-3 alert alert-danger">
+              <a href="#" class="close" data-dismiss="alert">&times;</a>
+              <strong>@Messages("error")</strong> @msg
+            </div>
+          }
+          @request.flash.get("info").map { msg =>
+            <div class="col-md-6 col-md-offset-3 alert alert-info">
+              <a href="#" class="close" data-dismiss="alert">&times;</a>
+              <strong>@Messages("info")</strong> @msg
+            </div>
+          }
+          @request.flash.get("success").map { msg =>
+            <div class="col-md-6 col-md-offset-3 alert alert-success">
+              <a href="#" class="close" data-dismiss="alert">&times;</a>
+              <strong>@Messages("success")</strong> @msg
+            </div>
+          }
+        <fieldset class="col-md-6 col-md-offset-3">
+          <legend>Đăng nhập</legend>
+          @helper.form(action = routes.SignInController.submit()) {
             @helper.CSRF.formField
-            @b3.email(signInForm("email"), '_hiddenLabel -> Messages("email"), 'placeholder -> Messages("email"), 'class -> "form-control input-lg")
-            @b3.password(signInForm("password"), '_hiddenLabel -> Messages("password"), 'placeholder -> Messages("password"), 'class -> "form-control input-lg")
+            @b3.email(signInForm("email"), '_hiddenLabel -> Messages("email"), 'placeholder -> "Email", 'class -> "form-control input-lg")
+            @b3.password(signInForm("password"), '_hiddenLabel -> Messages("password"), 'placeholder -> "Mật khẩu", 'class -> "form-control input-lg")
             @b3.checkbox(signInForm("rememberMe"), '_text -> Messages("remember.me"), 'checked -> true)
             <div class="form-group">
-                <div>
-                    <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@Messages("sign.in")</button>
-                </div>
+              <div>
+                <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@Messages("sign.in")</button>
+              </div>
             </div>
-        }
+          }
 
-        <div>
-            <p class="not-a-member">@Messages("not.a.member") <a href="@routes.SignUpController.view">@Messages("sign.up.now")</a> | <a href="@routes.ForgotPasswordController.view()" title="@Messages("forgot.your.password")">@Messages("forgot.your.password")</a></p>
+        </fieldset>
         </div>
-
-        @if(socialProviders.providers.nonEmpty) {
-            <div class="social-providers">
-                <p>@Messages("or.use.social")</p>
-                <div>
-                @for(p <- socialProviders.providers if p.id != "clef") {
-                    <a href="@routes.SocialAuthController.authenticate(p.id)" class="provider @p.id" title="@Messages(p.id)"><img src="@routes.Assets.at(s"images/providers/${p.id}.png")" width="64px" height="64px" alt="@Messages(p.id)"></a>
-                }
-                </div>
-                @defining(socialProviders.get[ClefProvider]) { clef =>
-                    @if(clef.isDefined) {
-                        <script type="text/javascript" src="https://clef.io/v3/clef.js" class="clef-button" data-app-id="@clef.get.settings.clientID" data-color="blue" data-style="flat" data-redirect-url="@clef.get.settings.redirectURL" data-type="login"></script>
-                    }
-                }
-            </div>
-        }
-
-    </fieldset>
-}
+      </main>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
+      <script src="@routes.Assets.at("javascripts/zxcvbnShim.js")"></script>
+    </body>
+  </html>

@@ -10,6 +10,27 @@ var postData = {"ok": "data"}
 Product.controller = function(){
   console.log("new product");
   var ctrl = this;
+  ctrl.data = m.prop({
+    "_id" : "",
+    "name": "",
+    "search": "",
+    "category": "none",
+    "extra": "normal",
+    "price": 0,
+    "available": true,
+    "guarantee": 12,
+    "image" : [
+    ],
+    "info": "",
+    "driver": "",
+    "youtube": ""
+  });
+  ctrl.type = m.route.param("status");
+  ctrl.productID = m.route.param("product");
+  ctrl.requestProduct = {}
+  ctrl.requestProduct.ready = m.prop(false);
+  
+  
   ctrl.showImgList = false;
   ctrl.imgList = m.prop([]);
   ctrl.imgListTmp = m.prop([]);
@@ -33,14 +54,24 @@ Product.controller = function(){
     m.redraw();
   };
   ctrl.setup = function(){
-    ctrl.categories(ctrl.request.data());
+    console.log(ctrl.request.data());
+    m.redraw();
+  };
+  ctrl.setupProduct = function(){
+    console.log("setup Product !!");
+    console.log(ctrl.data());
     m.redraw();
   };
   
   
   ctrl.categories = m.prop([]);
   ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listcategory"}, ctrl.categories, ctrl.setup);
+  if(ctrl.productID != undefined){
+    console.log("product !!");
+    ctrl.requestProduct = fn.requestWithFeedback({method: "GET", url: "/product/get/" + ctrl.productID}, ctrl.data, ctrl.setupProduct);
+  }
   
+
 };
 
 

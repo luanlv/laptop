@@ -1,14 +1,87 @@
-@()(implicit user: Option[User], request: RequestHeader, messages: Messages)
+@(listProduct: List[ListProduct], mapProduct: Map[String,Product], categoryMenu: List[CategoryMenu], nav: List[CategoryMenu])(implicit user: Option[User], request: RequestHeader, messages: Messages)
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-  </head>
-  <body>
-    <div>Index</div>
-  </body>
-</html>
+@main("Laptop Thảo Linh", categoryMenu, nav ) {
+
+  <div class="section-prod-list">
+    <div class="col-md-12">
+
+      <div class="all-product">
+        @listProduct.map { products =>
+          <div class="widget-title">
+            <span>@products.name</span>
+          </div>
+
+          @products.listID.map { ID =>
+            @mapProduct.get(ID) match {
+              case Some(value) => {
+                <div class="col-sm-3 col-md-2 col-xs-6 ">
+                  <div class="product-item  ">
+                    <a href="@{"/san-pham/" + mapProduct(ID).category + "/" + ID}">
+                      @if(mapProduct(ID).extra == "hot"){
+                        <img class="icon_status" src="/assets/images/hot.png"/>
+                      }
+                      @if(mapProduct(ID).extra == "new"){
+                        <img class="icon_status" src="/assets/images/moive.png"/>
+                      }
+                      @if(mapProduct(ID).extra == "sale"){
+                        <img class="icon_status" src="/assets/images/khuyenmai.png"/>
+                      }
+                    <div class="thumb" id="orther-thumb">
+                      <div class="square">
+                        <img src=@("/cover/get/" + mapProduct(ID).image.head._id) alt="" />
+
+                      </div>
+                    </div>
+                    <div class="prod-info"> @mapProduct(ID).name </p>
+                    <div class="price">@java.text.NumberFormat.getIntegerInstance.format(mapProduct(ID).price) VNĐ</div>
+                    <div class="status">
+                      Bảo hành: @mapProduct(ID).guarantee tháng
+                      <span>( Còn hàng )</span>
+                    </div>
+                    </div>
+                    <div class="name">
+                    @mapProduct(ID).name
+                    </div>
+                    <span>@java.text.NumberFormat.getIntegerInstance.format(mapProduct(ID).price) VNĐ</span>
+                    <div class="wanl">Bảo hành: @mapProduct(ID).guarantee tháng</div>
+                    </a>
+                  </div>
+                </div>
+              }
+
+              case None => {
+
+              }
+            }
+
+          }
+
+        }
+
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+  <div class="col-md-12 col-sm-12 col-lg-12">
+    <div class="home-bottom-bann">
+
+      <link href="/css/espeBanner/espebanner.css" rel="stylesheet" type="text/css" />
+
+      <script src="/scripts/espeBanner/espebanner.js" type="text/javascript"></script>
+
+      <script src="/services/advJS.ashx?positionid=8" type="text/javascript"></script>
+
+
+    </div>
+  </div>
+}

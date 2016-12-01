@@ -1831,7 +1831,7 @@ body:not(.menubar-first) .menubar-fixed-panel {
   font-style: italic;
   color: rgba(12, 12, 12, 0.75);
 }
-.gui-controls li.gui-folder.expanded > a .title,
+.gui-controls li.gui-folder.expanded > a .title, .gui-controls li.gui-folder.expanded2 > a .title,
 .gui-controls li.gui-folder.active > a .title {
   color: rgba(12, 12, 12, 0.85);
 }
@@ -1878,12 +1878,34 @@ body:not(.menubar-first) .menubar-fixed-panel {
   -o-transition: all 0.1s linear;
   transition: all 0.1s linear;
 }
+.gui-folder.expanded2 > a:after {
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: -2px;
+  margin-left: -12px;
+  -webkit-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  -webkit-transition: all 0.1s linear;
+  -o-transition: all 0.1s linear;
+  transition: all 0.1s linear;
+}
+
 .gui-controls > .gui-folder > a:after {
   top: 12px;
   margin-left: 2px;
 }
 .gui-controls > .gui-folder.expanding > a:after,
 .gui-controls > .gui-folder.expanded > a:after {
+  color: rgba(12, 12, 12, 0.4);
+  margin-left: 0;
+  -webkit-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+.gui-controls > .gui-folder.expanded2 > a:after {
   color: rgba(12, 12, 12, 0.4);
   margin-left: 0;
   -webkit-transform: rotate(-45deg);
@@ -2102,7 +2124,7 @@ body:not(.menubar-first) .menubar-fixed-panel {
 .menubar-inverse .gui-controls li.gui-folder > a .title {
   color: rgba(255, 255, 255, 0.5);
 }
-.menubar-inverse .gui-controls li.gui-folder.expanded > a .title,
+.menubar-inverse .gui-controls li.gui-folder.expanded > a .title, .menubar-inverse .gui-controls li.gui-folder.expanded2 > a .title
 .menubar-inverse .gui-controls li.gui-folder.active > a .title {
   color: rgba(255, 255, 255, 0.55);
 }
@@ -2110,7 +2132,7 @@ body:not(.menubar-first) .menubar-fixed-panel {
   color: rgba(255, 255, 255, 0.5);
 }
 .menubar-inverse .gui-controls > .gui-folder.expanding > a:after,
-.menubar-inverse .gui-controls > .gui-folder.expanded > a:after {
+.menubar-inverse .gui-controls > .gui-folder.expanded > a:after, .menubar-inverse .gui-controls > .gui-folder.expanded2 > a:after {
   color: rgba(255, 255, 255, 0.4);
 }
 .menubar-inverse .gui-icon {

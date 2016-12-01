@@ -1,6 +1,6 @@
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{ Inject, Singleton }
 
 import com.mohiva.play.silhouette.api.Authenticator.Implicits._
 import com.mohiva.play.silhouette.api._
@@ -16,32 +16,33 @@ import play.api.Configuration
 import play.api.i18n.{ I18nSupport, Messages, MessagesApi }
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.mvc.Controller
-import utils.silhouette.MyEnv
+import utils.silhouette.{ AuthController, MyEnv }
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
+@Singleton
 class SignInController @Inject() (
+  val silhouette: Silhouette[MyEnv],
   val messagesApi: MessagesApi,
-  silhouette: Silhouette[MyEnv],
   userService: UserService,
   authInfoRepository: AuthInfoRepository,
   credentialsProvider: CredentialsProvider,
-  socialProviderRegistry: SocialProviderRegistry,
   configuration: Configuration,
   clock: Clock,
-  implicit val webJarAssets: WebJarAssets)
-  extends Controller with I18nSupport {
+  socialProviderRegistry: SocialProviderRegistry) extends AuthController {
 
   /**
    * Views the `Sign In` page.
    *
    * @return The result to display.
    */
-  def view = silhouette.UnsecuredAction.async { implicit request =>
-    //    Future.successful(Ok(views.html.signIn(SignInForm.form, socialProviderRegistry)))
-    Future.successful(Redirect("/"))
+  def view = silhouette.UserAwareAction.async { implicit request =>
+    request.identity match {
+      case None => Future.successful(Ok(views.html.signIn(SignInForm.form, socialProviderRegistry)))
+      case _ => Future.successful(Redirect("/admin"))
+    }
   }
 
   /**
@@ -49,18 +50,15 @@ class SignInController @Inject() (
    *
    * @return The result to display.
    */
-  def submit = silhouette.UnsecuredAction.async { implicit request =>
-    println(" dang nhap =============================")
+  def submit = silhouette.UserAwareAction.async { implicit request =>
     SignInForm.form.bindFromRequest.fold(
       form => {
-        println("form loi: " + form.toString)
         Future.successful(BadRequest(views.html.signIn(form, socialProviderRegistry)))
       },
       data => {
-        println("thong tin: " + data.email + " | " + data.password)
         val credentials = Credentials(data.email, data.password)
         credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
-          val result = Redirect(routes.ApplicationController.index())
+          val result = Redirect(routes.Admin.index())
           userService.retrieve(loginInfo).flatMap {
             case Some(user) if !user.activated =>
               Future.successful(Ok(views.html.activateAccount(data.email)))

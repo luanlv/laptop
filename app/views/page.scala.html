@@ -1,0 +1,17 @@
+@(article: Article, categoryMenu: List[CategoryMenu], nav: List[CategoryMenu])(implicit user: Option[User], request: RequestHeader, messages: Messages)
+
+@main(article.title, categoryMenu, nav){
+  <div class="row">
+    <div class="col-md-12">
+      <div class="section-prod">
+        <div class="prod-detail-parth">
+          <a href="/">Trang chủ</a> &gt;&gt; @article.title
+        </div>
+
+        @Html(article.body)
+
+      </div>
+
+    </div>
+  </div>
+}

@@ -13,7 +13,9 @@ import models._
 import models.services._
 import org.apache.commons.io.FilenameUtils
 import org.joda.time.DateTime
+import play.api.cache.{ CacheApi, Cached }
 import play.api.libs.json.{ JsObject, JsValue, Json }
+import play.api.mvc.RequestHeader
 import utils.silhouette.{ AuthController, MyEnv, WithService }
 //import com.sksamuel.scrimage.Image
 //import com.sksamuel.scrimage.ScaleMethod.Bicubic
@@ -41,8 +43,11 @@ class Admin @Inject() (
    *
    * @return The result to display.
    */
-  def index = silhouette.UnsecuredAction.async { implicit request =>
-    Future.successful(Ok(views.html.admin.index("Trang chu")))
+  def index = silhouette.UserAwareAction.async { implicit request =>
+    request.identity match {
+      case None => Future.successful(Redirect("/signIn"))
+      case _ => Future.successful(Ok(views.html.admin.index("Trang chu")))
+    }
   }
 
 }

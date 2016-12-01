@@ -1,0 +1,119 @@
+var fn = require('./fn.msx');
+
+var input = m.prop("");
+var data = m.prop({
+  "_id" : "",
+  "name": "",
+  "category": "none",
+  "extra": "normal",
+  "price": 0,
+  "available": true,
+  "guarantee": 12,
+  "image" : [
+  ],
+  "info": ""
+});
+
+var NewProduct = function(ctrl){
+  return [
+    <hr className="ruler-xxl"/>,
+    <div className="content">
+      <section>
+        <div className="section-body">
+          <div className="card">
+            <div className="card-body">
+              
+              <nav aria-label="Page navigation">
+                <ul class="pagination">
+                  <li>
+                    <a href="javascript:void(0)" aria-label="Previous"
+                       onclick={function(){
+                         if(ctrl.page >1) {
+                           ctrl.request = fn.requestWithFeedback({
+                             method: "GET",
+                             url: "/product/list/" + (ctrl.page - 1)
+                           }, ctrl.productsTmp, ctrl.setupPrev);
+                         }
+                       }}
+                    >
+                      <span aria-hidden="true"
+                      >&laquo;</span>
+                    </a>
+                  </li>
+                  <li><a href="javascript:void(0)">{ctrl.page}</a></li>
+                  <li>
+                    <a href="javascript:void(0)" aria-label="Next"
+                       onclick={function(){
+                         ctrl.request = fn.requestWithFeedback({
+                           method: "GET",
+                           url: "/product/list/" + (ctrl.page + 1)
+                         }, ctrl.productsTmp, ctrl.setupNext);
+                       }}
+                    >
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                  <li>
+                    <div class="input-group">
+                      <span class="input-group-addon" id="basic-addon1"> Tìm kiếm: </span>
+                      <input type="text" class="form-control" placeholder="Tên sản phẩm" aria-describedby="basic-addon1"/>
+                    </div>
+                  </li>
+                </ul>
+              
+              </nav>
+              
+              <div class="table-responsive">
+                <table class="table no-margin">
+                  <thead>
+                  <tr>
+                    <th>Tên bài viết</th>
+                    <th></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {ctrl.products().map(function(el){
+                    return [<tr>
+                      <td>{el.title}</td>
+                      <td>
+                        <span style="cursor: pointer"
+                              onclick={function(){
+                                $.ajax({
+                                  type: "POST",
+                                  url: "/article/delete/" + el._id,
+                                  data: JSON.stringify({}),
+                                  contentType: "application/json",
+                                  dataType: "text"
+                                }).done(function() {
+                                  alert("Xóa thành công")
+                                  location.reload();
+                                })
+                                    .fail(function() {
+                                      alert( "error" );
+                                    });
+                              }}
+                        > Xóa </span> |
+                        <span style="cursor: pointer"
+                              onclick={function(){
+                                m.route("/article/edit?article=" + el._id)
+                              }}
+                        > Sửa </span>
+                      </td>
+                    </tr>
+                    ]
+                  })}
+                  
+                  
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  ]
+};
+
+
+module.exports = NewProduct;

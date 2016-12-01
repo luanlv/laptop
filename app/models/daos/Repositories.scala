@@ -67,3 +67,13 @@ class ProductRepository @Inject() (reactiveMongoApi: ReactiveMongoApi) extends D
 
   ensureIndexes
 }
+
+@Singleton
+class ArticleRepository @Inject() (reactiveMongoApi: ReactiveMongoApi) extends DocumentDao[Article](reactiveMongoApi) with Repository[Article] {
+
+  override def collectionName = "article"
+
+  override def ensureIndexes: Future[Boolean] = ensureIndex(List(), unique = true)
+
+  ensureIndexes
+}

@@ -10,7 +10,9 @@ import com.sksamuel.scrimage
 import com.sksamuel.scrimage.ScaleMethod.Bicubic
 import models._
 import models.services.{ ImageService, IndexProductService, SetupCategoryService }
+import play.api.cache.Cached
 import play.api.libs.json.{ JsArray, JsObject, JsValue, Json }
+import play.api.mvc.RequestHeader
 import utils.silhouette.MyEnv
 //import com.sksamuel.scrimage.Image
 //import com.sksamuel.scrimage.ScaleMethod.Bicubic

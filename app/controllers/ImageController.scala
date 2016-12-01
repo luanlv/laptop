@@ -36,7 +36,7 @@ class ImageController @Inject() (
   extends Controller with I18nSupport {
 
   def getCover(id: String) = Action {
-    val file = new java.io.File("/home/lvl/image/" + id + ".jpg")
+    val file = new java.io.File("/home/lvl/imageLaptopThaoLinh/" + id + ".jpg")
     Ok.sendFile(
       file,
       inline = true
@@ -55,7 +55,7 @@ class ImageController @Inject() (
       import java.io.File
       val filename = picture.filename
       val contentType = picture.contentType
-      val path = s"/home/lvl/image/$uuid.jpg"
+      val path = s"/home/lvl/imageLaptopThaoLinh/$uuid.jpg"
       resize(picture.ref.moveTo(new File(path)))
       val image = models.Image(
         _id = uuid,
@@ -73,7 +73,7 @@ class ImageController @Inject() (
   private def resize(file: File) = {
     import com.sksamuel.scrimage._
     implicit val writer = JpegWriter().withProgressive(true)
-    scrimage.Image.fromFile(file).scaleTo(500, 500, Bicubic).output(file)
+    scrimage.Image.fromFile(file).scaleToWidth(500, Bicubic).output(file)
   }
 
 }

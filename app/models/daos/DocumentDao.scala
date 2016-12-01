@@ -39,9 +39,19 @@ abstract class DocumentDao[T <: TemporalModel](reactiveMongoApi: ReactiveMongoAp
     collection.flatMap(_.find(query).sort(sort).options(QueryOpts((page - 1) * num)).cursor[T](ReadPreference.nearest).collect[List](num))
   }
 
-  def getList(query: JsObject = Json.obj(), sort: JsObject = Json.obj(), page: Int, num: Int)(implicit reader: Reads[T]): Future[List[T]] = {
+  def getList(query: JsObject = Json.obj(), sort: JsObject = Json.obj("createAt" -> -1), page: Int, num: Int)(implicit reader: Reads[T]): Future[List[T]] = {
     Logger.debug(s"Finding documents: [collection=$collectionName, query=$query], page=$page, num=$num")
     collection.flatMap(_.find(query).sort(sort).options(QueryOpts((page - 1) * num)).cursor[T](ReadPreference.nearest).collect[List](num))
+  }
+
+  def getListByListID(IDs: List[String])(implicit reader: Reads[T]): Future[List[T]] = {
+    Logger.debug(s"Finding products: [collection=$collectionName")
+    collection.flatMap(_.find(Json.obj("_id" -> Json.obj("$in" -> IDs))).cursor[T](ReadPreference.nearest).collect[List]())
+  }
+
+  def search(keyword: String)(implicit reader: Reads[T]): Future[List[T]] = {
+    Logger.debug(s"Searching products: [collection=$collectionName")
+    collection.flatMap(_.find(Json.obj("search" -> Json.obj("$regex" -> (".*" + keyword + ".*"), "$options" -> "-i"))).cursor[T](ReadPreference.nearest).collect[List](40))
   }
 
   def listCategory()(implicit reader: Reads[T]): Future[List[T]] = {
@@ -188,6 +198,13 @@ abstract class DocumentDao[T <: TemporalModel](reactiveMongoApi: ReactiveMongoAp
   def remove(id: BSONObjectID): Future[Try[Boolean]] = {
     Logger.debug(s"Removing document: [collection=$collectionName, id=$id]")
     recover(collection.flatMap(_.remove(DBQueryBuilder.id(id)))) {
+      true
+    }
+  }
+
+  def delete(id: String): Future[Try[Boolean]] = {
+    Logger.debug(s"Removing document: [collection=$collectionName, id=$id]")
+    recover(collection.flatMap(_.remove(Json.obj("_id" -> id)))) {
       true
     }
   }

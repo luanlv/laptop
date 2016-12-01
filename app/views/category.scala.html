@@ -1,0 +1,64 @@
+@(products: List[Product], categoryMenu: List[CategoryMenu], nav: List[CategoryMenu])(implicit user: Option[User], request: RequestHeader, messages: Messages)
+
+@main("category", categoryMenu, nav) {
+  <div class="row">
+
+    <div class="section-prod-list">
+
+      <div class="col-md-12">
+        <div class="widget-title prod-title">
+          <span></span>
+        </div>
+        <div class="all-product">
+
+          @products.map { product =>
+
+            <div class="col-sm-3 col-md-2 col-xs-6 ">
+              <div class="product-item  ">
+                <a href="@{"/san-pham/" + product.category + "/" + product._id}">
+                  @*<img class="icon_status" src= />*@
+
+                  <div class="thumb"  id="orther-thumb">
+                    <div class="square">
+                      <img src="@{"/cover/get/" + product.image.head._id}" alt="@{"/cover/get/" + product.image.head.alt}" />
+
+                    </div>
+                  </div>
+
+
+                  <div class="prod-info">
+                    <p> @product.name</p>
+                    <div class="price">@java.text.NumberFormat.getIntegerInstance.format(product.price) VNĐ</div>
+                    <div class="status">
+                      Bảo hành: @product.guarantee tháng
+                      <span>( Còn hàng )</span>
+                    </div>
+                  </div>
+                  <div class="name">@product.name </div>
+                  <span>@java.text.NumberFormat.getIntegerInstance.format(product.price) VNĐ</span>
+                  <div class="wanl">Bảo hành: @product.guarantee tháng</div>
+                </a>
+              </div>
+            </div>
+          }
+
+
+        </div>
+
+        @*<div class="pages">*@
+          @*<a href="/san-pham/may-bo-dell-core2duo-core2quad-89,1.htm"><b>1</b></a>*@
+          @*<a href="/san-pham/may-bo-dell-core2duo-core2quad-89,2.htm">2</a>*@
+        @*</div>*@
+
+
+      </div>
+      <script type="text/javascript">
+
+              var h = $("#orther-thumb").css('width');
+              $(".square").css("height", h);
+
+      </script>
+    </div>
+  </div>
+
+}

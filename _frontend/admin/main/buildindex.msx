@@ -25,6 +25,7 @@ Sortable.ListItems2 = function() {
 
 IndexController.controller = function(){
   var ctrl = this;
+  ctrl.products = m.prop([]);
   this.items = new Sortable.ListItems();
   this.listProduct = new Sortable.ListItems2();
   
@@ -89,6 +90,27 @@ IndexController.controller = function(){
   ctrl.setup = function(){
     m.redraw();
   }
+  
+  ctrl.setupProduct = function(){
+    m.redraw();
+  };
+  ctrl.page = 1;
+  ctrl.setupPrev = function(){
+    if(ctrl.productsTmp().length > 0){
+      ctrl.products(ctrl.productsTmp());
+      ctrl.page -=1;
+    }
+    m.redraw();
+  };
+  ctrl.setupNext = function(){
+    if(ctrl.productsTmp().length > 0){
+      ctrl.products(ctrl.productsTmp());
+      ctrl.page +=1;
+    }
+    m.redraw();
+  };
+  window.runApp();
+  window.runNav();
 };
 
 

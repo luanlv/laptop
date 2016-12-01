@@ -20,6 +20,7 @@ NewProduct.controller = function(){
   };
   // ctrl.categories = m.prop([]);
   // ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
+
 };
 
 

@@ -1,0 +1,54 @@
+var Product = {};
+var Header = require('./_header.msx');
+var Menu = require('./_menu.msx');
+var Main = require('./_product.msx');
+var Right = require('./_right.msx');
+var fn = require('./fn.msx');
+
+
+Product.controller = function(){
+  console.log("new product");
+  var ctrl = this;
+  ctrl.page = 1;
+  ctrl.products = m.prop([]);
+  ctrl.productsTmp = m.prop([]);
+  ctrl.setup = function(){
+    m.redraw();
+  };
+  ctrl.setupPrev = function(){
+    if(ctrl.productsTmp().length > 0){
+      ctrl.products(ctrl.productsTmp());
+      ctrl.page -=1;
+    }
+    m.redraw();
+  };
+  ctrl.setupNext = function(){
+    if(ctrl.productsTmp().length > 0){
+      ctrl.products(ctrl.productsTmp());
+      ctrl.page +=1;
+    }
+    m.redraw();
+  };
+  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/product/list/" + ctrl.page}, ctrl.products, ctrl.setup);
+
+};
+
+
+
+Product.view = function(ctrl){
+  return  [
+    Header(ctrl),
+    <div id="base">
+      
+      {Main(ctrl)}
+      
+      {Menu(ctrl)}
+      
+      {Right(ctrl)}
+    
+    </div>
+  ]
+};
+
+
+module.exports = Product;

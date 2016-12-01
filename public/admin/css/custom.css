@@ -248,18 +248,29 @@ body .backdrop{
   background: #ddd;
   margin-top: 3px;
 }
+.drag-n-drop .active {
+  background: dodgerblue !important;
+}
+
+.drag-n-drop .name {
+  width: 60%;
+  float: left;
+}
 
 .drag-n-drop li:hover {
   cursor: move;
 }
 
-.drag-n-drop li div.edit, .drag-n-drop li div.delete {
+.drag-n-drop li span.edit, .drag-n-drop li span.delete {
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 0 5px;
   margin-left: 10px;
+  text-align: center;
+  width: 10%;
+  float: right;
 }
 
-.drag-n-drop li div.edit:hover, .drag-n-drop li div.delete:hover {
+.drag-n-drop li span.edit:hover, .drag-n-drop li span.delete:hover {
   background: blue;
 }

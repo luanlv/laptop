@@ -8,13 +8,11 @@ var Menu = function(ctrl){
           </a>
         </div>
         <div className="expanded">
-          <a href="../../html/dashboards/dashboard.html">
+          <a href="javascript:void(0)">
             <span className="text-lg text-bold text-primary ">MATERIAL&nbsp;ADMIN</span>
           </a>
         </div>
       </div>
-      
-      
       
       <div className="menubar-scroll-panel"
         onmouseleave={function(){
@@ -27,30 +25,37 @@ var Menu = function(ctrl){
         
         <div className="gui-controls" id="main-menu">
           <li>
-            <a href="#/" className="active">
+            <a href="?/" className="active">
               <div className="gui-icon"><i className="md md-home"></i></div>
               <span className="title">Dashboard</span>
             </a>
           </li>
-          
-          <li className="gui-folder">
-            <a href="/admin#/newProduct"
-            >
-              <div className="gui-icon"><i className="md md-web"></i></div>
-              <span className="title">Thêm laptop</span>
+  
+          <li class="gui-folder expanded">
+            <a>
+              <div class="gui-icon"><i class="fa fa-folder-open fa-fw"></i></div>
+              <span class="title">LAPTOP</span>
             </a>
+            <ul>
+              <li><a href="/admin?/product/new"><span class="title">Thêm mới</span></a></li>
+              <li><a href="/admin?/product/list"><span class="title">Danh sách</span></a></li>
+            </ul>
           </li>
   
-          <li className="gui-folder">
-            <a href="/admin#/newArticle"
-            >
-              <div className="gui-icon"><i className="md md-web"></i></div>
-              <span className="title">Article</span>
+          <li class="gui-folder expanded">
+            <a>
+              <div class="gui-icon"><i class="fa fa-folder-open fa-fw"></i></div>
+              <span class="title">Bài viết</span>
             </a>
+            <ul>
+              <li><a href="/admin?/article/new"><span class="title">Thêm mới</span></a></li>
+              <li><a href="/admin?/article/list"><span class="title">Danh sách</span></a></li>
+            </ul>
           </li>
+          
   
           <li>
-            <a href="/admin#/category/create"
+            <a href="/admin?/category/create"
             >
               <div className="gui-icon"><i className="md md-web"></i></div>
               <span className="title">Thêm danh mục</span>
@@ -58,7 +63,7 @@ var Menu = function(ctrl){
           </li>
   
           <li>
-            <a href="/admin#/setup/category"
+            <a href="/admin?/setup/category"
             >
               <div className="gui-icon"><i className="md md-web"></i></div>
               <span className="title">Menu sản phẩm</span>
@@ -66,10 +71,18 @@ var Menu = function(ctrl){
           </li>
   
           <li>
-            <a href="/admin#/setup/nav"
+            <a href="/admin?/setup/nav"
             >
               <div className="gui-icon"><i className="md md-web"></i></div>
               <span className="title">Menu chính</span>
+            </a>
+          </li>
+          
+          <li>
+            <a href="/admin?/productShow"
+            >
+              <div className="gui-icon"><i className="md md-web"></i></div>
+              <span className="title">Hiển thị trang chủ</span>
             </a>
           </li>
           

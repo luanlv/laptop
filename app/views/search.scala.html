@@ -1,0 +1,68 @@
+@(products: List[Product], keyword: String = "", categoryMenu: List[CategoryMenu], nav: List[CategoryMenu])(implicit user: Option[User], request: RequestHeader, messages: Messages)
+
+@main("Tìm kiếm", categoryMenu, nav){
+  <div class="row">
+
+    <div class="section-prod-list">
+
+      <div class="col-md-12">
+        <div class="widget-title prod-title">
+          <span>Tìm kiếm từ khóa: @keyword</span>
+        </div>
+        <div class="all-product">
+
+        @products.map { product =>
+
+          <div class="col-sm-3 col-md-2 col-xs-6 ">
+            <div class="product-item  ">
+              <a href="@{"/san-pham/" + product.category + "/" + product._id}">
+                @*<img class="icon_status" src= />*@
+
+                <div class="thumb"  id="orther-thumb">
+                  <div class="square">
+                    <img src="@{"/cover/get/" + product.image.head._id}" alt="@{"/cover/get/" + product.image.head.alt}" />
+
+                  </div>
+                </div>
+
+
+                <div class="prod-info">
+                  <p> @product.name</p>
+                  <div class="price">@product.price VNĐ</div>
+                  <div class="status">
+                    Bảo hành: @product.guarantee tháng
+                    <span>( Còn hàng )</span>
+                  </div>
+                </div>
+                <div class="name">@product.name </div>
+                <span>@product.price VNĐ</span>
+                <div class="wanl">Bảo hành: @product.guarantee tháng</div>
+              </a>
+            </div>
+          </div>
+        }
+
+        </div>
+
+        @*<div class="pages">*@
+
+          @*<a href="/Search,1.htm"><b>1</b></a>*@
+          @*<a href="/Search,2.htm">2</a>*@
+          @*<a href="/Search,3.htm">3</a>*@
+          @*<a href="/Search,4.htm">4</a>*@
+          @*<a href="/Search,5.htm">5</a>*@
+          @*<a href="/Search,6.htm">6</a>*@
+
+        @*</div>*@
+
+
+      </div>
+      <script type="text/javascript">
+
+              var h = $("#orther-thumb").css('width');
+              $(".square").css("height", h);
+
+      </script>
+    </div>
+  </div>
+}

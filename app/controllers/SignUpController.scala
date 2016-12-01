@@ -1,7 +1,7 @@
 package controllers
 
 import java.util.UUID
-import javax.inject.Inject
+import javax.inject.{ Inject, Singleton }
 
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
@@ -16,30 +16,37 @@ import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.mailer.{ Email, MailerClient }
 import play.api.mvc.Controller
 import reactivemongo.bson.BSONObjectID
-import utils.silhouette.MyEnv
+import utils.silhouette.{ AuthController, MyEnv }
 
 import scala.concurrent.Future
 
+@Singleton
 class SignUpController @Inject() (
+  val silhouette: Silhouette[MyEnv],
   val messagesApi: MessagesApi,
-  silhouette: Silhouette[MyEnv],
   userService: UserService,
   authInfoRepository: AuthInfoRepository,
   authTokenService: AuthTokenService,
   avatarService: AvatarService,
   passwordHasherRegistry: PasswordHasherRegistry,
   mailerClient: MailerClient,
-  implicit val webJarAssets: WebJarAssets)
-  extends Controller with I18nSupport {
+  socialProviderRegistry: SocialProviderRegistry) extends AuthController {
 
   /**
    * Views the `Sign Up` page.
    *
    * @return The result to display.
    */
-  def view = silhouette.UnsecuredAction.async { implicit request =>
-    //    Future.successful(Ok(views.html.signUp(SignUpForm.form)))
-    Future.successful(Ok("một email đã được gửi tới địa chỉ email của bạn. vui lòng bấm vào đường link trong email để xác nhận"))
+  def view = silhouette.UserAwareAction.async { implicit request =>
+    request.identity match {
+      case None => Future.successful(Redirect("/"))
+      case Some(user) => if (user.services.contains("master")) {
+        Future.successful(Ok(views.html.signUp(SignUpForm.form)))
+      } else {
+        Future.successful(Redirect("/"))
+      }
+    }
+    //    Future.successful(Ok("một email đã được gửi tới địa chỉ email của bạn. vui lòng bấm vào đường link trong email để xác nhận"))
   }
 
   /**
@@ -47,7 +54,8 @@ class SignUpController @Inject() (
    *
    * @return The result to display.
    */
-  def submit = silhouette.UnsecuredAction.async { implicit request =>
+  def submit = silhouette.UserAwareAction.async { implicit request =>
+    println("============================ Submit ==========================")
     SignUpForm.form.bindFromRequest.fold(
       form => Future.successful(BadRequest(views.html.signUp(form))),
       data => {
@@ -56,13 +64,13 @@ class SignUpController @Inject() (
         userService.retrieve(loginInfo).flatMap {
           case Some(user) =>
             val url = routes.SignInController.view().absoluteURL()
-            mailerClient.send(Email(
-              subject = Messages("email.already.signed.up.subject"),
-              from = Messages("email.from"),
-              to = Seq(data.email),
-              bodyText = Some(views.txt.emails.alreadySignedUp(user, url).body),
-              bodyHtml = Some(views.html.emails.alreadySignedUp(user, url).body)
-            ))
+            //            mailerClient.send(Email(
+            //              subject = Messages("email.already.signed.up.subject"),
+            //              from = Messages("email.from"),
+            //              to = Seq(data.email),
+            //              bodyText = Some(views.txt.emails.alreadySignedUp(user, url).body),
+            //              bodyHtml = Some(views.html.emails.alreadySignedUp(user, url).body)
+            //            ))
 
             Future.successful(result)
           case None =>
@@ -86,13 +94,13 @@ class SignUpController @Inject() (
               authToken <- authTokenService.create(user.userID)
             } yield {
               val url = routes.ActivateAccountController.activate(authToken.id).absoluteURL()
-              mailerClient.send(Email(
-                subject = Messages("email.sign.up.subject"),
-                from = Messages("email.from"),
-                to = Seq(data.email),
-                bodyText = Some(views.txt.emails.signUp(user, url).body),
-                bodyHtml = Some(views.html.emails.signUp(user, url).body)
-              ))
+              //              mailerClient.send(Email(
+              //                subject = Messages("email.sign.up.subject"),
+              //                from = Messages("email.from"),
+              //                to = Seq(data.email),
+              //                bodyText = Some(views.txt.emails.signUp(user, url).body),
+              //                bodyHtml = Some(views.html.emails.signUp(user, url).body)
+              //              ))
 
               silhouette.env.eventBus.publish(SignUpEvent(user, request))
               result

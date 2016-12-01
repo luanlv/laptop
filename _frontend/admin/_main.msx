@@ -3,6 +3,8 @@ var Main = Main || {};
 
 Main.Home = require('./main/home.msx');
 Main.NewProduct = require('./main/newproduct.msx');
+Main.Product = require('./main/product.msx');
+Main.Article = require('./main/article.msx');
 Main.NewArticle = require('./main/newarticle.msx');
 Main.NewCategory = require('./main/newcategory.msx');
 Main.SetupCategoryController = require('./main/setup_category_controller.msx');
@@ -14,9 +16,11 @@ Main.IndexController = require('./main/buildindex.msx');
 
 
 m.route(document.querySelector('#app'), "/", {
-  "/": Main.Home,
-  "/newProduct": Main.NewProduct,
-  "/newArticle": Main.NewArticle,
+  "/": Main.Product,
+  "/product/list": Main.Product,
+  "/product/:status": Main.NewProduct,
+  "/article/list": Main.Article,
+  "/article/:status": Main.NewArticle,
   "/category/create": Main.NewCategory,
   "/setup/category": Main.SetupCategoryController,
   "/setup/nav": Main.SetupCategoryController,

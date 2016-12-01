@@ -5,6 +5,8 @@ var Content = require('./_content.msx');
 var Right = require('./_right.msx');
 Home.controller = function(){
   console.log("run home")
+  window.runApp();
+  window.runNav();
 };
 
 Home.view = function(ctrl){

@@ -4,9 +4,12 @@ var Main = Main || {};
 
 Main.Home = require('./main/home.msx');
 Main.NewProduct = require('./main/newproduct.msx');
+Main.Product = require('./main/product.msx');
+Main.Article = require('./main/article.msx');
 Main.NewArticle = require('./main/newarticle.msx');
 Main.NewCategory = require('./main/newcategory.msx');
-Main.MenuController = require('./main/menucontroller.msx');
+Main.SetupCategoryController = require('./main/setup_category_controller.msx');
+Main.IndexController = require('./main/buildindex.msx');
 //Main.Dashboard = require('./main/_dashboard.msx');
 // Main.Product = require('./main/_product.msx');
 // Main.Category = require('./main/_category.msx');
@@ -14,18 +17,22 @@ Main.MenuController = require('./main/menucontroller.msx');
 
 
 m.route(document.querySelector('#app'), "/", {
-  "/": Main.Home,
-  "/newProduct": Main.NewProduct,
-  "/newArticle": Main.NewArticle,
+  "/": Main.Product,
+  "/product/list": Main.Product,
+  "/product/:status": Main.NewProduct,
+  "/article/list": Main.Article,
+  "/article/:status": Main.NewArticle,
   "/category/create": Main.NewCategory,
-  "/menu": Main.MenuController
+  "/setup/category": Main.SetupCategoryController,
+  "/setup/nav": Main.SetupCategoryController,
+  "/productShow": Main.IndexController
 });
 
 // m.route('/menu');
 
 
 module.exports = Main;
-},{"./main/home.msx":12,"./main/menucontroller.msx":13,"./main/newarticle.msx":14,"./main/newcategory.msx":15,"./main/newproduct.msx":16}],2:[function(require,module,exports){
+},{"./main/article.msx":14,"./main/buildindex.msx":15,"./main/home.msx":17,"./main/newarticle.msx":18,"./main/newcategory.msx":19,"./main/newproduct.msx":20,"./main/product.msx":21,"./main/setup_category_controller.msx":22}],2:[function(require,module,exports){
 "use strict";
 
 window.token = $(document.getElementsByName("csrfToken")).val();
@@ -47,7 +54,7 @@ window.mobilecheck = function() {
 window.isMobile = window.mobilecheck();
 
 
-m.route.mode = "hash";
+m.route.mode = "search";
 
 //window.Nav = require('./_nav.msx');
 window.Main = require('./_main.msx');
@@ -60,6 +67,126 @@ window.Main = require('./_main.msx');
 
 
 },{"./_main.msx":1}],3:[function(require,module,exports){
+var fn = require('./fn.msx');
+
+var input = m.prop("");
+var data = m.prop({
+  "_id" : "",
+  "name": "",
+  "category": "none",
+  "extra": "normal",
+  "price": 0,
+  "available": true,
+  "guarantee": 12,
+  "image" : [
+  ],
+  "info": ""
+});
+
+var NewProduct = function(ctrl){
+  return [
+    {tag: "hr", attrs: {className:"ruler-xxl"}},
+    {tag: "div", attrs: {className:"content"}, children: [
+      {tag: "section", attrs: {}, children: [
+        {tag: "div", attrs: {className:"section-body"}, children: [
+          {tag: "div", attrs: {className:"card"}, children: [
+            {tag: "div", attrs: {className:"card-body"}, children: [
+              
+              {tag: "nav", attrs: {"aria-label":"Page navigation"}, children: [
+                {tag: "ul", attrs: {class:"pagination"}, children: [
+                  {tag: "li", attrs: {}, children: [
+                    {tag: "a", attrs: {href:"javascript:void(0)", "aria-label":"Previous", 
+                       onclick:function(){
+                         if(ctrl.page >1) {
+                           ctrl.request = fn.requestWithFeedback({
+                             method: "GET",
+                             url: "/product/list/" + (ctrl.page - 1)
+                           }, ctrl.productsTmp, ctrl.setupPrev);
+                         }
+                       }
+                    }, children: [
+                      {tag: "span", attrs: {"aria-hidden":"true"
+                      }, children: ["«"]}
+                    ]}
+                  ]}, 
+                  {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"javascript:void(0)"}, children: [ctrl.page]}]}, 
+                  {tag: "li", attrs: {}, children: [
+                    {tag: "a", attrs: {href:"javascript:void(0)", "aria-label":"Next", 
+                       onclick:function(){
+                         ctrl.request = fn.requestWithFeedback({
+                           method: "GET",
+                           url: "/product/list/" + (ctrl.page + 1)
+                         }, ctrl.productsTmp, ctrl.setupNext);
+                       }
+                    }, children: [
+                      {tag: "span", attrs: {"aria-hidden":"true"}, children: ["»"]}
+                    ]}
+                  ]}, 
+                  {tag: "li", attrs: {}, children: [
+                    {tag: "div", attrs: {class:"input-group"}, children: [
+                      {tag: "span", attrs: {class:"input-group-addon", id:"basic-addon1"}, children: [" Tìm kiếm: "]}, 
+                      {tag: "input", attrs: {type:"text", class:"form-control", placeholder:"Tên sản phẩm", "aria-describedby":"basic-addon1"}}
+                    ]}
+                  ]}
+                ]}
+              
+              ]}, 
+              
+              {tag: "div", attrs: {class:"table-responsive"}, children: [
+                {tag: "table", attrs: {class:"table no-margin"}, children: [
+                  {tag: "thead", attrs: {}, children: [
+                  {tag: "tr", attrs: {}, children: [
+                    {tag: "th", attrs: {}, children: ["Tên bài viết"]}, 
+                    {tag: "th", attrs: {}}
+                  ]}
+                  ]}, 
+                  {tag: "tbody", attrs: {}, children: [
+                  ctrl.products().map(function(el){
+                    return [{tag: "tr", attrs: {}, children: [
+                      {tag: "td", attrs: {}, children: [el.title]}, 
+                      {tag: "td", attrs: {}, children: [
+                        {tag: "span", attrs: {style:"cursor: pointer", 
+                              onclick:function(){
+                                $.ajax({
+                                  type: "POST",
+                                  url: "/article/delete/" + el._id,
+                                  data: JSON.stringify({}),
+                                  contentType: "application/json",
+                                  dataType: "text"
+                                }).done(function() {
+                                  alert("Xóa thành công")
+                                  location.reload();
+                                })
+                                    .fail(function() {
+                                      alert( "error" );
+                                    });
+                              }
+                        }, children: [" Xóa "]}, " |", 
+                        {tag: "span", attrs: {style:"cursor: pointer", 
+                              onclick:function(){
+                                m.route("/article/edit?article=" + el._id)
+                              }
+                        }, children: [" Sửa "]}
+                      ]}
+                    ]}
+                    ]
+                  })
+                  
+                  
+                  ]}
+                ]}
+              ]}
+            ]}
+          ]}
+        ]}
+      ]}
+    ]}
+  ]
+};
+
+
+module.exports = NewProduct;
+},{"./fn.msx":16}],4:[function(require,module,exports){
 var Content = function(ctrl){
   return [
     {tag: "hr", attrs: {className:"ruler-xxl"}},
@@ -132,7 +259,7 @@ var Content = function(ctrl){
 }
 
 module.exports = Content;
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var fn = require('./fn.msx');
 
 var input = m.prop("");
@@ -189,10 +316,11 @@ var CreateMenu = function(ctrl){
                     {tag: "br", attrs: {}}, 
                     {tag: "button", attrs: {id:"update", 
                       onclick:function(el){
+                        console.log(" Zzzzzzzzzzzzzz ")
                         $(document).on('click', '#update', function(){
                           var request = $.ajax({
                             type: "POST",
-                            url: "/admin/menu",
+                            url: "/setup/" + ctrl.setupID,
                             data: ctrl.domenu.toJson(),
                             contentType: "application/json; charset=utf-8",
                             dataType: "text"
@@ -204,7 +332,7 @@ var CreateMenu = function(ctrl){
                             alert( "Request failed: " + textStatus );
                           });
                         });
-                        console.log(ctrl.domenu.toJson());
+                        {/*console.log(ctrl.domenu.toJson());*/}
                       }
                           
                     }, children: ["Update"]}, 
@@ -268,7 +396,7 @@ var CreateMenu = function(ctrl){
 
 
 module.exports = CreateMenu;
-},{"./fn.msx":11}],5:[function(require,module,exports){
+},{"./fn.msx":16}],6:[function(require,module,exports){
 
 
 var Header = function(ctrl){
@@ -280,7 +408,7 @@ var Header = function(ctrl){
         {tag: "ul", attrs: {className:"header-nav header-nav-options"}, children: [
           {tag: "li", attrs: {className:"header-nav-brand"}, children: [
             {tag: "div", attrs: {className:"brand-holder"}, children: [
-              {tag: "a", attrs: {href:"/admin#/"}, children: [
+              {tag: "a", attrs: {href:"javascript:void(0)"}, children: [
                 {tag: "span", attrs: {className:"text-lg text-bold text-primary"}, children: ["MATERIAL ADMIN"]}
               ]}
             ]}
@@ -292,111 +420,115 @@ var Header = function(ctrl){
           ]}
         ]}
       ]}, 
-      
-      
-      {tag: "div", attrs: {className:"headerbar-right"}, children: [
-        {tag: "div", attrs: {className:"header-nav header-nav-options"}, children: [
-          {tag: "li", attrs: {}, children: [
-            {tag: "form", attrs: {className:"navbar-search", role:"search"}, children: [
-              {tag: "div", attrs: {className:"form-group"}, children: [
-                {tag: "input", attrs: {type:"text", className:"form-control", name:"headerSearch", placeholder:"Enter your keyword"}}
-              ]}, 
-              {tag: "button", attrs: {type:"submit", className:"btn btn-icon-toggle ink-reaction"}, children: [{tag: "i", attrs: {className:"fa fa-search"}}]}
-            ]}
-          ]}, 
-          {tag: "li", attrs: {className:"dropdown hidden-xs"}, children: [
-            {tag: "a", attrs: {href:"javascript:void(0);", className:"btn btn-icon-toggle btn-default", "data-toggle":"dropdown"}, children: [
-              {tag: "i", attrs: {className:"fa fa-bell"}}, {tag: "sup", attrs: {className:"badge style-danger"}, children: ["4"]}
-            ]}, 
-            {tag: "ul", attrs: {className:"dropdown-menu animation-expand"}, children: [
-              {tag: "li", attrs: {className:"dropdown-header"}, children: ["Today's messages"]}, 
-              {tag: "li", attrs: {}, children: [
-                {tag: "a", attrs: {className:"alert alert-callout alert-warning", href:"javascript:void(0);"}, children: [
-                  {tag: "img", attrs: {className:"pull-right img-circle dropdown-avatar", src:"/assets/admin/img/avatar2.jpg?1404026449", alt:""}}, 
-                  {tag: "strong", attrs: {}, children: ["Alex Anistor"]}, {tag: "br", attrs: {}}, 
-                  {tag: "small", attrs: {}, children: ["Testing functionality..."]}
-                ]}
-              ]}, 
-              {tag: "li", attrs: {}, children: [
-                {tag: "a", attrs: {className:"alert alert-callout alert-info", href:"javascript:void(0);"}, children: [
-                  {tag: "img", attrs: {className:"pull-right img-circle dropdown-avatar", src:"/assets/admin/img/avatar3.jpg?1404026799", alt:""}}, 
-                  {tag: "strong", attrs: {}, children: ["Alicia Adell"]}, {tag: "br", attrs: {}}, 
-                  {tag: "small", attrs: {}, children: ["Reviewing last changes..."]}
-                ]}
-              ]}, 
-              {tag: "li", attrs: {className:"dropdown-header"}, children: ["Options"]}, 
-              {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"../../html/pages/login.html"}, children: ["View all messages ", {tag: "span", attrs: {className:"pull-right"}, children: [{tag: "i", attrs: {className:"fa fa-arrow-right"}}]}]}]}, 
-              {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"../../html/pages/login.html"}, children: ["Mark as read ", {tag: "span", attrs: {className:"pull-right"}, children: [{tag: "i", attrs: {className:"fa fa-arrow-right"}}]}]}]}
-            ]}
-          ]}, 
-          {tag: "li", attrs: {className:"dropdown hidden-xs"}, children: [
-            {tag: "a", attrs: {href:"javascript:void(0);", className:"btn btn-icon-toggle btn-default", "data-toggle":"dropdown"}, children: [
-              {tag: "i", attrs: {className:"fa fa-area-chart"}}
-            ]}, 
-            {tag: "ul", attrs: {className:"dropdown-menu animation-expand"}, children: [
-              {tag: "li", attrs: {className:"dropdown-header"}, children: ["Server load"]}, 
-              {tag: "li", attrs: {className:"dropdown-progress"}, children: [
-                {tag: "a", attrs: {href:"javascript:void(0);"}, children: [
-                  {tag: "div", attrs: {className:"dropdown-label"}, children: [
-                    {tag: "span", attrs: {className:"text-light"}, children: ["Server load ", {tag: "strong", attrs: {}, children: ["Today"]}]}, 
-                    {tag: "strong", attrs: {className:"pull-right"}, children: ["93%"]}
-                  ]}, 
-                  {tag: "div", attrs: {className:"progress"}, children: [{tag: "div", attrs: {className:"progress-bar progress-bar-danger", style:"width: 93%"}}]}
-                ]}
-              ]}, 
-              {tag: "li", attrs: {className:"dropdown-progress"}, children: [
-                {tag: "a", attrs: {href:"javascript:void(0);"}, children: [
-                  {tag: "div", attrs: {className:"dropdown-label"}, children: [
-                    {tag: "span", attrs: {className:"text-light"}, children: ["Server load ", {tag: "strong", attrs: {}, children: ["Yesterday"]}]}, 
-                    {tag: "strong", attrs: {className:"pull-right"}, children: ["30%"]}
-                  ]}, 
-                  {tag: "div", attrs: {className:"progress"}, children: [{tag: "div", attrs: {className:"progress-bar progress-bar-success", style:"width: 30%"}}]}
-                ]}
-              ]}, 
-              {tag: "li", attrs: {className:"dropdown-progress"}, children: [
-                {tag: "a", attrs: {href:"javascript:void(0);"}, children: [
-                  {tag: "div", attrs: {className:"dropdown-label"}, children: [
-                    {tag: "span", attrs: {className:"text-light"}, children: ["Server load ", {tag: "strong", attrs: {}, children: ["Lastweek"]}]}, 
-                    {tag: "strong", attrs: {className:"pull-right"}, children: ["74%"]}
-                  ]}, 
-                  {tag: "div", attrs: {className:"progress"}, children: [{tag: "div", attrs: {className:"progress-bar progress-bar-warning", style:"width: 74%"}}]}
-                ]}
-              ]}
-            ]}
-          ]}
-        ]}, 
-        
-        
-        {tag: "ul", attrs: {className:"header-nav header-nav-profile"}, children: [
-          {tag: "li", attrs: {className:"dropdown"}, children: [
-            {tag: "a", attrs: {href:"javascript:void(0);", className:"dropdown-toggle ink-reaction", "data-toggle":"dropdown"}, children: [
-              {tag: "img", attrs: {src:"/assets/admin/img/avatar1.jpg?1403934956", alt:""}}, 
-              {tag: "span", attrs: {className:"profile-info"}, children: [
-                  "Daniel Johnson", 
-                  {tag: "small", attrs: {}, children: ["Administrator"]}
-                ]}
-            ]}, 
-            {tag: "ul", attrs: {className:"dropdown-menu animation-dock"}, children: [
-              {tag: "li", attrs: {className:"dropdown-header"}, children: ["Config"]}, 
-              {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"../../html/pages/profile.html"}, children: ["My profile"]}]}, 
-              {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"../../html/pages/blog/post.html"}, children: ["My blog ", {tag: "span", attrs: {className:"badge style-danger pull-right"}, children: ["16"]}]}]}, 
-              {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"../../html/pages/calendar.html"}, children: ["My appointments"]}]}, 
-              {tag: "li", attrs: {className:"divider"}}, 
-              {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"../../html/pages/locked.html"}, children: [{tag: "i", attrs: {className:"fa fa-fw fa-lock"}}, " Lock"]}]}, 
-              {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"../../html/pages/login.html"}, children: [{tag: "i", attrs: {className:"fa fa-fw fa-power-off text-danger"}}, " Logout"]}]}
-            ]}
-          ]}
-        ]}, 
-  
-  
-        {tag: "ul", attrs: {className:"header-nav header-nav-toggle"}, children: [
-          {tag: "li", attrs: {}, children: [
-            {tag: "a", attrs: {className:"btn btn-icon-toggle btn-default", href:"#offcanvas-search", "data-toggle":"offcanvas", "data-backdrop":"false"}, children: [
-              {tag: "i", attrs: {className:"fa fa-ellipsis-v"}}
-            ]}
-          ]}
-        ]}
+      {tag: "div", attrs: {className:"headerbar-right", style:"margin-top: 15px; margin-right: 15px; border: 1px solid #ddd; border-radius: 5px; padding: 5px;"}, children: [
+        {tag: "a", attrs: {href:"/signOut"}, children: ["Logout"]}
+      ]}, 
+      {tag: "div", attrs: {className:"headerbar-right", style:"margin-top: 15px; margin-right: 15px; border: 1px solid #ddd; border-radius: 5px; padding: 5px;"}, children: [
+        {tag: "a", attrs: {href:"/signUp"}, children: ["Thêm tài khoản"]}
       ]}
+      /*<div className="headerbar-right">*/
+        /*<div className="header-nav header-nav-options">*/
+          /*<li>*/
+            /*<form className="navbar-search" role="search">*/
+              /*<div className="form-group">*/
+                /*<input type="text" className="form-control" name="headerSearch" placeholder="Enter your keyword"/>*/
+              /*</div>*/
+              /*<button type="submit" className="btn btn-icon-toggle ink-reaction"><i className="fa fa-search"></i></button>*/
+            /*</form>*/
+          /*</li>*/
+          /*<li className="dropdown hidden-xs">*/
+            /*<a href="javascript:void(0);" className="btn btn-icon-toggle btn-default" data-toggle="dropdown">*/
+              /*<i className="fa fa-bell"></i><sup className="badge style-danger">4</sup>*/
+            /*</a>*/
+            /*<ul className="dropdown-menu animation-expand">*/
+              /*<li className="dropdown-header">Today's messages</li>*/
+              /*<li>*/
+                /*<a className="alert alert-callout alert-warning" href="javascript:void(0);">*/
+                  /*<img className="pull-right img-circle dropdown-avatar" src="/assets/admin/img/avatar2.jpg?1404026449" alt="" />*/
+                  /*<strong>Alex Anistor</strong><br/>*/
+                  /*<small>Testing functionality...</small>*/
+                /*</a>*/
+              /*</li>*/
+              /*<li>*/
+                /*<a className="alert alert-callout alert-info" href="javascript:void(0);">*/
+                  /*<img className="pull-right img-circle dropdown-avatar" src="/assets/admin/img/avatar3.jpg?1404026799" alt="" />*/
+                  /*<strong>Alicia Adell</strong><br/>*/
+                  /*<small>Reviewing last changes...</small>*/
+                /*</a>*/
+              /*</li>*/
+              /*<li className="dropdown-header">Options</li>*/
+              /*<li><a href="../../html/pages/login.html">View all messages <span className="pull-right"><i className="fa fa-arrow-right"></i></span></a></li>*/
+              /*<li><a href="../../html/pages/login.html">Mark as read <span className="pull-right"><i className="fa fa-arrow-right"></i></span></a></li>*/
+            /*</ul>*/
+          /*</li>*/
+          /*<li className="dropdown hidden-xs">*/
+            /*<a href="javascript:void(0);" className="btn btn-icon-toggle btn-default" data-toggle="dropdown">*/
+              /*<i className="fa fa-area-chart"></i>*/
+            /*</a>*/
+            /*<ul className="dropdown-menu animation-expand">*/
+              /*<li className="dropdown-header">Server load</li>*/
+              /*<li className="dropdown-progress">*/
+                /*<a href="javascript:void(0);">*/
+                  /*<div className="dropdown-label">*/
+                    /*<span className="text-light">Server load <strong>Today</strong></span>*/
+                    /*<strong className="pull-right">93%</strong>*/
+                  /*</div>*/
+                  /*<div className="progress"><div className="progress-bar progress-bar-danger" style="width: 93%"></div></div>*/
+                /*</a>*/
+              /*</li>*/
+              /*<li className="dropdown-progress">*/
+                /*<a href="javascript:void(0);">*/
+                  /*<div className="dropdown-label">*/
+                    /*<span className="text-light">Server load <strong>Yesterday</strong></span>*/
+                    /*<strong className="pull-right">30%</strong>*/
+                  /*</div>*/
+                  /*<div className="progress"><div className="progress-bar progress-bar-success" style="width: 30%"></div></div>*/
+                /*</a>*/
+              /*</li>*/
+              /*<li className="dropdown-progress">*/
+                /*<a href="javascript:void(0);">*/
+                  /*<div className="dropdown-label">*/
+                    /*<span className="text-light">Server load <strong>Lastweek</strong></span>*/
+                    /*<strong className="pull-right">74%</strong>*/
+                  /*</div>*/
+                  /*<div className="progress"><div className="progress-bar progress-bar-warning" style="width: 74%"></div></div>*/
+                /*</a>*/
+              /*</li>*/
+            /*</ul>*/
+          /*</li>*/
+        /*</div>*/
+        /**/
+        /**/
+        /*<ul className="header-nav header-nav-profile">*/
+          /*<li className="dropdown">*/
+            /*<a href="javascript:void(0);" className="dropdown-toggle ink-reaction" data-toggle="dropdown">*/
+              /*<img src="/assets/admin/img/avatar1.jpg?1403934956" alt="" />*/
+              /*<span className="profile-info">*/
+                  /*Daniel Johnson*/
+                  /*<small>Administrator</small>*/
+                /*</span>*/
+            /*</a>*/
+            /*<ul className="dropdown-menu animation-dock">*/
+              /*<li className="dropdown-header">Config</li>*/
+              /*<li><a href="../../html/pages/profile.html">My profile</a></li>*/
+              /*<li><a href="../../html/pages/blog/post.html">My blog <span className="badge style-danger pull-right">16</span></a></li>*/
+              /*<li><a href="../../html/pages/calendar.html">My appointments</a></li>*/
+              /*<li className="divider"></li>*/
+              /*<li><a href="../../html/pages/locked.html"><i className="fa fa-fw fa-lock"></i> Lock</a></li>*/
+              /*<li><a href="../../html/pages/login.html"><i className="fa fa-fw fa-power-off text-danger"></i> Logout</a></li>*/
+            /*</ul>*/
+          /*</li>*/
+        /*</ul>*/
+      
+      
+        /*<ul className="header-nav header-nav-toggle">*/
+          /*<li>*/
+            /*<a className="btn btn-icon-toggle btn-default" href="#offcanvas-search" data-toggle="offcanvas" data-backdrop="false">*/
+              /*<i className="fa fa-ellipsis-v"></i>*/
+            /*</a>*/
+          /*</li>*/
+        /*</ul>*/
+      /*</div>*/
       
     ]}
   ]}
@@ -404,7 +536,254 @@ var Header = function(ctrl){
 } ;
 
 module.exports = Header;
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
+var fn = require('./fn.msx');
+
+var input = m.prop("");
+var input2 = m.prop("");
+var data = m.prop({
+  "_id" : "",
+  "title": "",
+  "body": "",
+  "tags": ["huong-dan"],
+  "cover": {
+    "id" : "ec97531f-6aa0-4374-87d4-77b6a030a854",
+    "alt" : "anh dai dien"
+  }
+});
+
+var IndexBuilder = function(ctrl){
+  return [
+    {tag: "hr", attrs: {className:"ruler-xxl"}},
+    {tag: "div", attrs: {className:"content"}, children: [
+      {tag: "section", attrs: {}, children: [
+        {tag: "div", attrs: {className:"section-body"}, children: [
+          {tag: "div", attrs: {className:"card"}, children: [
+            {tag: "div", attrs: {className:"card-body"}, children: [
+                {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised btn-primary", style:"float: right", 
+                        onclick:function(){
+                          $.ajax({
+                            type: "POST",
+                            url: "/indexbuild",
+                            data: JSON.stringify(ctrl.items.colors()),
+                            contentType: "application/json",
+                            dataType: "json",
+                            success: function(data){
+                            }
+                          });
+                        }
+                }, children: ["Publish"]}, 
+                {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised", style:"float: right; margin-right: 20px;"}, children: ["Save"]}, 
+                {tag: "br", attrs: {}}, 
+                {tag: "br", attrs: {}}
+            ]}
+          ]}, 
+          
+          {tag: "div", attrs: {className:"row"}, children: [
+            {tag: "div", attrs: {className:"col-md-6"}, children: [
+              {tag: "div", attrs: {className:"card"}, children: [
+                {tag: "div", attrs: {className:"card-body"}, children: [
+                  {tag: "input", attrs: {type:"text", value:input(), 
+                     onchange: m.withAttr("value", input)}
+                  }, 
+                  {tag: "input", attrs: {type:"button", value:"Thêm mới", 
+                    onclick:function(){
+                      ctrl.items.colors().push({"name": input(), listID: []});
+                      input("")
+                    }}
+                  }, 
+                  {tag: "div", attrs: {className:"drag-n-drop clearfix"}, children: [
+                    {tag: "ol", attrs: {}, children: [
+                      ctrl.items.colors().map(function(item, i) {
+                        var dragging = (i == ctrl.items.dragging()) ? 'dragging' : '';
+                        return m('li.clearfix' + ((ctrl.listProduct.name()==item.name)?".active":""), {
+                          'data-id': i,
+                          class: dragging,
+                          draggable: 'true',
+                          ondragstart: ctrl.dragStart.bind(ctrl),
+                          ondragover: ctrl.dragOver.bind(ctrl),
+                          ondragend: ctrl.dragEnd.bind(ctrl)
+                        }, [ {tag: "span", attrs: {className:"name"}, children: [item.name]},
+                          {tag: "span", attrs: {className:"edit pull-right", 
+                            onclick:function(){
+                              ctrl.listProduct.product(item.listID)
+                              ctrl.listProduct.name(item.name)
+                            }
+                          }, children: ["Sửa"]},
+                          {tag: "span", attrs: {className:"delete pull-right", 
+                            onclick:function(){
+                              var r = confirm("Xác nhận xóa");
+                              if (r == true) {
+                                ctrl.items.colors().splice(i ,1)
+                              }
+                            }
+                          }, children: ["Xóa"]}
+                        ])
+                      })
+                      
+                      /*<pre>*/
+                        /*App State: {[JSON.stringify(ctrl.items,0,2)]}*/
+                      /*</pre>*/
+                    ]}
+                  ]}
+                ]}
+              ]}
+              
+            ]}, 
+  
+  
+            {tag: "div", attrs: {className:"col-md-6"}, children: [
+              {tag: "div", attrs: {className:"card"}, children: [
+                {tag: "div", attrs: {className:"card-body"}, children: [
+                  {tag: "div", attrs: {className:"drag-n-drop"}, children: [
+  
+                    {tag: "div", attrs: {className:"clearfix"}, children: [
+                      (ctrl.listProduct.name().length > 0)?[
+                        {tag: "button", attrs: {type:"button", className:"btn pull-right", "data-toggle":"modal", "data-target":"#product", 
+                                onclick:function(){
+                                  ctrl.productList = fn.requestWithFeedback({method: "GET", url: "/product/list/" + ctrl.page}, ctrl.products, ctrl.setupProduct);
+                                }
+                        }, children: ["Thêm mới"]}
+                      ]:("")
+                    ]}, 
+                    
+                    {tag: "ol", attrs: {}, children: [
+                      ctrl.listProduct.product().map(function(item, i) {
+                        var dragging = (i == ctrl.listProduct.dragging()) ? 'dragging' : '';
+                        return m('li', {
+                          'data-id': i,
+                          class: dragging,
+                          draggable: 'true',
+                          ondragstart: ctrl.dragStart2.bind(ctrl),
+                          ondragover: ctrl.dragOver2.bind(ctrl),
+                          ondragend: ctrl.dragEnd2.bind(ctrl)
+                        }, [ item,
+                          {tag: "span", attrs: {className:"delete pull-right", 
+                               onclick:function(){
+                                 var r = confirm("Xác nhận xóa");
+                                 if (r == true) {
+                                   ctrl.listProduct.product().splice(i ,1)
+                                 }
+                               }
+                          }, children: ["Xóa"]}
+                        ])
+                      })
+                      
+                      /*<pre>*/
+                      /*App State: {[JSON.stringify(ctrl.items,0,2)]}*/
+                      /*</pre>*/
+                    ]}
+                  ]}
+                ]}
+              ]}
+  
+            ]}
+            
+          ]}
+          
+        ]}, 
+  
+        {tag: "div", attrs: {id:"product", className:"modal fade", role:"dialog"}, children: [
+          {tag: "div", attrs: {className:"modal-dialog uploadImage"}, children: [
+            {tag: "div", attrs: {className:"modal-content "}, children: [
+              {tag: "div", attrs: {className:"modal-header"}, children: [
+                {tag: "button", attrs: {type:"button", className:"close", "data-dismiss":"modal"}, children: ["×"]}, 
+                {tag: "h4", attrs: {className:"modal-title"}, children: ["Chọn sản phẩm"]}
+              ]}, 
+              {tag: "div", attrs: {className:"modal-body"}, children: [
+                {tag: "nav", attrs: {"aria-label":"Page navigation"}, children: [
+                  {tag: "ul", attrs: {class:"pagination"}, children: [
+                    {tag: "li", attrs: {}, children: [
+                      {tag: "a", attrs: {href:"javascript:void(0)", "aria-label":"Previous", 
+                         onclick:function(){
+                           if(ctrl.page >1) {
+                             ctrl.request = fn.requestWithFeedback({
+                               method: "GET",
+                               url: "/product/list/" + (ctrl.page - 1)
+                             }, ctrl.productsTmp, ctrl.setupPrev);
+                           }
+                         }
+                      }, children: [
+                      {tag: "span", attrs: {"aria-hidden":"true"
+                      }, children: ["«"]}
+                      ]}
+                    ]}, 
+                    {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"javascript:void(0)"}, children: [ctrl.page]}]}, 
+                    {tag: "li", attrs: {}, children: [
+                      {tag: "a", attrs: {href:"javascript:void(0)", "aria-label":"Next", 
+                         onclick:function(){
+                           ctrl.request = fn.requestWithFeedback({
+                             method: "GET",
+                             url: "/product/list/" + (ctrl.page + 1)
+                           }, ctrl.productsTmp, ctrl.setupNext);
+                         }
+                      }, children: [
+                        {tag: "span", attrs: {"aria-hidden":"true"}, children: ["»"]}
+                      ]}
+                    ]}, 
+                    {tag: "li", attrs: {}, children: [
+                      {tag: "div", attrs: {class:"input-group"}, children: [
+                        {tag: "span", attrs: {class:"input-group-addon", id:"basic-addon1"}, children: [" Tìm kiếm: "]}, 
+                        {tag: "input", attrs: {type:"text", class:"form-control", placeholder:"Tên sản phẩm", "aria-describedby":"basic-addon1"}}
+                      ]}
+                    ]}
+                  ]}
+  
+                ]}, 
+                
+                {tag: "div", attrs: {class:"table-responsive"}, children: [
+                  {tag: "table", attrs: {class:"table no-margin"}, children: [
+                    {tag: "thead", attrs: {}, children: [
+                    {tag: "tr", attrs: {}, children: [
+                      {tag: "th", attrs: {}, children: ["Tên laptop"]}, 
+                      {tag: "th", attrs: {}, children: ["Giá"]}, 
+                      {tag: "th", attrs: {}, children: ["Bảo hành"]}, 
+                      {tag: "th", attrs: {}, children: ["Tình trạng"]}, 
+                      {tag: "th", attrs: {}, children: ["Thuộc loại"]}, 
+                      {tag: "th", attrs: {}}
+                    ]}
+                    ]}, 
+                    {tag: "tbody", attrs: {}, children: [
+                    ctrl.products().map(function(el){
+                      return [{tag: "tr", attrs: {}, children: [
+                        {tag: "td", attrs: {}, children: [el.name]}, 
+                        {tag: "td", attrs: {}, children: [el.price]}, 
+                        {tag: "td", attrs: {}, children: [el.guarantee]}, 
+                        {tag: "td", attrs: {}, children: [el.available?"Còn hàng":"hết hàng"]}, 
+                        {tag: "td", attrs: {}, children: [el.extra]}, 
+                        {tag: "td", attrs: {}, children: [
+                          {tag: "span", attrs: {style:"cursor: pointer", 
+                                onclick:function(){
+                                  ctrl.listProduct.product().push(el._id);
+                                }
+                          }, children: [" Thêm "]}
+                        ]}
+                      ]}
+                      ]
+                    })
+    
+    
+                    ]}
+                  ]}
+                ]}
+                
+              ]}, 
+              {tag: "div", attrs: {className:"modal-footer"}, children: [
+                {tag: "button", attrs: {type:"button", className:"btn btn-default", "data-dismiss":"modal"}, children: ["Close"]}
+              ]}
+            ]}
+    
+          ]}
+        ]}
+        
+      ]}
+    ]}
+  ]
+};
+
+
+module.exports = IndexBuilder;
+},{"./fn.msx":16}],8:[function(require,module,exports){
 var Menu = function(ctrl){
   return [
     {tag: "div", attrs: {id:"menubar", className:"menubar-inverse "}, children: [
@@ -415,13 +794,11 @@ var Menu = function(ctrl){
           ]}
         ]}, 
         {tag: "div", attrs: {className:"expanded"}, children: [
-          {tag: "a", attrs: {href:"../../html/dashboards/dashboard.html"}, children: [
+          {tag: "a", attrs: {href:"javascript:void(0)"}, children: [
             {tag: "span", attrs: {className:"text-lg text-bold text-primary "}, children: ["MATERIAL ADMIN"]}
           ]}
         ]}
       ]}, 
-      
-      
       
       {tag: "div", attrs: {className:"menubar-scroll-panel", 
         onmouseleave:function(){
@@ -434,44 +811,66 @@ var Menu = function(ctrl){
         
         {tag: "div", attrs: {className:"gui-controls", id:"main-menu"}, children: [
           {tag: "li", attrs: {}, children: [
-            {tag: "a", attrs: {href:"#/", className:"active"}, children: [
+            {tag: "a", attrs: {href:"?/", className:"active"}, children: [
               {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-home"}}]}, 
               {tag: "span", attrs: {className:"title"}, children: ["Dashboard"]}
             ]}
           ]}, 
+  
+          {tag: "li", attrs: {class:"gui-folder expanded"}, children: [
+            {tag: "a", attrs: {}, children: [
+              {tag: "div", attrs: {class:"gui-icon"}, children: [{tag: "i", attrs: {class:"fa fa-folder-open fa-fw"}}]}, 
+              {tag: "span", attrs: {class:"title"}, children: ["LAPTOP"]}
+            ]}, 
+            {tag: "ul", attrs: {}, children: [
+              {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"/admin?/product/new"}, children: [{tag: "span", attrs: {class:"title"}, children: ["Thêm mới"]}]}]}, 
+              {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"/admin?/product/list"}, children: [{tag: "span", attrs: {class:"title"}, children: ["Danh sách"]}]}]}
+            ]}
+          ]}, 
+  
+          {tag: "li", attrs: {class:"gui-folder expanded"}, children: [
+            {tag: "a", attrs: {}, children: [
+              {tag: "div", attrs: {class:"gui-icon"}, children: [{tag: "i", attrs: {class:"fa fa-folder-open fa-fw"}}]}, 
+              {tag: "span", attrs: {class:"title"}, children: ["Bài viết"]}
+            ]}, 
+            {tag: "ul", attrs: {}, children: [
+              {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"/admin?/article/new"}, children: [{tag: "span", attrs: {class:"title"}, children: ["Thêm mới"]}]}]}, 
+              {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"/admin?/article/list"}, children: [{tag: "span", attrs: {class:"title"}, children: ["Danh sách"]}]}]}
+            ]}
+          ]}, 
           
-          {tag: "li", attrs: {className:"gui-folder"}, children: [
-            {tag: "a", attrs: {href:"/admin#/newProduct"
-            }, children: [
-              {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-web"}}]}, 
-              {tag: "span", attrs: {className:"title"}, children: ["Post"]}
-            ]}
-          ]}, 
   
-          {tag: "li", attrs: {className:"gui-folder"}, children: [
-            {tag: "a", attrs: {href:"/admin#/newArticle"
+          {tag: "li", attrs: {}, children: [
+            {tag: "a", attrs: {href:"/admin?/category/create"
             }, children: [
               {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-web"}}]}, 
-              {tag: "span", attrs: {className:"title"}, children: ["Article"]}
+              {tag: "span", attrs: {className:"title"}, children: ["Thêm danh mục"]}
             ]}
           ]}, 
   
           {tag: "li", attrs: {}, children: [
-            {tag: "a", attrs: {href:"/admin#/category/create"
+            {tag: "a", attrs: {href:"/admin?/setup/category"
             }, children: [
               {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-web"}}]}, 
-              {tag: "span", attrs: {className:"title"}, children: ["New Category"]}
+              {tag: "span", attrs: {className:"title"}, children: ["Menu sản phẩm"]}
             ]}
           ]}, 
   
           {tag: "li", attrs: {}, children: [
-            {tag: "a", attrs: {href:"/admin#/menu"
+            {tag: "a", attrs: {href:"/admin?/setup/nav"
             }, children: [
               {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-web"}}]}, 
-              {tag: "span", attrs: {className:"title"}, children: ["Menu"]}
+              {tag: "span", attrs: {className:"title"}, children: ["Menu chính"]}
+            ]}
+          ]}, 
+          
+          {tag: "li", attrs: {}, children: [
+            {tag: "a", attrs: {href:"/admin?/productShow"
+            }, children: [
+              {tag: "div", attrs: {className:"gui-icon"}, children: [{tag: "i", attrs: {className:"md md-web"}}]}, 
+              {tag: "span", attrs: {className:"title"}, children: ["Hiển thị trang chủ"]}
             ]}
           ]}
-          
           
         ]}, 
         
@@ -488,20 +887,10 @@ var Menu = function(ctrl){
 }
 
 module.exports = Menu;
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var fn = require('./fn.msx');
 
 var input = m.prop("");
-var data = m.prop({
-  "_id" : "",
-  "title": "",
-  "body": "",
-  "tags": ["huong-dan"],
-  "cover": {
-    "id" : "ec97531f-6aa0-4374-87d4-77b6a030a854",
-    "alt" : "anh dai dien"
-  }
-});
 
 var NewArticle = function(ctrl){
   return [
@@ -514,21 +903,20 @@ var NewArticle = function(ctrl){
               {tag: "form", attrs: {className:"form-horizontal", role:"form"}, children: [
                 {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised btn-primary", style:"float: right", 
                   onclick:function(){
-                    {/*console.log(data());*/}
                     $.ajax({
                       type: "POST",
                       url: "/admin/article",
-                      data: JSON.stringify(data()),
+                      data: JSON.stringify(ctrl.data()),
                       contentType: "application/json",
-                      dataType: "json",
-                      success: function(data){
-                        alert(data)
-                      }
+                      dataType: "text"
+                    }).done(function() {
+                      m.route('/article/edit?article=' + ctrl.data()._id)
+                    })
+                      .fail(function() {
+                        alert( "error" );
                     });
-                    
                   }
-                }, children: ["Publish"]}, 
-                {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised", style:"float: right; margin-right: 20px;"}, children: ["Save"]}, 
+                }, children: [(ctrl.status=="new")?"Thêm mới":"Cập nhập"]}, 
                 {tag: "br", attrs: {}}, 
                 {tag: "br", attrs: {}}, 
   
@@ -537,63 +925,25 @@ var NewArticle = function(ctrl){
                   {tag: "div", attrs: {className:"col-sm-10"}, children: [
                     {tag: "input", attrs: {type:"text", className:"form-control", id:"_id", name:"_id", 
                            onchange:function(el){
-                             data()._id = $(el.target).val()
+                             ctrl.data()._id = $(el.target).val()
                            }, 
-                           value:data()._id}
+                           value:ctrl.data()._id}
                     }, 
                     {tag: "div", attrs: {className:"form-control-line"}}
                   ]}
                 ]}, 
                 
                 {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"title", className:"col-sm-2 control-label"}, children: ["Title"]}, 
+                  {tag: "label", attrs: {htmlFor:"title", className:"col-sm-2 control-label"}, children: ["Tiêu đề"]}, 
                   {tag: "div", attrs: {className:"col-sm-10"}, children: [
                       {tag: "input", attrs: {type:"text", className:"form-control", id:"title", name:"title", 
                         onchange:function(el){
-                          data().title = $(el.target).val();
-                          data()._id = fn.slug(data().title);
+                          ctrl.data().title = $(el.target).val();
+                          ctrl.data()._id = fn.slug(ctrl.data().title);
                         }, 
-                        value:data().title}
+                        value:ctrl.data().title}
                       }, 
                     {tag: "div", attrs: {className:"form-control-line"}}
-                  ]}
-                ]}, 
-  
-                {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"", className:"col-sm-2 control-label"}, children: ["Cover image"]}, 
-                  {tag: "div", attrs: {className:"col-sm-10"}, children: [
-                    {tag: "img", attrs: {src:"/cover/get/" + data().cover.id, alt:data().cover.alt, 
-                      style:"cursor: pointer", 
-                      onclick:function(){
-                        ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
-                        ctrl.showImgList = true;
-                        
-                      }}
-                    }
-                  ]}
-                ]}, 
-                
-                
-                {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"", className:"col-sm-2 control-label"}, children: ["List value"]}, 
-                  {tag: "div", attrs: {className:"col-sm-10"}, children: [
-        
-                    {tag: "select", attrs: {multiple:true,"data-role":"tagsinput", 
-                      config:function(el,isInited,ctx){
-                        if(!isInited){
-                          console.log("init")
-                          $("select[multiple][data-role=tagsinput]").tagsinput();
-                        }
-                      }, 
-                      onchange:function(el){
-                        data().tags = $(el.target).val()
-                      }
-                    }, children: [
-                      data().tags.map(function(el){
-                        return {tag: "option", attrs: {value:el}, children: [el]}
-                      })
-                      
-                    ]}
                   ]}
                 ]}
                 
@@ -602,164 +952,58 @@ var NewArticle = function(ctrl){
           ]}, 
           
           {tag: "div", attrs: {className:"row"}, children: [
-            {tag: "div", attrs: {className:"col-md-6"}, children: [
-              {tag: "div", attrs: {className:"card"}, children: [
-                {tag: "div", attrs: {className:"card-body"}, children: [
-                  {tag: "div", attrs: {id:"editor", 
-                       
-                   config:
-                     function(el, initOK ){
-                         if(!initOK) {
-                           var editor = ace.edit("editor");
-                           editor.getSession().on('change', function () {
-                             data().body = editor.getSession().getValue();
-                             m.redraw();
-                           });
-                           {/*input(editor.getSession().getValue());*/}
-                           data().body = editor.getSession().getValue();
-                           m.redraw();
-                           editor.$blockScrolling = Infinity;
-                           editor.setOptions({
-                             maxLines: Infinity,
-                             wrap: true
-                           });
-                           editor.focus();
-  
-                           document.getElementById('editor').style.fontSize='14px';
-                           document.getElementById('editor').style.lineHeight='20px';
-  
-                           fn.setupAce(editor);
-                           
-                         }
-                      }
-                    
-                       
-                  }, children: [
-                    data().body
-                  ]}
-                ]}
-              ]}
-              
-            ]}, 
-  
-  
-            {tag: "div", attrs: {className:"col-md-6"}, children: [
-              {tag: "div", attrs: {className:"card"}, children: [
-                {tag: "div", attrs: {id:"render", className:"card-body"}, children: [
-                  
-                    m("div", m.trust(marked(data().body)))
-                  
-                ]}
-              ]}
-  
-            ]}
-            
-          ]}, 
-          {tag: "div", attrs: {className:"row"}
-            
-          }, 
-  
-          {tag: "div", attrs: {className:"offcanvas"}, children: [
-            {tag: "div", attrs: {id:"offcanvas-demo-size4", className:"offcanvas-pane width-12 " + (ctrl.showImgList?"active":""), style:"width: 800px; " + (ctrl.showImgList?"transform: translate(-800px, 0px)":(""))}, children: [
-            {tag: "div", attrs: {className:"offcanvas-head"}, children: [
-              {tag: "header", attrs: {}, children: ["Images controller "]}, 
-              {tag: "div", attrs: {className:"offcanvas-tools"}, children: [
-                {tag: "a", attrs: {className:"btn btn-icon-toggle btn-default-light pull-right", "data-dismiss":"offcanvas", 
-                  onclick:function(){
-                    ctrl.showImgList = false;
-                  }
-                }, children: [
-                  {tag: "i", attrs: {className:"md md-close"}}
-                ]}
-              ]}
-            ]}, 
-            {tag: "div", attrs: {className:"nano has-scrollbar", style:"height: 90vh;"}, children: [
-              {tag: "div", attrs: {className:"nano-content", tabindex:"0", style:"right: -15px;"}, children: [
-                {tag: "div", attrs: {className:"offcanvas-body"}, children: [
-                  {tag: "div", attrs: {className:"card-body"}, children: [
-                    ctrl.imgList().map(function(el){
-                      return {tag: "a", attrs: {href:"javascript:void(0)", 
-                        onclick:function(){
-                          data().cover.id=el.id;
-                          data().cover.alt=el.filename;
-                          ctrl.showImgList = false;
+            {tag: "div", attrs: {className:"col-md-12"}, children: [
+              {tag: "div", attrs: {className:"card card-body"}, children: [
+                ctrl.requestArticle.ready()?({tag: "div", attrs: {id:"summernote", 
+                     config:function (el, isInited) {
+                       if (!isInited) {
+                         $('#summernote').summernote({
+                           callbacks: {
+                             onChange: function(contents, $editable) {
+                               ctrl.data().body = $('#summernote').summernote('code');
+                             }
+                           }
+                         });
+                         $('#summernote').summernote('code', ctrl.data().body);
+                       }
+                     }
+                     
+                }}):({tag: "div", attrs: {id:"summernote"}, children: [
+                  "config=", function (el, isInited) {
+                  if (!isInited) {
+                    $('#summernote').summernote({
+                      callbacks: {
+                        onChange: function(contents, $editable) {
+                          ctrl.data().body = $('#summernote').summernote('code');
                         }
-                        
-                      }, children: [{tag: "img", attrs: {src:"/cover/get/" + el.id, alt:el.filename}}]}
-                    })
-                  ]}, 
-                  
-                  
-                  
-                  {tag: "div", attrs: {className:"card-body"}, children: [
-                    {tag: "div", attrs: {className:"btn-group"}, children: [
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["1"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["2"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["3"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["4"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["5"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["6"]}, 
-                      {tag: "input", attrs: {className:"btn ink-reaction btn-default-bright", name:"file", id:"file", type:"file", accept:"/image/*", 
-                        onchange:function(){
-                          var file = $('#file').get(0).files[0];
-                          var formData = new FormData();
-                          formData.append('file', file);
-                          $.ajax({
-                            url: '/upload/image',
-                            data: formData,
-                            type: 'POST',
-                            contentType: false,
-                            processData: false,
-                            beforeSend: function (data) {
-                              alert('Are you sure you want to upload image?');
-                            },
-                            success: function (data) {
-                              ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                              alert(textStatus + ': ' + errorThrown);
-                            }
-                          });
-                        }}
                       }
-                  
-                    ]}
-                  ]}
+                    });
+                    $('#summernote').summernote('code', ctrl.data().body);
+                  }
+                }
+                ]})
                 
-                ]}
               ]}
             ]}
-            ]}
+  
+            
           ]}
-        
-          
         ]}
       ]}
-    ]},
-    ctrl.showImgList?({tag: "div", attrs: {className:"backdrop", 
-      onclick:function(){
-        ctrl.showImgList = false;
-      }
-    }}):""
+    ]}
   ]
 };
 
 
 module.exports = NewArticle;
-},{"./fn.msx":11}],8:[function(require,module,exports){
+},{"./fn.msx":16}],10:[function(require,module,exports){
 var fn = require('./fn.msx');
 
 var input = m.prop("");
 
 var data = m.prop({
-  "slug": "",
-  "name" : "",
-  "description": "",
-  "sku": {
-    "parent_id" : "NONE",
-    "name" : "NONE",
-    "slug" : "NONE"
-  }
+  "_id": "",
+  "name" : ""
 });
 
 var NewCategory = function(ctrl){
@@ -782,6 +1026,10 @@ var NewCategory = function(ctrl){
                       contentType: "application/json",
                       dataType: "json",
                       success: function(data){
+                        alert("Đã thêm thành công");
+                        data()._id = "";
+                        data()._name = "";
+                        m.redraw();
                       }
                     });
                     
@@ -796,9 +1044,9 @@ var NewCategory = function(ctrl){
                   {tag: "div", attrs: {className:"col-sm-10"}, children: [
                       {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"title", 
                              onchange:function(el){
-                               data().slug = $(el.target).val()
+                               data()._id = $(el.target).val()
                              }, 
-                             value:data().slug}
+                             value:data()._id}
                       }, 
                   {tag: "div", attrs: {className:"form-control-line"}}
                   ]}
@@ -810,106 +1058,25 @@ var NewCategory = function(ctrl){
                       {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"title", 
                              onchange:function(el){
                                data().name = $(el.target).val();
-                               data().slug = fn.slug(data().name);
+                               data()._id = fn.slug(data().name);
                              }, 
                              value:(data().name === undefined)?"":(data().name)}
                       }, 
                     {tag: "div", attrs: {className:"form-control-line"}}
                   ]}
-                ]}, 
-  
-                {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"textarea", className:"col-sm-2 control-label"}, children: ["Description"]}, 
-                  {tag: "div", attrs: {className:"col-sm-10"}, children: [
-                    {tag: "textarea", attrs: {name:"textarea", id:"textarea", className:"form-control", rows:"3", placeholder:"", 
-                              config:function(el, isInit, ctx){
-                                if(!isInit) {
-                                  $(el).val(data().description)
-                                }
-                              }, 
-                              onkeydown:function(el){
-                                data().description = $(el.target).val();
-                              }
-                    }}, 
-      
-                    {tag: "div", attrs: {className:"form-control-line"}}
-                  ]}
-                ]}, 
-  
-  
-                {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"categories", className:"col-sm-2 control-label"}, children: ["Category"]}, 
-                  {tag: "div", attrs: {className:"col-sm-5 control-label"}, children: [
-                    {tag: "select", attrs: {className:"form-control", size:"7", id:"categories", name:"categories", 
-                            onchange:function(el){
-                              
-                            }
-                    }, children: [
-                      
-                        ctrl.categories().map(function(el){
-                          return {tag: "option", attrs: {
-                              value:el._id, 
-                              onclick:function(){
-                                data().sku = {
-                                  "parent_id": el.slug,
-                                  "name": el.name,
-                                  "slug": el.slug
-                                };
-                              }
-                          }, children: [" ", el.name, " "]}
-                        })
-                      
-                    ]}
-                  ]}
-                 
                 ]}
-                
-                
               ]}
             ]}
           ]}, 
           
           {tag: "div", attrs: {className:"row"}
             
-          }, 
-  
-          {tag: "div", attrs: {className:"offcanvas"}, children: [
-            {tag: "div", attrs: {id:"offcanvas-demo-size4", className:"offcanvas-pane width-12 " + (ctrl.showImgList?"active":""), style:"width: 800px; " + (ctrl.showImgList?"transform: translate(-800px, 0px)":(""))}, children: [
-            {tag: "div", attrs: {className:"offcanvas-head"}, children: [
-              {tag: "header", attrs: {}, children: ["Images controller "]}, 
-              {tag: "div", attrs: {className:"offcanvas-tools"}, children: [
-                {tag: "a", attrs: {className:"btn btn-icon-toggle btn-default-light pull-right", "data-dismiss":"offcanvas", 
-                  onclick:function(){
-                    {/*ctrl.showImgList = false;*/}
-                  }
-                }, children: [
-                  {tag: "i", attrs: {className:"md md-close"}}
-                ]}
-              ]}
-            ]}, 
-            {tag: "div", attrs: {className:"nano has-scrollbar", style:"height: 90vh;"}, children: [
-              {tag: "div", attrs: {className:"nano-content", tabindex:"0", style:"right: -15px;"}, children: [
-                {tag: "div", attrs: {className:"offcanvas-body"}, children: [
-                  {tag: "div", attrs: {className:"card-body"}, children: [
-                    "test"
-                  ]}
-                  
-                
-                ]}
-              ]}
-            ]}
-            ]}
-          ]}
+          }
         
           
         ]}
       ]}
-    ]},
-    ctrl.showImgList?({tag: "div", attrs: {className:"backdrop", 
-      onclick:function(){
-        ctrl.showImgList = false;
-      }
-    }}):""
+    ]}
   ]
 };
 
@@ -933,30 +1100,11 @@ var categories = [
 
 
 module.exports = NewCategory;
-},{"./fn.msx":11}],9:[function(require,module,exports){
+},{"./fn.msx":16}],11:[function(require,module,exports){
 var fn = require('./fn.msx');
 
 var input = m.prop("");
-var data = m.prop({
-  "id" : "",
-  "title": "new file",
-  "categories": ["1", "2"],
-  "time": 1464226633054,
-  "description" : "abc",
-  "link": [
-    {
-        "url": "",
-        "shortUrl": "",
-        "filename": "",
-        "filesize" : 0
-    }
-  ],
-  "content": "## Noi dung",
-  "cover" : {
-    "id" : "ec97531f-6aa0-4374-87d4-77b6a030a854",
-    "alt" : "anh dai dien"
-  }
-});
+
 
 var NewProduct = function(ctrl){
   return [
@@ -970,363 +1118,429 @@ var NewProduct = function(ctrl){
                 
                 {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised btn-primary", style:"float: right", 
                   onclick:function(){
-                    {/*console.log(data());*/}
-                    delete data().time;
-                    $.ajax({
-                      type: "POST",
-                      url: "/admin/post",
-                      data: JSON.stringify(data()),
-                      contentType: "application/json",
-                      dataType: "json",
-                      success: function(data){
-                      }
-                    });
-                    
+                    if(ctrl.data().image.length > 0 && ctrl.data()._id.length > 0) {
+                      $.ajax({
+                        type: "POST",
+                        url: "/admin/product",
+                        data: JSON.stringify(ctrl.data()),
+                        contentType: "application/json",
+                        dataType: "text",
+                        success: function (data) {
+                          m.route("/product/edit?product=" + ctrl.data()._id)
+                        }
+                      });
+                    } else {
+                      alert("Phải chọn ảnh sản phẩm!")
+                    }
                   }
-                }, children: ["Publish"]}, 
-                {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-raised", style:"float: right; margin-right: 20px;"}, children: ["Save"]}, 
+                }, children: [(ctrl.productID != undefined)?"Cập nhập":"Thêm laptop"]}, 
+                
                 {tag: "br", attrs: {}}, 
                 {tag: "br", attrs: {}}, 
   
                 {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"url", className:"col-sm-2 control-label"}, children: ["Url"]}, 
+                  {tag: "label", attrs: {htmlFor:"url", className:"col-sm-2 control-label"}, children: ["Url :"]}, 
                   {tag: "div", attrs: {className:"col-sm-10"}, children: [
-                    (data().id === undefined)?(
-                        {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"title"}}
-                    ):(
-                        {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"title", 
-                               onchange:function(el){
-                                 data().id = $(el.target).val()
-                               }, 
-                               value:data().id}
-                        }
-                    ), 
+                    {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"title", disabled:(ctrl.productID != undefined)?"true":"", 
+                           onchange:function(el){
+                             ctrl.data()._id = $(el.target).val()
+                           }, 
+                           value:ctrl.data()._id}
+                    }, 
                     {tag: "div", attrs: {className:"form-control-line"}}
                   ]}
                 ]}, 
                 
                 {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"title", className:"col-sm-2 control-label"}, children: ["Title"]}, 
+                  {tag: "label", attrs: {htmlFor:"title", className:"col-sm-2 control-label"}, children: ["Tên laptop :"]}, 
                   {tag: "div", attrs: {className:"col-sm-10"}, children: [
-                    (data().title === undefined)?(
-                        {tag: "input", attrs: {type:"text", className:"form-control", id:"title", name:"title"}}
-                    ):(
-                        {tag: "input", attrs: {type:"text", className:"form-control", id:"title", name:"title", 
-                        onchange:function(el){
-                          data().title = $(el.target).val();
-                          data().id = fn.slug(data().title);
-                        }, 
-                        value:data().title}
-                        }
-                    ), 
-                    {tag: "div", attrs: {className:"form-control-line"}}
-                  ]}
-                ]}, 
-  
-                {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"date", className:"col-sm-2 control-label"}, children: ["Upload Date"]}, 
-                  {tag: "div", attrs: {className:"col-sm-2"}, children: [
-                    {tag: "input", attrs: {type:"date", className:"form-control", id:"date", disabled:true,
-                       value:(data().time !== undefined)?(moment.unix(data().time/1000).format("YYYY-MM-DD")):(moment().format("YYYY-MM-DD"))}
+                    {tag: "input", attrs: {type:"text", className:"form-control", id:"title", name:"title", 
+                    onchange:function(el){
+                      ctrl.data().name = $(el.target).val();
+                      ctrl.data().search = $(el.target).val();
+                      ctrl.data()._id = fn.slug(ctrl.data().name);
+                    }, 
+                    value:ctrl.data().name}
                     }, 
                     {tag: "div", attrs: {className:"form-control-line"}}
                   ]}
                 ]}, 
   
                 {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"categories", className:"col-sm-2 control-label"}, children: ["Category"]}, 
-                  {tag: "div", attrs: {className:"col-sm-5 control-label"}, children: [
-                    {tag: "select", attrs: {multiple:true,className:"form-control", size:"7", id:"categories", name:"categories", 
-                      onchange:function(el){
-                        data().categories = $(el.target).val();
-                      }
-                    }, children: [
-                      (data().categories === undefined)?[
-                        ctrl.categories().map(function(el){
-                            return {tag: "option", attrs: {
-                                value:el._id
-                            }, children: [" ", el.name, " "]}
-                          })
-                      ]:[
-                        ctrl.categories().map(function(el){
-                          return {tag: "option", attrs: {
-                              value:el._id, 
-                              selected:
-                                (data().categories.indexOf(el._id) >= 0)?"true":""
-                              
-                          }, children: [" ", el.name, " "]}
-                        })
-                      ]
-                    ]}
-                  ]}, 
-                  /*<label htmlFor="image" className="col-sm-1 control-label">Cover</label>*/
-                  {tag: "div", attrs: {className:"col-sm-2 control-label"}, children: [
-                    {tag: "img", attrs: {src:"/cover/get/" + data().cover.id, alt:data().cover.alt, 
-                      style:"cursor: pointer", 
-                      onclick:function(){
-                        ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
-                        ctrl.showImgList = true;
-                        
-                      }}
-                    }
-                  ]}
-                ]}, 
-                
-                {tag: "div", attrs: {className:"form-group"}, children: [
-                  {tag: "label", attrs: {htmlFor:"textarea", className:"col-sm-2 control-label"}, children: ["Description"]}, 
+                  {tag: "label", attrs: {htmlFor:"title", className:"col-sm-2 control-label"}, children: ["Link driver"]}, 
                   {tag: "div", attrs: {className:"col-sm-10"}, children: [
-                    {tag: "textarea", attrs: {name:"textarea", id:"textarea", className:"form-control", rows:"3", placeholder:"", 
-                      config:function(el, isInit, ctx){
-                        if(!isInit) {
-                          $(el).val(data().description)
-                        }
-                      }, 
-                      onchange:function(el){
-                        data().description = $(el.target).val();
-                      }
-                    }}, 
-                    
+                    {tag: "input", attrs: {type:"text", className:"form-control", id:"title", name:"title", 
+                           onchange:function(el){
+                             ctrl.data().driver = $(el.target).val();
+                           }, 
+                           value:ctrl.data().driver}
+                    }, 
                     {tag: "div", attrs: {className:"form-control-line"}}
                   ]}
                 ]}, 
   
-                (data().link === undefined)?[
-                  {tag: "div", attrs: {className:"form-group"}, children: [
-                    {tag: "label", attrs: {htmlFor:"url", className:"col-sm-2 control-label"}, children: ["File 1"]}, 
-                    {tag: "div", attrs: {className:"col-sm-3"}, children: [
-                      {tag: "input", attrs: {type:"text", className:"form-control", id:"url", name:"url", placeholder:"URL"}}, {tag: "div", attrs: {className:"form-control-line"}}
-                    ]}, 
-                    {tag: "div", attrs: {className:"col-sm-5"}, children: [
-                      {tag: "input", attrs: {type:"text", className:"form-control", id:"", placeholder:"File name"}}, {tag: "div", attrs: {className:"form-control-line"}}
-                    ]}, 
-                    {tag: "div", attrs: {className:"col-sm-2"}, children: [
-                      {tag: "input", attrs: {disabled:true,type:"text", className:"form-control", id:"", placeholder:"File size"}}, {tag: "div", attrs: {className:"form-control-line"}}
+                {tag: "div", attrs: {className:"form-group"}, children: [
+                  {tag: "label", attrs: {htmlFor:"title", className:"col-sm-2 control-label"}, children: ["Video youtube"]}, 
+                  {tag: "div", attrs: {className:"col-sm-10"}, children: [
+                    {tag: "input", attrs: {type:"text", className:"form-control", id:"title", name:"title", 
+                           onchange:function(el){
+                             ctrl.data().youtube = $(el.target).val();
+                           }, 
+                           value:ctrl.data().youtube}
+                    }, 
+                    {tag: "div", attrs: {className:"form-control-line"}}
+                  ]}
+                ]}, 
+                
+                
+                {tag: "div", attrs: {className:"form-group"}, children: [
+                  {tag: "label", attrs: {htmlFor:"title", className:"col-sm-2 control-label"}, children: ["Loại hàng :"]}, 
+                  {tag: "div", attrs: {className:"col-sm-5 control-label"}, children: [
+                    {tag: "select", attrs: {className:"form-control", id:"categories", name:"categories", 
+                            onchange:function(el){
+                              ctrl.data().extra = $(el.target).val();
+                            }
+                    }, children: [
+                      {tag: "option", attrs: {value:"normal", selected:(ctrl.data().extra == "normal")?"true":""}, children: ["Bình thường"]}, 
+                      {tag: "option", attrs: {value:"hot", selected:(ctrl.data().extra == "hot")?"true":""}, children: ["Hàng Hot"]}, 
+                      {tag: "option", attrs: {value:"new", selected:(ctrl.data().extra == "new")?"true":""}, children: ["Hàng mới về"]}, 
+                      {tag: "option", attrs: {value:"sale", selected:(ctrl.data().extra == "sale")?"true":""}, children: ["Hàng khuyến mãi"]}
+                    ]}
+  
+                  ]}
+                ]}, 
+  
+                {tag: "div", attrs: {className:"form-group"}, children: [
+                  {tag: "label", attrs: {htmlFor:"categories", className:"col-sm-2 control-label"}, children: ["Danh mục :"]}, 
+                  {tag: "div", attrs: {className:"col-sm-5 control-label"}, children: [
+                    {tag: "select", attrs: {className:"form-control", id:"categories", name:"categories", 
+                      onchange:function(el){
+                        ctrl.data().category = $(el.target).val();
+                      }
+                    }, children: [
+                      ctrl.categories().map(function(el){
+                        return  {tag: "option", attrs: {value:el._id}, children: [el.name]}
+                      }), 
+                      {tag: "option", attrs: {value:"none", selected:(ctrl.data().category == "none")?"true":""}, children: ["Chưa chọn"]}
                     ]}
                   ]}
-                ]:[
-                    data().link.map(function(el, index){
+                  /*<label htmlFor="image" className="col-sm-1 control-label">Cover</label>*/
+                ]}, 
+                
+                {tag: "div", attrs: {className:"form-group"}, children: [
+                  {tag: "label", attrs: {htmlFor:"", className:"col-sm-2 control-label"}, children: ["Tình trạng :"]}, 
+                  {tag: "div", attrs: {className:"col-sm-5 control-label"}, children: [
+                    {tag: "select", attrs: {className:"form-control", id:"categories", name:"categories", 
+                            onchange:function(el){
+                              ctrl.data().available = ($(el.target).val() == "true")?true:false;
+                            }
+                    }, children: [
+                      {tag: "option", attrs: {value:"true", selected:(ctrl.data().available == true)?"true":""}, children: ["Còn hàng"]}, 
+                      {tag: "option", attrs: {value:"false", selected:(ctrl.data().available == false)?"true":""}, children: ["Hết hàng"]}
+                    ]}
+                  ]}
+                ]}, 
+  
+                {tag: "div", attrs: {className:"form-group"}, children: [
+                  {tag: "label", attrs: {htmlFor:"", className:"col-sm-2 control-label"}, children: ["Bảo hành :"]}, 
+                  {tag: "div", attrs: {className:"col-sm-1 control-label"}, children: [
+                    {tag: "input", attrs: {type:"number", 
+                           onchange:function(el){
+                             ctrl.data().guarantee = parseInt($(el.target).val());
+                           }, 
+                           value:ctrl.data().guarantee}}
+                  ]}
+                ]}, 
+  
+                {tag: "div", attrs: {className:"form-group"}, children: [
+                  {tag: "label", attrs: {htmlFor:"", className:"col-sm-2 control-label"}, children: ["Giá bán :"]}, 
+                  {tag: "div", attrs: {className:"col-sm-1 control-label"}, children: [
+                    {tag: "input", attrs: {type:"number", 
+                           onchange:function(el){
+                             ctrl.data().price = parseInt($(el.target).val());
+                           }, 
+                           value:ctrl.data().price}}
+                  ]}
+                ]}, 
+  
+                {tag: "div", attrs: {className:"row"}, children: [
+                  {tag: "label", attrs: {htmlFor:"", className:"col-sm-2 control-label"}, children: ["Ảnh đại diện"]}, 
+                  {tag: "div", attrs: {className:"col-sm-3"}, children: [
+                    {tag: "button", attrs: {type:"button", className:"btn", style:"float:left", "data-toggle":"modal", "data-target":"#uploadImage"}, children: ["Up ảnh"]}, 
+                    {tag: "button", attrs: {type:"button", className:"btn", style:"float: left; margin-left: 5px;", "data-toggle":"modal", "data-target":"#selectImage", 
+                            onclick:function(){
+                              ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
+                            }
+                    }, children: ["Chọn ảnh"]}
+                  ]}, 
+                  {tag: "div", attrs: {className:"col-sm-5 control-label img-cover"}, children: [
+                    (ctrl.data().image.length>0)?[
+                        ctrl.data().image.map(function(el){
+                          return {tag: "img", attrs: {src:"/cover/get/" + el._id, alt:el.alt, 
+                            onclick:function(){
+                              ctrl.data().image.splice(fn.getIndexByParam(ctrl.data().image, "_id", el._id) ,1)
+                            }}
+                          }
+                        })
+                    ]:(
+                        {tag: "img", attrs: {src:"http://localhost:9000/assets/images/laptop.jpg", alt:""}}
+                    )
+                    
+                  ]}
+                ]}
+                
+              ]}
+            ]}
+          ]}, 
+          
+          {tag: "div", attrs: {className:"card card-body"}, children: [
+            (ctrl.requestProduct.ready() || ctrl.productID == undefined )?(
+              {tag: "div", attrs: {id:"summernote", 
+              config:function (el, isInited) {
+                if (!isInited) {
+                  $('#summernote').summernote({
+                    callbacks: {
+                      onChange: function(contents, $editable) {
+                        console.log("change:" + contents);
+                        ctrl.data().info = $('#summernote').summernote('code');
+                        ctrl.data().info = $('#summernote').summernote('code');
+                        {/*console.log(ctrl.data().info)*/}
+                      }
+                    }
+                  });
+                  $('#summernote').summernote('code', ctrl.data().info);
+                }
+              }
+              
+            }}):({tag: "div", attrs: {id:"summernote"}})
+            
+          ]}, 
+  
+          {tag: "div", attrs: {id:"uploadImage", className:"modal fade", role:"dialog"}, children: [
+            {tag: "div", attrs: {className:"modal-dialog uploadImage"}, children: [
+              {tag: "div", attrs: {className:"modal-content "}, children: [
+                {tag: "div", attrs: {className:"modal-header"}, children: [
+                  {tag: "button", attrs: {type:"button", className:"close", "data-dismiss":"modal"}, children: ["×"]}, 
+                  {tag: "h4", attrs: {className:"modal-title"}, children: ["upload Image!"]}
+                ]}, 
+                {tag: "div", attrs: {className:"modal-body"}, children: [
+                  {tag: "input", attrs: {
+                      config:function(el, isInited){
+                        if(!isInited){
+                            var $input = $('input.file[type=file]');
+                            if ($input.length) {
+                              $input.fileinput();
+                            }
+                        }
+                      }, 
+                      id:"file-0a", class:"file", type:"file", multiple:true,"data-max-file-count":"5", "data-upload-url":"/upload/image"}}
+                ]}, 
+                {tag: "div", attrs: {className:"modal-footer"}, children: [
+                  {tag: "button", attrs: {type:"button", className:"btn btn-default", "data-dismiss":"modal"}, children: ["Close"]}
+                ]}
+              ]}
+    
+            ]}
+          ]}, 
+  
+  
+          {tag: "div", attrs: {id:"selectImage", className:"modal fade", role:"dialog"
+          }, children: [
+            {tag: "div", attrs: {className:"modal-dialog uploadImage"}, children: [
+              {tag: "div", attrs: {className:"modal-content"}, children: [
+                {tag: "div", attrs: {className:"modal-header"}, children: [
+                  {tag: "button", attrs: {type:"button", className:"close", "data-dismiss":"modal"}, children: ["×"]}, 
+                  {tag: "h4", attrs: {className:"modal-title"}, children: ["select Image!"]}
+                ]}, 
+                {tag: "div", attrs: {className:"modal-body clearfix"}, children: [
+                    ctrl.imgList().map(function(item){
                       return (
-                          {tag: "div", attrs: {className:"form-group"}, children: [
-                            {tag: "label", attrs: {htmlFor:"url" + (index+1), className:"col-sm-2 control-label"}, children: ["File ", index + 1]}, 
-                            {tag: "div", attrs: {className:"col-sm-2"}, children: [
-                              {tag: "input", attrs: {type:"text", className:"form-control", id:"url" + (index+1), name:"url" + (index+1), placeholder:"URL", 
-                                     onchange:function(item){
-                                       data().link[index].url = $(item.target).val();
-                                       $.ajax({
-                                         type: "POST",
-                                         url: "/file/getSize",
-                                         data: JSON.stringify({"url" : data().link[index].url}),
-                                         contentType: "application/json",
-                                         dataType: "json",
-                                         success: function(res){
-                                           data().link[index].filesize = res.size;
-                                           console.log(data().link[index])
-                                           m.redraw();
-                                         }
-                                       });
-                                     }, 
-                                     value:el.url}
-                              }, {tag: "div", attrs: {className:"form-control-line"}}
-                            ]}, 
-                            {tag: "div", attrs: {className:"col-sm-2"}, children: [
-                              {tag: "input", attrs: {type:"text", className:"form-control", placeholder:"Short Url", 
-                                     onchange:function(item){
-                                       data().link[index].shortUrl = $(item.target).val();
-                                     }, 
-                                     value:el.shortUrl}
-                              }, {tag: "div", attrs: {className:"form-control-line"}}
-                            ]}, 
-                            {tag: "div", attrs: {className:"col-sm-3"}, children: [
-                              {tag: "input", attrs: {type:"text", className:"form-control", id:"", placeholder:"File name", 
-                                     onchange:function(item){
-                                       data().link[index].filename = $(item.target).val();
-                                     }, 
-                                     value:el.filename}
-                              }, {tag: "div", attrs: {className:"form-control-line"}}
-                            ]}, 
-                            {tag: "div", attrs: {className:"col-sm-2"}, children: [
-                              {tag: "input", attrs: {disabled:true,type:"number", className:"form-control", id:"", placeholder:"File size", 
-                                     value:(el.filesize>0)?(el.filesize):""}
-                              }, {tag: "div", attrs: {className:"form-control-line"}}
-                            ]}, 
-                            {tag: "div", attrs: {className:"col-sm-1"}, children: [
-                              {tag: "button", attrs: {type:"button", className:"btn btn-floating-action", 
-                                onclick:function(){
-                                  data().link.splice(index, 1);
+                          {tag: "div", attrs: {className:"col-lg-2 col-md-3 col-xs-4 thumb " + ((fn.getItemByParam(ctrl.data().image, "_id", item._id) == undefined)?"":"selected")}, children: [
+                            {tag: "span", attrs: {
+                              onclick:function(){
+                                ctrl.data().image.splice(fn.getIndexByParam(ctrl.data().image, "_id", item._id) ,1)
+                              }
+                            }}, 
+                            {tag: "a", attrs: {class:"thumbnail", href:"javascript:void(0)", 
+                              onclick:function(){
+                                if(fn.getItemByParam(ctrl.data().image, "_id", item._id) == undefined && ctrl.data().image.length<5){
+                                  ctrl.data().image.push({"_id": item._id, "alt" : item.filename})
                                 }
-                              }, children: [{tag: "i", attrs: {className:"glyphicon glyphicon-remove"}}]}
+                              }
+                            }, children: [
+                              {tag: "img", attrs: {class:"img-responsive", src:"/cover/get/" + item._id, alt:""}}
                             ]}
                           ]}
                       )
                     })
-                  
-                ], 
-  
-                {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-flat btn-primary btn-loading-state", style:"float: right", 
-                  onclick:function(el){
-                    data().link.push(
-                        {
-                          "url": "",
-                          "shortUrl": "",
-                          "filename": "",
-                          "filesize" : 0
+                ]}, 
+                {tag: "div", attrs: {className:"modal-footer"}, children: [
+                  {tag: "div", attrs: {class:"btn-group", role:"group", "aria-label":"..."}, children: [
+                    {tag: "button", attrs: {type:"button", class:"btn btn-default", style:"margin-left: 5px", 
+                      onclick:function(){
+                        if(ctrl.imgPage >1) {
+                          ctrl.request2 = fn.requestWithFeedback({
+                            method: "GET",
+                            url: "/image/list/" + (ctrl.imgPage - 1)
+                          }, ctrl.imgList, ctrl.setupPrev);
                         }
-                    )
-                  }
-                }, children: ["Add new file"]}
-                
-              ]}
-            ]}
-          ]}, 
-          
-          {tag: "div", attrs: {className:"row"}, children: [
-            {tag: "div", attrs: {className:"col-md-6"}, children: [
-              {tag: "div", attrs: {className:"card"}, children: [
-                {tag: "div", attrs: {className:"card-body"}, children: [
-                  {tag: "div", attrs: {id:"editor", 
-                       
-                   config:
-                     function(el, initOK ){
-                         if(!initOK) {
-                           var editor = ace.edit("editor");
-                           editor.getSession().on('change', function () {
-                             data().content = editor.getSession().getValue();
-                             m.redraw();
-                           });
-                           {/*input(editor.getSession().getValue());*/}
-                           data().content = editor.getSession().getValue()
-                           m.redraw();
-                           editor.$blockScrolling = Infinity;
-                           editor.setOptions({
-                             maxLines: Infinity,
-                             wrap: true
-                           });
-                           editor.focus();
-  
-                           document.getElementById('editor').style.fontSize='14px';
-                           document.getElementById('editor').style.lineHeight='20px';
-  
-                           fn.setupAce(editor);
-                           
-                         }
                       }
+                    }, children: ["Trang trước"]}, 
+                    {tag: "button", attrs: {type:"button", class:"btn btn-default", style:"margin-left: 5px"}, children: [ctrl.imgPage]}, 
                     
-                       
-                  }, children: [
-                    data().content
-                  ]}
-                ]}
-              ]}
-              
-            ]}, 
-  
-  
-            {tag: "div", attrs: {className:"col-md-6"}, children: [
-              {tag: "div", attrs: {className:"card"}, children: [
-                {tag: "div", attrs: {id:"render", className:"card-body"}, children: [
-                  
-                    m("div", m.trust(marked(data().content)))
-                  
-                ]}
-              ]}
-  
-            ]}
-            
-          ]}, 
-          {tag: "div", attrs: {className:"row"}
-            
-          }, 
-  
-          {tag: "div", attrs: {className:"offcanvas"}, children: [
-            {tag: "div", attrs: {id:"offcanvas-demo-size4", className:"offcanvas-pane width-12 " + (ctrl.showImgList?"active":""), style:"width: 800px; " + (ctrl.showImgList?"transform: translate(-800px, 0px)":(""))}, children: [
-            {tag: "div", attrs: {className:"offcanvas-head"}, children: [
-              {tag: "header", attrs: {}, children: ["Images controller "]}, 
-              {tag: "div", attrs: {className:"offcanvas-tools"}, children: [
-                {tag: "a", attrs: {className:"btn btn-icon-toggle btn-default-light pull-right", "data-dismiss":"offcanvas", 
-                  onclick:function(){
-                    ctrl.showImgList = false;
-                  }
-                }, children: [
-                  {tag: "i", attrs: {className:"md md-close"}}
-                ]}
-              ]}
-            ]}, 
-            {tag: "div", attrs: {className:"nano has-scrollbar", style:"height: 90vh;"}, children: [
-              {tag: "div", attrs: {className:"nano-content", tabindex:"0", style:"right: -15px;"}, children: [
-                {tag: "div", attrs: {className:"offcanvas-body"}, children: [
-                  {tag: "div", attrs: {className:"card-body"}, children: [
-                    ctrl.imgList().map(function(el){
-                      return {tag: "a", attrs: {href:"javascript:void(0)", 
-                        onclick:function(){
-                          data().cover.id=el.id;
-                          data().cover.alt=el.filename;
-                          ctrl.showImgList = false;
-                        }
-                        
-                      }, children: [{tag: "img", attrs: {src:"/cover/get/" + el.id, alt:el.filename}}]}
-                    })
-                  ]}, 
-                  
-                  
-                  
-                  {tag: "div", attrs: {className:"card-body"}, children: [
-                    {tag: "div", attrs: {className:"btn-group"}, children: [
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["1"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["2"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["3"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["4"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["5"]}, 
-                      {tag: "button", attrs: {type:"button", className:"btn ink-reaction btn-default-bright"}, children: ["6"]}, 
-                      {tag: "input", attrs: {className:"btn ink-reaction btn-default-bright", name:"file", id:"file", type:"file", accept:"/image/*", 
-                        onchange:function(){
-                          var file = $('#file').get(0).files[0];
-                          var formData = new FormData();
-                          formData.append('file', file);
-                          $.ajax({
-                            url: '/upload/image',
-                            data: formData,
-                            type: 'POST',
-                            contentType: false,
-                            processData: false,
-                            beforeSend: function (data) {
-                              alert('Are you sure you want to upload image?');
-                            },
-                            success: function (data) {
-                              ctrl.request2 = fn.requestWithFeedback({method: "GET", url: "/image/list/1"}, ctrl.imgList, ctrl.setup2);
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                              alert(textStatus + ': ' + errorThrown);
+                    {tag: "button", attrs: {type:"button", class:"btn btn-default", style:"margin-left: 5px", 
+                            onclick:function(){
+                              ctrl.request2 = fn.requestWithFeedback({
+                                method: "GET",
+                                url: "/image/list/" + (ctrl.imgPage + 1)
+                              }, ctrl.imgListTmp, ctrl.setupNext);
                             }
-                          });
-                        }}
-                      }
-                  
-                    ]}
-                  ]}
-                
+                    }, children: ["Trang sau"]}
+                  ]}, 
+                  {tag: "button", attrs: {type:"button", className:"btn btn-default", "data-dismiss":"modal"}, children: ["Close"]}
                 ]}
               ]}
-            ]}
+    
             ]}
           ]}
-        
           
         ]}
       ]}
-    ]},
-    ctrl.showImgList?({tag: "div", attrs: {className:"backdrop", 
-      onclick:function(){
-        ctrl.showImgList = false;
-      }
-    }}):""
+    ]}
   ]
-}
-
-
+};
 
 
 module.exports = NewProduct;
-},{"./fn.msx":11}],10:[function(require,module,exports){
+},{"./fn.msx":16}],12:[function(require,module,exports){
+var fn = require('./fn.msx');
+
+var input = m.prop("");
+var data = m.prop({
+  "_id" : "",
+  "name": "",
+  "category": "none",
+  "extra": "normal",
+  "price": 0,
+  "available": true,
+  "guarantee": 12,
+  "image" : [
+  ],
+  "info": ""
+});
+
+var NewProduct = function(ctrl){
+  return [
+    {tag: "hr", attrs: {className:"ruler-xxl"}},
+    {tag: "div", attrs: {className:"content"}, children: [
+      {tag: "section", attrs: {}, children: [
+        {tag: "div", attrs: {className:"section-body"}, children: [
+          {tag: "div", attrs: {className:"card"}, children: [
+            {tag: "div", attrs: {className:"card-body"}, children: [
+              
+              {tag: "nav", attrs: {"aria-label":"Page navigation"}, children: [
+                {tag: "ul", attrs: {class:"pagination"}, children: [
+                  {tag: "li", attrs: {}, children: [
+                    {tag: "a", attrs: {href:"javascript:void(0)", "aria-label":"Previous", 
+                       onclick:function(){
+                         if(ctrl.page >1) {
+                           ctrl.request = fn.requestWithFeedback({
+                             method: "GET",
+                             url: "/product/list/" + (ctrl.page - 1)
+                           }, ctrl.productsTmp, ctrl.setupPrev);
+                         }
+                       }
+                    }, children: [
+                      {tag: "span", attrs: {"aria-hidden":"true"
+                      }, children: ["«"]}
+                    ]}
+                  ]}, 
+                  {tag: "li", attrs: {}, children: [{tag: "a", attrs: {href:"javascript:void(0)"}, children: [ctrl.page]}]}, 
+                  {tag: "li", attrs: {}, children: [
+                    {tag: "a", attrs: {href:"javascript:void(0)", "aria-label":"Next", 
+                      onclick:function(){
+                        ctrl.request = fn.requestWithFeedback({
+                          method: "GET",
+                          url: "/product/list/" + (ctrl.page + 1)
+                        }, ctrl.productsTmp, ctrl.setupNext);
+                      }
+                    }, children: [
+                      {tag: "span", attrs: {"aria-hidden":"true"}, children: ["»"]}
+                    ]}
+                  ]}
+                  /*<li>*/
+                    /*<div class="input-group">*/
+                      /*<span class="input-group-addon" id="basic-addon1"> Tìm kiếm: </span>*/
+                      /*<input type="text" class="form-control" placeholder="Tên sản phẩm" aria-describedby="basic-addon1"/>*/
+                    /*</div>*/
+                  /*</li>*/
+                ]}
+                
+              ]}, 
+              
+              {tag: "div", attrs: {class:"table-responsive"}, children: [
+                {tag: "table", attrs: {class:"table no-margin"}, children: [
+                  {tag: "thead", attrs: {}, children: [
+                  {tag: "tr", attrs: {}, children: [
+                    {tag: "th", attrs: {}, children: ["Tên laptop"]}, 
+                    {tag: "th", attrs: {}, children: ["Giá"]}, 
+                    {tag: "th", attrs: {}, children: ["Bảo hành"]}, 
+                    {tag: "th", attrs: {}, children: ["Tình trạng"]}, 
+                    {tag: "th", attrs: {}, children: ["Thuộc loại"]}, 
+                    {tag: "th", attrs: {}}
+                  ]}
+                  ]}, 
+                  {tag: "tbody", attrs: {}, children: [
+                  ctrl.products().map(function(el){
+                    return [{tag: "tr", attrs: {}, children: [
+                      {tag: "td", attrs: {}, children: [el.name]}, 
+                      {tag: "td", attrs: {}, children: [el.price]}, 
+                      {tag: "td", attrs: {}, children: [el.guarantee]}, 
+                      {tag: "td", attrs: {}, children: [el.available?"Còn hàng":"hết hàng"]}, 
+                      {tag: "td", attrs: {}, children: [el.extra]}, 
+                      {tag: "td", attrs: {}, children: [
+                        {tag: "span", attrs: {style:"cursor: pointer", 
+                              onclick:function(){
+                                $.ajax({
+                                  type: "POST",
+                                  url: "/product/delete/" + el._id,
+                                  data: JSON.stringify({}),
+                                  contentType: "application/json",
+                                  dataType: "text"
+                                }).done(function() {
+                                  alert("Xóa thành công")
+                                  location.reload();
+                                })
+                                    .fail(function() {
+                                      alert( "error" );
+                                    });
+                              }
+                        }, children: [" Xóa "]}, " |", 
+                        {tag: "span", attrs: {style:"cursor: pointer", 
+                          onclick:function(){
+                            m.route("/product/edit?product=" + el._id)
+                          }
+                        }, children: [" Sửa "]}
+                      ]}
+                    ]}
+                    ]
+                  })
+                  
+                  
+                  ]}
+                ]}
+              ]}
+            ]}
+          ]}
+        ]}
+      ]}
+    ]}
+  ]
+};
+
+
+module.exports = NewProduct;
+},{"./fn.msx":16}],13:[function(require,module,exports){
 var Right = function(ctrl){
   return [
     {tag: "div", attrs: {className:"offcanvas"}, children: [
@@ -1567,7 +1781,198 @@ var Right = function(ctrl){
 };
 
 module.exports = Right;
-},{}],11:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
+var Product = {};
+var Header = require('./_header.msx');
+var Menu = require('./_menu.msx');
+var Main = require('./_article.msx');
+var Right = require('./_right.msx');
+var fn = require('./fn.msx');
+
+
+Product.controller = function(){
+  console.log("new product");
+  var ctrl = this;
+  ctrl.page = 1;
+  ctrl.products = m.prop([]);
+  ctrl.productsTmp = m.prop([]);
+  ctrl.setup = function(){
+    m.redraw();
+  };
+  ctrl.setupPrev = function(){
+    if(ctrl.productsTmp().length > 0){
+      ctrl.products(ctrl.productsTmp());
+      ctrl.page -=1;
+    }
+    m.redraw();
+  };
+  ctrl.setupNext = function(){
+    if(ctrl.productsTmp().length > 0){
+      ctrl.products(ctrl.productsTmp());
+      ctrl.page +=1;
+    }
+    m.redraw();
+  };
+  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/article/list/" + ctrl.page}, ctrl.products, ctrl.setup);
+  window.runApp();
+  window.runNav();
+};
+
+
+
+Product.view = function(ctrl){
+  return  [
+    Header(ctrl),
+    {tag: "div", attrs: {id:"base"}, children: [
+      
+      Main(ctrl), 
+      
+      Menu(ctrl), 
+      
+      Right(ctrl)
+    
+    ]}
+  ]
+};
+
+
+module.exports = Product;
+},{"./_article.msx":3,"./_header.msx":6,"./_menu.msx":8,"./_right.msx":13,"./fn.msx":16}],15:[function(require,module,exports){
+var IndexController = {};
+var Header = require('./_header.msx');
+var Menu = require('./_menu.msx');
+var Index = require('./_indexbuilder.msx');
+var Right = require('./_right.msx');
+var fn = require('./fn.msx');
+
+var postData = {"ok": "data"}
+
+var Sortable = {};
+
+Sortable.ListItems = function() {
+  this.dragging = m.prop(undefined);
+    this.colors = m.prop([
+  ]);
+};
+
+Sortable.ListItems2 = function() {
+  this.dragging = m.prop(undefined);
+  this.name = m.prop("");
+  this.product = m.prop([
+  ]);
+};
+
+
+IndexController.controller = function(){
+  var ctrl = this;
+  ctrl.products = m.prop([]);
+  this.items = new Sortable.ListItems();
+  this.listProduct = new Sortable.ListItems2();
+  
+  // ==============================
+  this.sort = function(colors, dragging) {
+    this.items.colors(colors);
+    this.items.dragging(dragging);
+  };
+  this.dragStart = function(e) {
+    this.dragged = Number(e.currentTarget.dataset.id);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', null);
+  };
+  this.dragOver = function(e) {
+    e.preventDefault();
+    var over = e.currentTarget,
+        dragging = this.items.dragging(),
+        from = isFinite(dragging) ? dragging : this.dragged,
+        to = Number(over.dataset.id);
+    if((e.clientY - over.offsetTop) > (over.offsetHeight / 2)) to++;
+    if(from < to) to--;
+    
+    var colors = this.items.colors();
+    colors.splice(to, 0, colors.splice(from, 1)[0]);
+    this.sort(colors, to);
+  };
+  this.dragEnd = function() {
+    this.sort(this.items.colors(), undefined);
+  };
+  // ==============================
+  
+  
+  // ==============================
+  this.sort2 = function(colors, dragging) {
+    this.listProduct.product(colors);
+    this.listProduct.dragging(dragging);
+  };
+  this.dragStart2 = function(e) {
+    this.dragged = Number(e.currentTarget.dataset.id);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', null);
+  };
+  this.dragOver2 = function(e) {
+    e.preventDefault();
+    var over = e.currentTarget,
+        dragging = this.listProduct.dragging(),
+        from = isFinite(dragging) ? dragging : this.dragged,
+        to = Number(over.dataset.id);
+    if((e.clientY - over.offsetTop) > (over.offsetHeight / 2)) to++;
+    if(from < to) to--;
+    
+    var colors = this.listProduct.product();
+    colors.splice(to, 0, colors.splice(from, 1)[0]);
+    this.sort2(colors, to);
+  };
+  this.dragEnd2 = function() {
+    this.sort2(this.listProduct.product(), undefined);
+  };
+  // ==============================
+  
+  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/indexbuild"}, ctrl.items.colors, ctrl.setup);
+  ctrl.setup = function(){
+    m.redraw();
+  }
+  
+  ctrl.setupProduct = function(){
+    m.redraw();
+  };
+  ctrl.page = 1;
+  ctrl.setupPrev = function(){
+    if(ctrl.productsTmp().length > 0){
+      ctrl.products(ctrl.productsTmp());
+      ctrl.page -=1;
+    }
+    m.redraw();
+  };
+  ctrl.setupNext = function(){
+    if(ctrl.productsTmp().length > 0){
+      ctrl.products(ctrl.productsTmp());
+      ctrl.page +=1;
+    }
+    m.redraw();
+  };
+  window.runApp();
+  window.runNav();
+};
+
+
+
+IndexController.view = function(ctrl){
+  return  [
+    Header(ctrl),
+    {tag: "div", attrs: {id:"base"}, children: [
+      
+      Index(ctrl), 
+      
+      Menu(ctrl), 
+      
+      Right(ctrl)
+    
+    ]}
+  ]
+};
+
+
+module.exports = IndexController;
+},{"./_header.msx":6,"./_indexbuilder.msx":7,"./_menu.msx":8,"./_right.msx":13,"./fn.msx":16}],16:[function(require,module,exports){
 var Fn = {};
 
 
@@ -1703,9 +2108,32 @@ Fn.bindOnce = (function() {
 }())
 
 
+Fn.getItemByParam = function(list, key, value){
+  var result = undefined;
+  var length = list.length;
+  for(var i=0; i<length; i++){
+    if(list[i][key] == value){
+      result = list[i];
+      break;
+    }
+  }
+  return result;
+};
+
+Fn.getIndexByParam = function(list, key, value){
+  var result = -1;
+  var length = list.length;
+  for(var i=0; i<length; i++){
+    if(list[i][key] == value){
+      result = i;
+      break;
+    }
+  }
+  return result;
+};
 
 module.exports = Fn;
-},{}],12:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var Home = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1713,6 +2141,8 @@ var Content = require('./_content.msx');
 var Right = require('./_right.msx');
 Home.controller = function(){
   console.log("run home")
+  window.runApp();
+  window.runNav();
 };
 
 Home.view = function(ctrl){
@@ -1733,63 +2163,7 @@ Home.view = function(ctrl){
 
 
 module.exports = Home;
-},{"./_content.msx":3,"./_header.msx":5,"./_menu.msx":6,"./_right.msx":10}],13:[function(require,module,exports){
-var MenuController = {};
-var Header = require('./_header.msx');
-var Menu = require('./_menu.msx');
-var CreateMenu = require('./_createMenu.msx');
-var Right = require('./_right.msx');
-var fn = require('./fn.msx');
-
-var postData = {"ok": "data"};
-
-
-MenuController.controller = function(){
-  console.log("run menu")
-  var ctrl = this;
-  ctrl.showImgList = false;
-  ctrl.imgList = m.prop([]);
-  ctrl.menu = m.prop([]);
-  
-  ctrl.setup = function(){
-    ctrl.menu(ctrl.request.data());
-    console.log(ctrl.menu())
-    ctrl.domenu = $('#domenu-0').domenu({
-      onDomenuInitialized: [function() {
-        console.log('event: onDomenuInitialized', 'arguments:', arguments, 'context:', this);
-      }],
-      data: JSON.stringify(ctrl.menu())
-    }).parseJson();
-    
-  };
-  
-  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/setup/menu"}, ctrl.menu, ctrl.setup);
-  // ctrl.menu = [{"title":"SẢN PHẨM PHẦN CỨNG","http":"/c/sp-phan-cung","parent":"NONE","children":[{"title":"CBUS","http":"/c/sp-phan-cung/cbus","parent":"sp-phan-cung","children":[{"title":"CBUS HOST","http":"/c/sp-phan-cung/cbus/cbus-host","parent":"CBUS"},{"title":"cBUS AddOn","http":"/c/sp-phan-cung/cbus/cbus-addon","parent":"cbus"}]}]},{"title":"Development Board","http":"/c/sp-phan-cung/development-board","parent":"sp-phan-cung","children":[{"title":"Microcontroller","http":"/c/sp-phan-cung/development-board/microcontroller","parent":"development-board"},{"title":"Arduino","http":"/c/sp-phan-cung/development-board/arduino","parent":"development-board"},{"title":"ARM","http":"/c/sp-phan-cung/development-board/arm","parent":"development-board"}]}]
-  // ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
-  
-  
-};
-
-
-
-MenuController.view = function(ctrl){
-  return  [
-    Header(ctrl),
-    {tag: "div", attrs: {id:"base"}, children: [
-      
-      CreateMenu(ctrl), 
-      
-      Menu(ctrl), 
-      
-      Right(ctrl)
-    
-    ]}
-  ]
-};
-
-
-module.exports = MenuController;
-},{"./_createMenu.msx":4,"./_header.msx":5,"./_menu.msx":6,"./_right.msx":10,"./fn.msx":11}],14:[function(require,module,exports){
+},{"./_content.msx":4,"./_header.msx":6,"./_menu.msx":8,"./_right.msx":13}],18:[function(require,module,exports){
 var Article = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1800,16 +2174,26 @@ var fn = require('./fn.msx');
 var postData = {"ok": "data"}
 
 Article.controller = function(){
-  console.log("new article");
   var ctrl = this;
-  ctrl.showImgList = false;
-  ctrl.imgList = m.prop([]);
+  ctrl.data = m.prop({
+    "_id" : "",
+    "title": "",
+    "body": ""
+  });
+  ctrl.requestArticle = {};
+  ctrl.requestArticle.ready = m.prop(false);
   
-  ctrl.setup2 = function(){
-    ctrl.imgList(ctrl.request2.data());
-    ctrl.showImgList = true;
+  ctrl.setup = function(){
+    console.log(ctrl.data().body);
     m.redraw();
   };
+  
+  ctrl.type = m.route.param("status");
+  ctrl.articleID = m.route.param("article");
+  
+  if(ctrl.articleID != undefined){
+    ctrl.requestArticle = fn.requestWithFeedback({method: "GET", url: "/article/get/" + ctrl.articleID}, ctrl.data, ctrl.setup);
+  }
 
 };
 
@@ -1832,7 +2216,7 @@ Article.view = function(ctrl){
 
 
 module.exports = Article;
-},{"./_header.msx":5,"./_menu.msx":6,"./_newarticle.msx":7,"./_right.msx":10,"./fn.msx":11}],15:[function(require,module,exports){
+},{"./_header.msx":6,"./_menu.msx":8,"./_newarticle.msx":9,"./_right.msx":13,"./fn.msx":16}],19:[function(require,module,exports){
 var NewProduct = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1853,8 +2237,9 @@ NewProduct.controller = function(){
     // ctrl.showImgList = true;
     m.redraw();
   };
-  ctrl.categories = m.prop([]);
-  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
+  // ctrl.categories = m.prop([]);
+  // ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
+
 };
 
 
@@ -1876,7 +2261,7 @@ NewProduct.view = function(ctrl){
 
 
 module.exports = NewProduct;
-},{"./_header.msx":5,"./_menu.msx":6,"./_newcategory.msx":8,"./_right.msx":10,"./fn.msx":11}],16:[function(require,module,exports){
+},{"./_header.msx":6,"./_menu.msx":8,"./_newcategory.msx":10,"./_right.msx":13,"./fn.msx":16}],20:[function(require,module,exports){
 var Product = {};
 var Header = require('./_header.msx');
 var Menu = require('./_menu.msx');
@@ -1889,24 +2274,68 @@ var postData = {"ok": "data"}
 Product.controller = function(){
   console.log("new product");
   var ctrl = this;
+  ctrl.data = m.prop({
+    "_id" : "",
+    "name": "",
+    "search": "",
+    "category": "none",
+    "extra": "normal",
+    "price": 0,
+    "available": true,
+    "guarantee": 12,
+    "image" : [
+    ],
+    "info": "",
+    "driver": "",
+    "youtube": ""
+  });
+  ctrl.type = m.route.param("status");
+  ctrl.productID = m.route.param("product");
+  ctrl.requestProduct = {}
+  ctrl.requestProduct.ready = m.prop(false);
+  
+  
   ctrl.showImgList = false;
   ctrl.imgList = m.prop([]);
-  
+  ctrl.imgListTmp = m.prop([]);
+  ctrl.imgPage = 1;
   ctrl.setup2 = function(){
     ctrl.imgList(ctrl.request2.data());
     ctrl.showImgList = true;
     m.redraw();
   };
-  
+  ctrl.categories = m.prop([]);
+  ctrl.setupPrev = function(){
+    ctrl.imgList(ctrl.request2.data());
+    ctrl.Page -=1;
+    m.redraw();
+  };
+  ctrl.setupNext = function(){
+    if(ctrl.imgListTmp().length>0) {
+      ctrl.imgList(ctrl.imgListTmp());
+      ctrl.Page += 1;
+    }
+    m.redraw();
+  };
   ctrl.setup = function(){
-    ctrl.categories(ctrl.request.data());
+    console.log(ctrl.request.data());
+    m.redraw();
+  };
+  ctrl.setupProduct = function(){
+    console.log("setup Product !!");
+    console.log(ctrl.data());
     m.redraw();
   };
   
   
   ctrl.categories = m.prop([]);
-  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
+  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listcategory"}, ctrl.categories, ctrl.setup);
+  if(ctrl.productID != undefined){
+    console.log("product !!");
+    ctrl.requestProduct = fn.requestWithFeedback({method: "GET", url: "/product/get/" + ctrl.productID}, ctrl.data, ctrl.setupProduct);
+  }
   
+
 };
 
 
@@ -1928,4 +2357,114 @@ Product.view = function(ctrl){
 
 
 module.exports = Product;
-},{"./_header.msx":5,"./_menu.msx":6,"./_newproduct.msx":9,"./_right.msx":10,"./fn.msx":11}]},{},[2])
+},{"./_header.msx":6,"./_menu.msx":8,"./_newproduct.msx":11,"./_right.msx":13,"./fn.msx":16}],21:[function(require,module,exports){
+var Product = {};
+var Header = require('./_header.msx');
+var Menu = require('./_menu.msx');
+var Main = require('./_product.msx');
+var Right = require('./_right.msx');
+var fn = require('./fn.msx');
+
+
+Product.controller = function(){
+  console.log("new product");
+  var ctrl = this;
+  ctrl.page = 1;
+  ctrl.products = m.prop([]);
+  ctrl.productsTmp = m.prop([]);
+  ctrl.setup = function(){
+    m.redraw();
+  };
+  ctrl.setupPrev = function(){
+    if(ctrl.productsTmp().length > 0){
+      ctrl.products(ctrl.productsTmp());
+      ctrl.page -=1;
+    }
+    m.redraw();
+  };
+  ctrl.setupNext = function(){
+    if(ctrl.productsTmp().length > 0){
+      ctrl.products(ctrl.productsTmp());
+      ctrl.page +=1;
+    }
+    m.redraw();
+  };
+  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/product/list/" + ctrl.page}, ctrl.products, ctrl.setup);
+
+};
+
+
+
+Product.view = function(ctrl){
+  return  [
+    Header(ctrl),
+    {tag: "div", attrs: {id:"base"}, children: [
+      
+      Main(ctrl), 
+      
+      Menu(ctrl), 
+      
+      Right(ctrl)
+    
+    ]}
+  ]
+};
+
+
+module.exports = Product;
+},{"./_header.msx":6,"./_menu.msx":8,"./_product.msx":12,"./_right.msx":13,"./fn.msx":16}],22:[function(require,module,exports){
+var MenuController = {};
+var Header = require('./_header.msx');
+var Menu = require('./_menu.msx');
+var Main = require('./_createSetupCategory.msx');
+var Right = require('./_right.msx');
+var fn = require('./fn.msx');
+
+var postData = {"ok": "data"};
+
+
+MenuController.controller = function(){
+  console.log("run menu")
+  var ctrl = this;
+  ctrl.showImgList = false;
+  ctrl.imgList = m.prop([]);
+  ctrl.menu = m.prop([]);
+  ctrl.setupID = (m.route() == "/setup/category")?"category":"nav";
+  ctrl.setup = function(){
+      ctrl.domenu = $('#domenu-0').domenu({
+        onDomenuInitialized: [function() {
+          console.log('event: onDomenuInitialized', 'arguments:', arguments, 'context:', this);
+        }],
+        maxDepth: (ctrl.setupID == "category")?2:1,
+        data: JSON.stringify(ctrl.menu())
+      }).parseJson()
+    
+  };
+  
+  ctrl.request = fn.requestWithFeedback({method: "GET", url: "/setup/" + ctrl.setupID}, ctrl.menu, ctrl.setup);
+  // ctrl.menu = [{"title":"SẢN PHẨM PHẦN CỨNG","http":"/c/sp-phan-cung","parent":"NONE","children":[{"title":"CBUS","http":"/c/sp-phan-cung/cbus","parent":"sp-phan-cung","children":[{"title":"CBUS HOST","http":"/c/sp-phan-cung/cbus/cbus-host","parent":"CBUS"},{"title":"cBUS AddOn","http":"/c/sp-phan-cung/cbus/cbus-addon","parent":"cbus"}]}]},{"title":"Development Board","http":"/c/sp-phan-cung/development-board","parent":"sp-phan-cung","children":[{"title":"Microcontroller","http":"/c/sp-phan-cung/development-board/microcontroller","parent":"development-board"},{"title":"Arduino","http":"/c/sp-phan-cung/development-board/arduino","parent":"development-board"},{"title":"ARM","http":"/c/sp-phan-cung/development-board/arm","parent":"development-board"}]}]
+  // ctrl.request = fn.requestWithFeedback({method: "GET", url: "/admin/category/listParent"}, ctrl.categories, ctrl.setup);
+  
+
+};
+
+
+
+MenuController.view = function(ctrl){
+  return  [
+    Header(ctrl),
+    {tag: "div", attrs: {id:"base"}, children: [
+      
+      Main(ctrl), 
+      
+      Menu(ctrl), 
+      
+      Right(ctrl)
+    
+    ]}
+  ]
+};
+
+
+module.exports = MenuController;
+},{"./_createSetupCategory.msx":5,"./_header.msx":6,"./_menu.msx":8,"./_right.msx":13,"./fn.msx":16}]},{},[2])

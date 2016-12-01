@@ -1,18 +1,7 @@
 var fn = require('./fn.msx');
 
 var input = m.prop("");
-var data = m.prop({
-  "_id" : "",
-  "name": "",
-  "category": "none",
-  "extra": "normal",
-  "price": 0,
-  "available": true,
-  "guarantee": 12,
-  "image" : [
-  ],
-  "info": ""
-});
+
 
 var NewProduct = function(ctrl){
   return [
@@ -26,21 +15,22 @@ var NewProduct = function(ctrl){
                 
                 <button type="button" className="btn ink-reaction btn-raised btn-primary" style="float: right"
                   onclick={function(){
-                    console.log(data());
-                    $.ajax({
-                      type: "POST",
-                      url: "/admin/product",
-                      data: JSON.stringify(data()),
-                      contentType: "application/json",
-                      dataType: "json",
-                      success: function(data){
-                      }
-                    });
-                    
+                    if(ctrl.data().image.length > 0 && ctrl.data()._id.length > 0) {
+                      $.ajax({
+                        type: "POST",
+                        url: "/admin/product",
+                        data: JSON.stringify(ctrl.data()),
+                        contentType: "application/json",
+                        dataType: "text",
+                        success: function (data) {
+                          m.route("/product/edit?product=" + ctrl.data()._id)
+                        }
+                      });
+                    } else {
+                      alert("Phải chọn ảnh sản phẩm!")
+                    }
                   }}
-                >Thêm laptop</button>
-                
-                <button type="button" className="btn ink-reaction btn-raised" style="float: right; margin-right: 20px;">Save</button>
+                >{(ctrl.productID != undefined)?"Cập nhập":"Thêm laptop"}</button>
                 
                 <br/>
                 <br/>
@@ -48,11 +38,11 @@ var NewProduct = function(ctrl){
                 <div className="form-group">
                   <label htmlFor="url" className="col-sm-2 control-label">Url :</label>
                   <div className="col-sm-10">
-                    <input type="text" className="form-control" id="url" name="title"
+                    <input type="text" className="form-control" id="url" name="title" disabled={(ctrl.productID != undefined)?"true":""}
                            onchange={function(el){
-                             data()._id = $(el.target).val()
+                             ctrl.data()._id = $(el.target).val()
                            }}
-                           value={data()._id}
+                           value={ctrl.data()._id}
                     />
                     <div className="form-control-line"></div>
                   </div>
@@ -63,27 +53,55 @@ var NewProduct = function(ctrl){
                   <div className="col-sm-10">
                     <input type="text" className="form-control" id="title" name="title"
                     onchange={function(el){
-                      data().name = $(el.target).val();
-                      data()._id = fn.slug(data().name);
+                      ctrl.data().name = $(el.target).val();
+                      ctrl.data().search = $(el.target).val();
+                      ctrl.data()._id = fn.slug(ctrl.data().name);
                     }}
-                    value={data().name}
+                    value={ctrl.data().name}
                     />
                     <div className="form-control-line"></div>
                   </div>
                 </div>
   
                 <div className="form-group">
+                  <label htmlFor="title" className="col-sm-2 control-label">Link driver</label>
+                  <div className="col-sm-10">
+                    <input type="text" className="form-control" id="title" name="title"
+                           onchange={function(el){
+                             ctrl.data().driver = $(el.target).val();
+                           }}
+                           value={ctrl.data().driver}
+                    />
+                    <div className="form-control-line"></div>
+                  </div>
+                </div>
+  
+                <div className="form-group">
+                  <label htmlFor="title" className="col-sm-2 control-label">Video youtube</label>
+                  <div className="col-sm-10">
+                    <input type="text" className="form-control" id="title" name="title"
+                           onchange={function(el){
+                             ctrl.data().youtube = $(el.target).val();
+                           }}
+                           value={ctrl.data().youtube}
+                    />
+                    <div className="form-control-line"></div>
+                  </div>
+                </div>
+                
+                
+                <div className="form-group">
                   <label htmlFor="title" className="col-sm-2 control-label">Loại hàng :</label>
                   <div className="col-sm-5 control-label">
                     <select className="form-control" id="categories" name="categories"
                             onchange={function(el){
-                              data().extra = $(el.target).val();
+                              ctrl.data().extra = $(el.target).val();
                             }}
                     >
-                      <option value="normal" selected={(data().extra == "normal")?"true":""}>Bình thường</option>
-                      <option value="hot" selected={(data().extra == "hot")?"true":""}>Hàng Hot</option>
-                      <option value="new" selected={(data().extra == "new")?"true":""}>Hàng mới về</option>
-                      <option value="sale" selected={(data().extra == "sale")?"true":""}>Hàng khuyến mãi</option>
+                      <option value="normal" selected={(ctrl.data().extra == "normal")?"true":""}>Bình thường</option>
+                      <option value="hot" selected={(ctrl.data().extra == "hot")?"true":""}>Hàng Hot</option>
+                      <option value="new" selected={(ctrl.data().extra == "new")?"true":""}>Hàng mới về</option>
+                      <option value="sale" selected={(ctrl.data().extra == "sale")?"true":""}>Hàng khuyến mãi</option>
                     </select>
   
                   </div>
@@ -94,13 +112,13 @@ var NewProduct = function(ctrl){
                   <div className="col-sm-5 control-label">
                     <select className="form-control" id="categories" name="categories"
                       onchange={function(el){
-                        data().category = $(el.target).val();
+                        ctrl.data().category = $(el.target).val();
                       }}
                     >
                       {ctrl.categories().map(function(el){
                         return  <option value={el._id} >{el.name}</option>
                       })}
-                      <option value="none" selected={(data().category == "none")?"true":""}>Chưa chọn</option>
+                      <option value="none" selected={(ctrl.data().category == "none")?"true":""}>Chưa chọn</option>
                     </select>
                   </div>
                   {/*<label htmlFor="image" className="col-sm-1 control-label">Cover</label>*/}
@@ -111,11 +129,11 @@ var NewProduct = function(ctrl){
                   <div className="col-sm-5 control-label">
                     <select className="form-control" id="categories" name="categories"
                             onchange={function(el){
-                              data().available = ($(el.target).val() == "true")?true:false;
+                              ctrl.data().available = ($(el.target).val() == "true")?true:false;
                             }}
                     >
-                      <option value="true" selected={(data().available == true)?"true":""}>Còn hàng</option>
-                      <option value="false" selected={(data().available == false)?"true":""}>Hết hàng</option>
+                      <option value="true" selected={(ctrl.data().available == true)?"true":""}>Còn hàng</option>
+                      <option value="false" selected={(ctrl.data().available == false)?"true":""}>Hết hàng</option>
                     </select>
                   </div>
                 </div>
@@ -125,9 +143,20 @@ var NewProduct = function(ctrl){
                   <div className="col-sm-1 control-label">
                     <input type="number"
                            onchange={function(el){
-                             data().guarantee = $(el.target).val();
+                             ctrl.data().guarantee = parseInt($(el.target).val());
                            }}
-                           value={data().guarantee}/>
+                           value={ctrl.data().guarantee}/>
+                  </div>
+                </div>
+  
+                <div className="form-group">
+                  <label htmlFor="" className="col-sm-2 control-label">Giá bán :</label>
+                  <div className="col-sm-1 control-label">
+                    <input type="number"
+                           onchange={function(el){
+                             ctrl.data().price = parseInt($(el.target).val());
+                           }}
+                           value={ctrl.data().price}/>
                   </div>
                 </div>
   
@@ -142,11 +171,11 @@ var NewProduct = function(ctrl){
                     >Chọn ảnh</button>
                   </div>
                   <div className="col-sm-5 control-label img-cover">
-                    {(data().image.length>0)?[
-                        data().image.map(function(el){
+                    {(ctrl.data().image.length>0)?[
+                        ctrl.data().image.map(function(el){
                           return <img src={"/cover/get/" + el._id} alt={el.alt}
                             onclick={function(){
-                              data().image.splice(fn.getIndexByParam(data().image, "_id", el._id) ,1)
+                              ctrl.data().image.splice(fn.getIndexByParam(ctrl.data().image, "_id", el._id) ,1)
                             }}
                           />
                         })
@@ -162,22 +191,26 @@ var NewProduct = function(ctrl){
           </div>
           
           <div className="card card-body">
-            <div id="summernote"
+            {(ctrl.requestProduct.ready() || ctrl.productID == undefined )?(
+              <div id="summernote"
               config={function (el, isInited) {
                 if (!isInited) {
                   $('#summernote').summernote({
                     callbacks: {
                       onChange: function(contents, $editable) {
-                        data().info = $('#summernote').summernote('code');
+                        console.log("change:" + contents);
+                        ctrl.data().info = $('#summernote').summernote('code');
+                        ctrl.data().info = $('#summernote').summernote('code');
+                        {/*console.log(ctrl.data().info)*/}
                       }
                     }
                   });
-  
-                  $('#summernote').summernote('code', data().info);
+                  $('#summernote').summernote('code', ctrl.data().info);
                 }
               }
               }
-            ></div>
+            ></div>):(<div id="summernote"></div>)
+            }
           </div>
   
           <div id="uploadImage" className="modal fade" role="dialog">
@@ -188,7 +221,16 @@ var NewProduct = function(ctrl){
                   <h4 className="modal-title">upload Image!</h4>
                 </div>
                 <div className="modal-body">
-                  <input id="file-0a" class="file" type="file" multiple  data-max-file-count="5" data-upload-url="/upload/image"/>
+                  <input
+                      config={function(el, isInited){
+                        if(!isInited){
+                            var $input = $('input.file[type=file]');
+                            if ($input.length) {
+                              $input.fileinput();
+                            }
+                        }
+                      }}
+                      id="file-0a" class="file" type="file" multiple  data-max-file-count="5" data-upload-url="/upload/image"/>
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
@@ -210,16 +252,16 @@ var NewProduct = function(ctrl){
                 <div className="modal-body clearfix">
                     {ctrl.imgList().map(function(item){
                       return (
-                          <div className={"col-lg-2 col-md-3 col-xs-4 thumb " + ((fn.getItemByParam(data().image, "_id", item._id) == undefined)?"":"selected")}>
+                          <div className={"col-lg-2 col-md-3 col-xs-4 thumb " + ((fn.getItemByParam(ctrl.data().image, "_id", item._id) == undefined)?"":"selected")}>
                             <span
                               onclick={function(){
-                                data().image.splice(fn.getIndexByParam(data().image, "_id", item._id) ,1)
+                                ctrl.data().image.splice(fn.getIndexByParam(ctrl.data().image, "_id", item._id) ,1)
                               }}
                             ></span>
                             <a class="thumbnail" href="javascript:void(0)"
                               onclick={function(){
-                                if(fn.getItemByParam(data().image, "_id", item._id) == undefined && data().image.length<5){
-                                  data().image.push({"_id": item._id, "alt" : item.filename})
+                                if(fn.getItemByParam(ctrl.data().image, "_id", item._id) == undefined && ctrl.data().image.length<5){
+                                  ctrl.data().image.push({"_id": item._id, "alt" : item.filename})
                                 }
                               }}
                             >

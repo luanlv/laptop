@@ -1,24 +1,100 @@
-@(signUpForm: Form[forms.SignUpForm.Data])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@(signUpForm: Form[forms.SignUpForm.Data])(implicit request: RequestHeader, user: Option[User], messages: Messages)
 
+
+@import com.mohiva.play.silhouette.impl.providers.oauth2.ClefProvider
 @import b3.inline.fieldConstructor
 
-@main(Messages("sign.up.title")) {
-    <fieldset class="col-md-6 col-md-offset-3">
-        <legend>@Messages("sign.up.account")</legend>
-        @helper.form(action = routes.SignUpController.submit()) {
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+    <title>Dang nhap</title>
+    <link href="//fonts.googleapis.com/css?family=Roboto|Montserrat:400,700|Open+Sans:400,300,600" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/ionicons/1.5.2/css/ionicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="@routes.Assets.at("styles/main.css")">
+      <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+      <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+            <![endif]-->
+  </head>
+  <body>
+
+    <main class="container">
+      <div class="starter-template row">
+        @request.flash.get("error").map { msg =>
+          <div class="col-md-6 col-md-offset-3 alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert">&times;</a>
+            <strong>@Messages("error")</strong> @msg
+          </div>
+        }
+        @request.flash.get("info").map { msg =>
+          <div class="col-md-6 col-md-offset-3 alert alert-info">
+            <a href="#" class="close" data-dismiss="alert">&times;</a>
+            <strong>@Messages("info")</strong> @msg
+          </div>
+        }
+        @request.flash.get("success").map { msg =>
+          <div class="col-md-6 col-md-offset-3 alert alert-success">
+            <a href="#" class="close" data-dismiss="alert">&times;</a>
+            <strong>@Messages("success")</strong> @msg
+          </div>
+        }
+
+
+        <fieldset class="col-md-6 col-md-offset-3">
+          <legend>@Messages("sign.up.account")</legend>
+          @helper.form(action = routes.SignUpController.submit()) {
             @helper.CSRF.formField
             @b3.text(signUpForm("firstName"), '_hiddenLabel -> Messages("first.name"), 'placeholder -> Messages("first.name"), 'class -> "form-control input-lg")
             @b3.text(signUpForm("lastName"), '_hiddenLabel -> Messages("last.name"), 'placeholder -> Messages("last.name"), 'class -> "form-control input-lg")
             @b3.text(signUpForm("email"), '_hiddenLabel -> Messages("email"), 'placeholder -> Messages("email"), 'class -> "form-control input-lg")
-            @passwordStrength(signUpForm("password"), '_hiddenLabel -> Messages("password"), 'placeholder -> Messages("password"), 'class -> "form-control input-lg")
+            <section>
+
+
+
+              <div class="form-group  " id="password_field">
+
+
+                <label class="control-label sr-only" for="password">Password</label>
+
+
+
+
+                <input type="password" id="password" name="password" value="" required="true" class="form-control form-control input-lg" data-pwd="true" placeholder="Password">
+
+
+
+
+
+
+              </div>
+
+              <meter max="4" id="password-strength-meter"></meter>
+              <p id="password-strength-text"></p>
+            </section>
+
             <div class="form-group">
-                <div>
-                    <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@Messages("sign.up")</button>
-                </div>
+              <div>
+                <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@Messages("sign.up")</button>
+              </div>
             </div>
             <div class="sign-in-now">
-                <p>@Messages("already.a.member") <a href="@routes.SignInController.view">@Messages("sign.in.now")</a></p>
+              <p>@Messages("already.a.member") <a href="@routes.SignInController.view">@Messages("sign.in.now")</a></p>
             </div>
-        }
-    </fieldset>
-}
+          }
+        </fieldset>
+
+      </div>
+    </main>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
+    <script src="@routes.Assets.at("javascripts/zxcvbnShim.js")"></script>
+  </body>
+</html>

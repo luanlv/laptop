@@ -13,6 +13,7 @@ import reactivemongo.bson.BSONObjectID
 case class Product(
   _id: String,
   name: String,
+  search: String,
   category: String,
   price: Int,
   extra: String,
@@ -20,6 +21,8 @@ case class Product(
   guarantee: Int,
   image: List[LightImage],
   info: String,
+  driver: Option[String] = Some(""),
+  youtube: Option[String] = Some(""),
   createAt: DateTime = DateTime.now()
 ) extends Identity with TemporalModel {
 

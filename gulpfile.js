@@ -24,40 +24,83 @@ gulp.task('sass', function () {
         browsers: ['last 2 versions'],
         cascade: false
       }))
-      // .pipe(cleanCSS())
+      .pipe(cleanCSS())
       // .pipe(rename('style.min.css'))
       .pipe(rename('style.css'))
       // .pipe(gulp.dest('public/stylesheets'));
-      .pipe(gulp.dest('file/'));
+      .pipe(gulp.dest('public/css/'));
 });
 
+// gulp.task('sass', function () {
+//   return sass('_frontend/scss/*.scss')
+//       .on('error', sass.logError)
+//       .pipe(autoprefixer({
+//         browsers: ['last 2 versions'],
+//         cascade: false
+//       }))
+//       // .pipe(cleanCSS())
+//       // .pipe(rename('style.min.css'))
+//       .pipe(rename('style.css'))
+//       // .pipe(gulp.dest('public/stylesheets'));
+//       .pipe(gulp.dest('file/'));
+// });
+
 gulp.task('app', function() {
-  var cmd = new run.Command('optimize-js ./file/app-tmp.js > ./file/app.js');
+  var cmd = new run.Command('optimize-js ./public/js/app-tmp-min.js > ./public/js/app.js');
   gulp.src('_frontend/app/main.msx')
       .pipe(browserify({
         transform: ['mithrilify']
       }))
       .pipe(rename('app-tmp.js'))
       .pipe(minify({}))
-      .pipe(gulp.dest('file/'))
+      .pipe(gulp.dest('public/js/'))
       .on('end', function(){
         cmd.exec('');
       });
 });
+//
+// gulp.task('app', function() {
+//   var cmd = new run.Command('optimize-js ./file/app-tmp.js > ./file/app.js');
+//   gulp.src('_frontend/app/main.msx')
+//       .pipe(browserify({
+//         transform: ['mithrilify']
+//       }))
+//       .pipe(rename('app-tmp.js'))
+//       // .pipe(minify({}))
+//       .pipe(gulp.dest('file/'))
+//       .on('end', function(){
+//         cmd.exec('');
+//       });
+// });
 
 gulp.task('admin', function() {
-  var cmd = new run.Command('optimize-js ./file/admin-tmp.js > ./file/admin.js');
+  var cmd = new run.Command('optimize-js ./public/js/admin-tmp-min.js > ./public/js/admin.js');
   gulp.src('_frontend/admin/main.msx')
       .pipe(browserify({
         transform: ['mithrilify']
       }))
       .pipe(rename('admin-tmp.js'))
+      .pipe(minify({}))
       // .pipe(gulp.dest('public/js/'))
-      .pipe(gulp.dest('file/'))
+      .pipe(gulp.dest('public/js/'))
       .on('end', function(){
         cmd.exec('');
       });
 });
+
+// gulp.task('admin', function() {
+//   var cmd = new run.Command('optimize-js ./file/admin-tmp.js > ./file/admin.js');
+//   gulp.src('_frontend/admin/main.msx')
+//       .pipe(browserify({
+//         transform: ['mithrilify']
+//       }))
+//       .pipe(rename('admin-tmp.js'))
+//       // .pipe(gulp.dest('public/js/'))
+//       .pipe(gulp.dest('file/'))
+//       .on('end', function(){
+//         cmd.exec('');
+//       });
+// });
 
 
 //

@@ -881,6 +881,8 @@ fn.changePageUrl = function(title, pageOld, pageNew, id) {
     }
 };
 
+
+
 var shortUrl = [
     "http://ouo.io/s/jkaTd8hX?s=",
     "http://sh.st/st/e789c1b5ebbd52558715462cbeccf4ca/",

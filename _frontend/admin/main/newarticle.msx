@@ -8,16 +8,26 @@ var fn = require('./fn.msx');
 var postData = {"ok": "data"}
 
 Article.controller = function(){
-  console.log("new article");
   var ctrl = this;
-  ctrl.showImgList = false;
-  ctrl.imgList = m.prop([]);
+  ctrl.data = m.prop({
+    "_id" : "",
+    "title": "",
+    "body": ""
+  });
+  ctrl.requestArticle = {};
+  ctrl.requestArticle.ready = m.prop(false);
   
-  ctrl.setup2 = function(){
-    ctrl.imgList(ctrl.request2.data());
-    ctrl.showImgList = true;
+  ctrl.setup = function(){
+    console.log(ctrl.data().body);
     m.redraw();
   };
+  
+  ctrl.type = m.route.param("status");
+  ctrl.articleID = m.route.param("article");
+  
+  if(ctrl.articleID != undefined){
+    ctrl.requestArticle = fn.requestWithFeedback({method: "GET", url: "/article/get/" + ctrl.articleID}, ctrl.data, ctrl.setup);
+  }
 
 };
 
