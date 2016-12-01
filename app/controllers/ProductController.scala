@@ -26,6 +26,7 @@ import scala.language.postfixOps
 
 @Singleton
 class ProductController @Inject() (
+  cached: Cached,
   val messagesApi: MessagesApi,
   val silhouette: Silhouette[MyEnv],
   productService: ProductService,
@@ -33,28 +34,32 @@ class ProductController @Inject() (
   setupCategoryService: SetupCategoryService,
   socialProviderRegistry: SocialProviderRegistry) extends AuthController {
 
-  def index(categorySlug: String, productID: String) = UserAwareAction.async { implicit request =>
-    val fuData = for {
-      product <- productService.retrieve(productID)
-      productsInCategory <- productService.getListByCategory(categorySlug, 1, 12)
-      categoryProduct <- setupCategoryService.retrieve("category")
-      nav <- setupCategoryService.retrieve("nav")
-    } yield (product.get, productsInCategory, categoryProduct.get.value, nav.get.value)
+  def index(categorySlug: String, productID: String) = cached((rh: RequestHeader) => categorySlug + productID, 15) {
+    UserAwareAction.async { implicit request =>
+      val fuData = for {
+        product <- productService.retrieve(productID)
+        productsInCategory <- productService.getListByCategory(categorySlug, 1, 12)
+        categoryProduct <- setupCategoryService.retrieve("category")
+        nav <- setupCategoryService.retrieve("nav")
+      } yield (product.get, productsInCategory, categoryProduct.get.value, nav.get.value)
 
-    fuData map { data =>
-      Ok(views.html.product(data._1, data._2, data._3, data._4))
+      fuData map { data =>
+        Ok(views.html.product(data._1, data._2, data._3, data._4))
+      }
     }
   }
 
-  def indexCategory(categorySlug: String, page: Int) = UserAwareAction.async { implicit request =>
-    val fuData = for {
-      products <- productService.getListByCategory(categorySlug, page)
-      categoryProduct <- setupCategoryService.retrieve("category")
-      nav <- setupCategoryService.retrieve("nav")
-    } yield (products, categoryProduct.get.value, nav.get.value)
+  def indexCategory(categorySlug: String, page: Int) = cached((rh: RequestHeader) => categorySlug, 15) {
+    UserAwareAction.async { implicit request =>
+      val fuData = for {
+        products <- productService.getListByCategory(categorySlug, page)
+        categoryProduct <- setupCategoryService.retrieve("category")
+        nav <- setupCategoryService.retrieve("nav")
+      } yield (products, categoryProduct.get.value, nav.get.value)
 
-    fuData map { data =>
-      Ok(views.html.category(data._1, data._2, data._3))
+      fuData map { data =>
+        Ok(views.html.category(data._1, data._2, data._3))
+      }
     }
   }
 

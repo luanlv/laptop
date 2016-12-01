@@ -245,7 +245,7 @@ Since Atropos v1.3
     .footer .col-md-3 {display:none}
     
     .footer .footer_top {
-        background: url("../images/foter.png") no-repeat scroll left 39% top rgba(0, 0, 0, 0);
+        /*background: url("../images/foter.png") no-repeat scroll left 39% top rgba(0, 0, 0, 0);*/
         
     }
 }
@@ -287,7 +287,7 @@ Since Atropos v1.3
         
     }
     .footer .footer_top {
-    background: url("../images/foter.png") no-repeat scroll left top rgba(0, 0, 0, 0);
+    /*background: url("../images/foter.png") no-repeat scroll left top rgba(0, 0, 0, 0);*/
 }
     .footer .footer_top .col-md-8 {display:none}
     .section-prod .prod-detail ul.prod-service {width:100%}

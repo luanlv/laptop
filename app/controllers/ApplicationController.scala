@@ -34,7 +34,7 @@ class ApplicationController @Inject() (
    *
    * @return The result to display.
    */
-  def index = cached((rh: RequestHeader) => "index", 30) {
+  def index = cached((rh: RequestHeader) => "index", 15) {
     UserAwareAction.async { implicit request =>
       val fuData = for {
         indexProduct <- indexProductService.retrieve("index")
