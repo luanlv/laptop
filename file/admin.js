@@ -2184,10 +2184,9 @@ Article.controller = function(){
   ctrl.requestArticle.ready = m.prop(false);
   
   ctrl.setup = function(){
-    console.log(ctrl.data().body);
     m.redraw();
   };
-  
+  console.log("article")
   ctrl.type = m.route.param("status");
   ctrl.articleID = m.route.param("article");
   
